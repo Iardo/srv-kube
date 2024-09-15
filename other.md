@@ -12,6 +12,8 @@ https://hub.docker.com/_/varnish
 
 https://github.com/hcengineering/huly-selfhost -- probar, este puede ser un remplazo de .app
 
+https://github.com/Infisical/infisical
+https://github.com/passbolt
 https://github.com/actualbudget/actual -- remplazar firefly3 con este
 https://hub.docker.com/r/filecloud/fileclouddocker -- remplazar nextclout por este
 https://hub.docker.com/r/adguard/adguardhome -- remplazar pihole por este (https://cyberhost.uk/adguard-setup/)
@@ -23,10 +25,12 @@ https://github.com/filebrowser/filebrowser -- crear algun carpeta de categoria d
 https://github.com/louislam/dockge -- probar
 https://github.com/postalserver/postal -- probar
 https://github.com/OneUptime/oneuptime
+https://docs.paperless-ngx.com/ -- probar
 https://www.docuseal.co/ -- probar
 
 ## Manga - de aca tengo que elegir uno, asi que debo investigar bien cual es el mejor en terminos de compatibilidad y features
 https://www.kavitareader.com/ -- probar
+https://www.stumpapp.dev/ -- probar
 
 
 https://github.com/hurlenko/aria2-ariang-docker
@@ -48,11 +52,13 @@ https://moodist.app/ -- mmm, solo por curiosidad
 https://www.crowdsec.net/ -- investigar que es esto
 https://github.com/CorentinTh/it-tools -- probar
 https://hub.docker.com/r/grafana/grafana -- investigar mas, tambien esto https://github.com/ar51an/unbound-dashboard
+https://github.com/AnalogJ/scrutiny -- probar
 https://github.com/binwiederhier/ntfy -- probar
 https://github.com/mealie-recipes/mealie -- probar
 https://github.com/pucherot/Pi.Alert -- hmm, quizas, tengo que pensarmelo
 https://github.com/seriousm4x/UpSnap?tab=readme-ov-file -- probar
 https://github.com/wg-easy/wg-easy -- investigar
+https://github.com/Lissy93/web-check -- probar
 
 ## Homepage
 https://www.reddit.com/r/selfhosted/comments/1bpgx7i/finally_got_my_homepage_to_look_neat_enough_to/
