@@ -69,3 +69,7 @@ https://k3s.io/
 https://fernandocejas.com/blog/engineering/2023-01-06-over-engineered-home-lab-docker-kubernetes/
 https://www.youtube.com/watch?v=n-fAf2mte6M&themeRefresh=1
 https://www.reddit.com/r/homelab/comments/kugur2/kubernetes_or_docker_homelab/
+
+
+https://github.com/sqlparser/sqlflow_public/blob/master/install_sqlflow.md
+https://github.com/PostHog/posthog/tree/master/docker
