@@ -1,0 +1,51 @@
+# References
+# --------------------
+# https://github.com/requarks/wiki/blob/main/dev/examples/docker-compose.yml
+
+networks:
+  wikijs:
+    name: wikijs
+
+volumes:
+  wikijs-database:
+    name: wikijs-database
+
+services:    
+  wikijs-web:
+    image: requarks/wiki:2
+    container_name: wikijs-web
+    restart: unless-stopped
+    depends_on:
+      - wikijs-database
+    networks:
+      - wikijs
+    ports:
+      - ${WIKIJS_WEB_HTTP:-3000}:3000
+      - ${WIKIJS_WEB_HTTPS:-3443}:3443
+    env_file: .env
+    environment:
+      DB_PORT: 5432
+      DB_TYPE: postgres
+      DB_HOST: wikijs-database
+      DB_NAME: wikijs
+      DB_USER: wikijs
+      DB_PASS: wikijs # Dummy
+
+  wikijs-database:
+    image: postgres:16-alpine
+    container_name: wikijs-database
+    restart: unless-stopped
+    logging:
+      driver: "none"
+    networks:
+      - wikijs
+    ports:
+      - ${WIKIJS_DATABASE:-5432}:5432
+    volumes:
+      - wikijs-database:/var/lib/postgresql/data
+    env_file: .env
+    environment:
+      PGPORT: 5432
+      POSTGRES_DB: ${POSTGRES_NAME:?}
+      POSTGRES_PASSWORD: ${POSTGRES_PASS:?}
+      POSTGRES_USER: ${POSTGRES_USER:?}

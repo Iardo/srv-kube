@@ -66,7 +66,7 @@ serv_list: dict = {
     'tuleap': ['web-http'],
     'uptime-kuma': ['web-http'],
     'webcheck': ['web-http'],
-    'wikijs': ['web-http'],
+    'wikijs': ['web-http', 'web-https', 'database'],
 }
 
 # Main
