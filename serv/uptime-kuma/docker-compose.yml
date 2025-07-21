@@ -1,0 +1,23 @@
+# References
+# --------------------
+# https://github.com/louislam/uptime-kuma/blob/master/docker/docker-compose-dev.yml
+
+networks:
+  uptime-kuma:
+    name: uptime-kuma
+
+volumes:
+  uptime-kuma:
+    name: uptime-kuma
+
+services:
+  uptime-kuma:
+    image: louislam/uptime-kuma:nightly2
+    container_name: uptime-kuma
+    restart: unless-stopped
+    networks:
+      - uptime-kuma
+    volumes:
+      - uptime-kuma:/app/data
+    ports:
+      - ${UPTIME_KUMA_WEB_HTTP:-3001}:3001
