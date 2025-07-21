@@ -7,10 +7,11 @@
 # --------------------
 # docker compose up -d --build
 
-include:
-  - ${SERV:?}/actual/${FILE:?}
-  - ${SERV:?}/docmost/${FILE:?}
-  - ${SERV:?}/nginx-proxy-manager/${FILE:?}
-  - ${SERV:?}/notesnook/${FILE:?}
-  - ${SERV:?}/portainer/${FILE:?}
-  - ${SERV:?}/timetagger/${FILE:?}
+include: [
+  '${SERV:?}/actual/${FILE:?}',
+  '${SERV:?}/docmost/${FILE:?}',
+  '${SERV:?}/nginx-proxy-manager/${FILE:?}',
+  '${SERV:?}/notesnook/${FILE:?}',
+  '${SERV:?}/portainer/${FILE:?}',
+  '${SERV:?}/timetagger/${FILE:?}',
+]
