@@ -16,7 +16,7 @@ services:
     ports:
       - ${HOMEPAGE_WEB_HTTP:-3000}:3000
     volumes:
-      - ./config:/app/config
+      - ./conf:/app/config
       - /var/run/docker.sock:/var/run/docker.sock:ro
     environment:
       PUID: 1000

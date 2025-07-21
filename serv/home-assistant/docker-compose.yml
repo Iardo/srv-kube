@@ -17,5 +17,5 @@ services:
     ports:
       - ${HOME_ASSISTANT_WEB_HTTP:-8123}:8123
     volumes:
-      - ./config:/config
-      - ./config/etc/localtime:/etc/localtime:ro
+      - ./conf:/config
+      - ./conf/etc/localtime:/etc/localtime:ro
