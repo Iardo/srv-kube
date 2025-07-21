@@ -1,0 +1,239 @@
+# References
+# --------------------
+# https://github.com/streetwriters/notesnook-sync-server/blob/master/.env
+# https://github.com/streetwriters/notesnook-sync-server/blob/master/docker-compose.yml
+
+networks:
+  notesnook:
+    name: notesnook
+
+volumes:
+  notesnook-database:
+    name: notesnook-database
+    driver: local
+  notesnook-minio:
+    name: notesnook-minio
+    driver: local
+
+x-discovery: 
+  &discovery
+    SELF_HOSTED: ${SELF_HOSTED:?}
+    API_HOST: http://notesnook-server:${NOTESNOOK_SERVER:-5264}
+    IDENTITY_SERVER_HOST: notesnook-identity
+    IDENTITY_SERVER_PORT: 8264  # Internal
+    IDENTITY_SERVER_URL: http://localhost:${NOTESNOOK_IDENTITY:-8264}
+    NOTESNOOK_APP_HOST: ${NOTESNOOK_PUBLIC_URL_WEB:?}
+    NOTESNOOK_SERVER_HOST: notesnook-server
+    NOTESNOOK_SERVER_PORT: 5264 # Internal
+    PUBLIC_URL: http://localhost:${NOTESNOOK_MONOGRAPH:-6264}
+    S3_ACCESS_KEY_ID: ${MINIO_ROOT_USER:?}
+    S3_ACCESS_KEY: ${MINIO_ROOT_PASSWORD:?}
+    S3_INTERNAL_SERVICE_URL: "http://notesnook-minio:9000"
+    S3_SERVICE_URL: http://localhost:9000
+    SSE_SERVER_HOST: notesnook-events
+    SSE_SERVER_PORT: 7264       # Internal
+
+services:
+  notesnook-validate:
+    image: vandot/alpine-bash
+    container_name: notesnook-validate
+    # Ensure the validate service runs first
+    restart: "no"
+    command: /bin/bash -c /validate.sh
+    networks:
+      - notesnook
+    volumes:
+      - ./task/validate.sh:/validate.sh
+    env_file: .env
+
+  notesnook-server:
+    image: streetwriters/notesnook-sync:latest
+    container_name: notesnook-server
+    depends_on:
+      - notesnook-identity
+      - notesnook-minio
+      - notesnook-minio-setup
+      - notesnook-validate
+    networks:
+      - notesnook
+    ports:
+      - ${NOTESNOOK_SERVER:-5264}:5264
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - wget --tries=1 -nv -q http://localhost:${NOTESNOOK_SERVER:-5264}/health -O- || exit 1
+      interval: 40s
+      retries: 3
+      timeout: 30s
+      start_period: 60s
+    env_file: .env
+    environment:
+      <<: *discovery
+      MONGODB_CONNECTION_STRING: mongodb://notesnook-database:27017/?replSet=rs0
+      MONGODB_DATABASE_NAME: notesnook
+
+  notesnook-identity:
+    image: streetwriters/identity:latest
+    container_name: notesnook-identity
+    depends_on:
+      - notesnook-database
+    networks:
+      - notesnook
+    ports:
+      - ${NOTESNOOK_IDENTITY:-8264}:8264
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - wget --tries=1 -nv -q  http://localhost:8264/health -O- || exit 1
+      interval: 40s
+      retries: 3
+      timeout: 30s
+      start_period: 60s
+    env_file: .env
+    environment:
+      <<: *discovery
+      MONGODB_CONNECTION_STRING: mongodb://notesnook-database:27017/identity?replSet=rs0
+      MONGODB_DATABASE_NAME: identity
+
+  notesnook-events:
+    image: streetwriters/sse:latest
+    container_name: notesnook-events
+    depends_on:
+      - notesnook-identity
+      - notesnook-server
+    networks:
+      - notesnook
+    ports:
+      - ${NOTESNOOK_EVENTS:-7264}:7264
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - wget --tries=1 -nv -q  http://localhost:${NOTESNOOK_EVENTS:-7264}/health -O- || exit 1
+      interval: 40s
+      retries: 3
+      timeout: 30s
+      start_period: 60s
+    env_file: .env
+    environment:
+      <<: *discovery
+
+  notesnook-monograph:
+    image: streetwriters/monograph:latest
+    container_name: notesnook-monograph
+    depends_on:
+      - notesnook-server
+    networks:
+      - notesnook
+    ports:
+      - ${NOTESNOOK_MONOGRAPH:-6264}:3000
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - wget --tries=1 -nv -q  http://localhost:${NOTESNOOK_MONOGRAPH:-6264}/api/health -O- || exit 1
+      interval: 40s
+      retries: 3
+      timeout: 30s
+      start_period: 60s
+    env_file: .env
+    environment:
+      <<: *discovery
+
+  notesnook-autoheal:
+    image: willfarrell/autoheal:latest
+    container_name: notesnook-autoheal
+    restart: always
+    depends_on:
+      notesnook-validate:
+        condition: service_completed_successfully
+    networks:
+      - notesnook
+    tty: true
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    env_file: .env
+
+  notesnook-database:
+    image: mongo:7.0.12
+    container_name: notesnook-database
+    hostname: notesnook-database
+    command: --replSet rs0 --bind_ip_all
+    depends_on:
+      notesnook-validate:
+        condition: service_completed_successfully
+    networks:
+      - notesnook
+    ports:
+      - ${NOTESNOOK_DATABASE:-27017}:27017
+    volumes:
+      - notesnook-database:/data/db
+      - notesnook-database:/data/configdb
+    healthcheck:
+      test: 
+        - CMD-SHELL
+        - echo 'db.runCommand("ping").ok' | mongosh mongodb://localhost:${NOTESNOOK_DATABASE:-27017} --quiet
+      interval: 40s
+      retries: 3
+      timeout: 30s
+      start_period: 60s
+
+  # Sync server requires transactions which only work with a replica set.
+  # This job runs `rs.initiate()` upgrading our instance to a replica set.
+  # This is only required once but running it multiple times is no issue.
+  notesnook-database-init:
+    image: mongo:7.0.12
+    container_name: notesnook-database-init
+    depends_on:
+      - notesnook-database
+    networks:
+      - notesnook
+    entrypoint: /bin/sh
+    command:
+      - -c
+      - |
+        mongosh mongodb://notesnook-database:${NOTESNOOK_DATABASE:-27017} <<EOF
+          rs.initiate();
+          rs.status();
+        EOF
+
+  notesnook-minio:
+    image: minio/minio:RELEASE.2024-07-29T22-14-52Z
+    container_name: notesnook-minio
+    command: server /data/s3 --console-address :9090
+    depends_on:
+      notesnook-validate:
+        condition: service_completed_successfully
+    networks:
+      - notesnook
+    ports:
+      - 9000:9000
+      - ${NOTESNOOK_MINIO:-9090}:9090
+    healthcheck:
+      test:
+        - CMD-SHELL 
+        - timeout 5s bash -c ':> /dev/tcp/127.0.0.1/9000' || exit 1
+      interval: 40s
+      retries: 3
+      timeout: 30s
+      start_period: 60s
+    volumes:
+      - notesnook-minio:/data/s3
+    env_file: .env
+
+  # There's no way to specify a default bucket in Minio so we have to
+  # set it up ourselves.
+  notesnook-minio-setup:
+    image: minio/mc:RELEASE.2024-07-26T13-08-44Z
+    container_name: notesnook-minio-setup
+    depends_on:
+      - notesnook-minio
+    networks:
+      - notesnook
+    entrypoint: /bin/bash
+    command:
+      - -c
+      - |
+        until mc alias set minio http://notesnook-minio:9000 ${MINIO_ROOT_USER:?} ${MINIO_ROOT_PASSWORD:?}; do
+          sleep 1;
+        done;
+        mc mb minio/attachments -p
+    env_file: .env

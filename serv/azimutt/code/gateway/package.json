@@ -1,0 +1,79 @@
+{
+  "name": "@azimutt/gateway",
+  "description": "A Gateway to proxy database access for Azimutt frontend",
+  "version": "0.1.25",
+  "license": "MIT",
+  "homepage": "https://azimutt.app",
+  "keywords": [
+    "database",
+    "database tool",
+    "database schema",
+    "diagram",
+    "erd",
+    "entity-relationship diagram"
+  ],
+  "main": "./out/index.js",
+  "types": "./out/index.d.ts",
+  "scripts": {
+    "start": "tsx watch ./src/start.ts .env | pino-pretty --colorize",
+    "test": "vitest run",
+    "test:watch": "vitest watch",
+    "lint": "tsc --noEmit && eslint .",
+    "lint:fix": "tsc --noEmit && eslint . --fix",
+    "build": "rm -rf ./out && tsc",
+    "build:do": "npm ci --production=false && npm run build",
+    "build:docker:prod": "docker build . -t azimutt-gateway --build-arg APP_ENV=production",
+    "preview": "node out/start.js",
+    "dry-publish": "pnpm run build && pnpm test && pnpm pack"
+  },
+  "dependencies": {
+    "@azimutt/connector-bigquery": "^0.1.2",
+    "@azimutt/connector-couchbase": "^0.1.2",
+    "@azimutt/connector-mariadb": "^0.1.9",
+    "@azimutt/connector-mongodb": "^0.1.4",
+    "@azimutt/connector-mysql": "^0.1.5",
+    "@azimutt/connector-oracle": "^0.1.4",
+    "@azimutt/connector-postgres": "^0.1.11",
+    "@azimutt/connector-snowflake": "^0.1.2",
+    "@azimutt/connector-sqlserver": "^0.1.4",
+    "@azimutt/models": "^0.1.20",
+    "@azimutt/utils": "^0.1.8",
+    "@fastify/cors": "9.0.1",
+    "@sinclair/typebox": "0.29.6",
+    "ajv": "8.17.1",
+    "dotenv": "16.4.5",
+    "env-schema": "6.0.0",
+    "fastify": "4.28.1",
+    "fastify-plugin": "4.5.1"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3.2.0",
+    "@eslint/js": "^9.16.0",
+    "@types/node": "^22.10.1",
+    "@typescript-eslint/eslint-plugin": "^8.16.0",
+    "@typescript-eslint/parser": "^8.16.0",
+    "esbuild": "^0.23.1",
+    "eslint": "^9.16.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.2.1",
+    "globals": "^15.12.0",
+    "pino-pretty": "^11.3.0",
+    "prettier": "^3.4.1",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.6"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/azimuttapp/azimutt.git",
+    "directory": "gateway"
+  },
+  "bugs": {
+    "url": "https://github.com/azimuttapp/azimutt/issues"
+  },
+  "author": {
+    "name": "Loïc Knuchel",
+    "email": "loicknuchel@gmail.com",
+    "url": "https://loicknuchel.fr"
+  }
+}

@@ -1,16 +1,15 @@
 # ignore these folders:
-__pycache__
-/**/backups/*
-/**/cert/*
-/**/code/*
-/**/data/*
-/**/logs/*
+data/authentik/media/*
+data/authentik/templates/*
 
 # ignore these files:
-.DS_Store
 
 # --------------------
 # include these folders:
-!/**/cert
+!data
+!data/authentik
+!data/authentik/media
+!data/authentik/templates
+
 # include these files:
 !.gitkeep

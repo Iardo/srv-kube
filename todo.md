@@ -239,12 +239,6 @@ https://kubernetes-sigs.github.io/external-dns/latest/
 
 ## Notes Managers
 <!-------------------->
-> 1. Notesnook -  
-> https://notesnook.com/?utm_source=openalternative.co  
-
-> 2. Docmost - Probarlo  
-> https://docmost.com/  
-
 > 3. Privatebin - Notas efimeras, se ve util para compartir cosas dentro de LAN  
 > https://privatebin.info/  
 

@@ -1,0 +1,49 @@
+# References
+# --------------------
+# https://docs.linkwarden.app/self-hosting/installation
+# https://github.com/linkwarden/linkwarden/blob/main/docker-compose.yml
+
+networks:
+  linkwarden:
+    name: linkwarden
+
+volumes:
+  linkwarden-data:
+    name: linkwarden-data
+  linkwarden-database:
+    name: linkwarden-database
+
+services:
+  linkwarden-web:
+    image: ghcr.io/linkwarden/linkwarden:v2.5.3
+    container_name: linkwarden-web
+    restart: unless-stopped
+    depends_on:
+      - linkwarden-database
+    networks:
+      - linkwarden
+    ports:
+      - ${LINKWARDEN_WEB_HTTP:-5173}:3000
+    volumes:
+      - ./logs:/logs
+      - linkwarden-data:/data/data
+    env_file: .env
+
+  linkwarden-database:
+    image: postgres:16-alpine
+    container_name: linkwarden-database
+    restart: unless-stopped
+    networks:
+      - linkwarden
+    ports:
+      - ${LINKWARDEN_DATABASE:-8090}:8090
+    volumes:
+      - ./backups:/backups
+      - ./logs:/logs
+      - linkwarden-database:/var/lib/postgresql/data
+    env_file: .env
+    environment:
+      PGPORT: 8090
+      POSTGRES_DB: ${LINKWARDEN_POSTGRES_NAME:?}
+      POSTGRES_PASSWORD: ${LINKWARDEN_POSTGRES_PASS:?}
+      POSTGRES_USER: ${LINKWARDEN_POSTGRES_USER:?}

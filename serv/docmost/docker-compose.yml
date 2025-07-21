@@ -1,0 +1,68 @@
+# References
+# --------------------
+# https://github.com/docmost/docmost/blob/main/.env.example
+# https://github.com/docmost/docmost/blob/main/docker-compose.yml
+
+networks:
+  docmost:
+    name: docmost
+
+volumes:
+  docmost-database:
+    name: docmost-database
+    driver: local
+  docmost-redis:
+    name: docmost-redis
+    driver: local
+
+services:
+  docmost-web:
+    image: docmost/docmost:0.21.0
+    container_name: docmost-web
+    restart: unless-stopped
+    depends_on:
+      - docmost-database
+      - docmost-redis
+    networks:
+      - docmost
+    ports:
+      - ${DOCMOST_WEB_HTTP:?}:3000
+    volumes:
+      - ./data/docmost:/app/data/storage
+    env_file: .env
+    environment:
+      PORT: 3000
+      APP_URL: 'http://localhost:3000'
+      APP_SECRET: ${APP_SECRET:?}
+      DATABASE_URL: 'postgresql://${POSTGRESQL_USER:?}:${POSTGRESQL_PASS:?}@docmost-database:5432/${POSTGRESQL_NAME:?}?schema=public'
+      REDIS_URL: 'redis://docmost-redis:6379'
+
+  docmost-database:
+    image: postgres:16-alpine
+    container_name: docmost-database
+    restart: unless-stopped
+    networks:
+      - docmost
+    ports:
+      - ${DOCMOST_DATABASE:?}:5432
+    volumes:
+      - docmost-database:/var/lib/postgresql/data
+    env_file: .env
+    environment:
+      PGPORT: 5432
+      POSTGRES_DB: ${POSTGRESQL_NAME:?}
+      POSTGRES_PASSWORD: ${POSTGRESQL_PASS:?}
+      POSTGRES_USER: ${POSTGRESQL_USER:?}
+
+  docmost-redis:
+    image: redis:7.2-alpine
+    container_name: docmost-redis
+    restart: unless-stopped
+    command: --port 6379
+    networks:
+      - docmost
+    ports:
+      - ${DOCMOST_REDIS:?}:6379
+    volumes:
+      - docmost-redis:/data
+    env_file: .env

@@ -1,0 +1,70 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-proxy-manager
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+    spec:
+      restartPolicy: Always
+      containers:
+        - name: nginx-proxy-manager
+          image: docker.io/jc21/nginx-proxy-manager:2
+          ports:
+            - containerPort: 80
+              protocol: TCP
+            - containerPort: 81
+              protocol: TCP
+            - containerPort: 443
+              protocol: TCP
+          volumeMounts:
+            - mountPath: /data
+              name: nginx-proxy-manager-pvc-data
+            - mountPath: /etc/letsencrypt
+              name: nginx-proxy-manager-pvc-letsencrypt
+      volumes:
+        - name: nginx-proxy-manager-pvc-data
+          persistentVolumeClaim:
+            claimName: nginx-proxy-manager-pvc-data
+        - name: nginx-proxy-manager-pvc-letsencrypt
+          persistentVolumeClaim:
+            claimName: nginx-proxy-manager-pvc-letsencrypt
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-proxy-manager
+spec:
+  ports:
+    - name: "80"
+      port: 80
+      targetPort: 80
+    - name: "81"
+      port: 81
+      targetPort: 81
+    - name: "443"
+      port: 443
+      targetPort: 443
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: nginx-proxy-manager-pvc-data
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Mi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: nginx-proxy-manager-pvc-letsencrypt
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Mi

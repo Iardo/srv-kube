@@ -1,0 +1,27 @@
+FROM vandot/alpine-bash:3 as code
+RUN apk add --no-cache git
+RUN git clone https://github.com/azimuttapp/azimutt.git /code
+
+FROM node:18-slim AS deps
+WORKDIR /app
+COPY . .
+RUN npm install
+
+FROM node:18-slim AS builder
+ARG APP_ENV
+WORKDIR /app
+COPY --from=code /code/gateway/src ./src
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+RUN npm run build
+
+FROM node:18-slim AS runner
+WORKDIR /usr/app
+ARG APP_ENV
+COPY --from=code /code/gateway/src ./src
+COPY --from=builder /app/out ./out
+COPY . .
+RUN npm install --prod
+USER node
+ENV NODE_ENV="production"
+CMD ["node", "./out/start.js"]

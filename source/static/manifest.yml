@@ -1,7 +1,0 @@
-services:
-  linkwarden:
-    database: postgresql
-  open-project:
-    database: postgresql
-  trudesk:
-    database: mongodb

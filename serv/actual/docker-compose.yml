@@ -1,0 +1,22 @@
+# References
+# --------------------
+# https://actualbudget.org/docs/install/docker/
+# https://github.com/actualbudget/actual-server/blob/master/docker-compose.yml
+
+networks:
+  actual:
+    name: actual
+
+services:
+  actual-web:
+    image: docker.io/actualbudget/actual-server:23.10.0-alpine
+    container_name: actual-web
+    restart: unless-stopped
+    networks:
+      - actual
+    ports:
+      - ${ACTUAL_WEB_HTTP:?}:5006
+    volumes:
+      - ./cert:/cert
+      - ./data:/data
+    env_file: .env

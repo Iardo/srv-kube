@@ -1,0 +1,122 @@
+# References
+# --------------------
+# https://github.com/goauthentik/authentik/blob/main/docker-compose.yml
+
+
+# Redis Memory Overcommit Must Be Enabled
+# --------------------
+# The warning can be fixed by enabling memory overcommit in your system settings.
+# This allows Redis to perform operations like background saving and replication
+# without being blocked by the operating system’s memory restrictions.
+# 
+# > sudo nvim /etc/sysctl.conf
+# > add `vm.overcommit_memory=1`
+# > sudo sysctl -p
+# > docker restart <container>
+
+networks:
+  authentik:
+    name: authentik
+
+volumes:
+  authentik-database:
+    name: authentik-database
+    driver: local
+  authentik-cache:
+    name: authentik-cache
+    driver: local
+
+services:
+  authentik-web:
+    image: ghcr.io/goauthentik/server:2025.6.3
+    container_name: authentik-web
+    restart: unless-stopped
+    command: server
+    depends_on:
+      authentik-database:
+        condition: service_healthy
+      authentik-redis:
+        condition: service_healthy
+    networks:
+      - authentik
+    ports:
+      - ${AUTHENTIK_WEB_HTTP:?}:9000
+      - ${AUTHENTIK_WEB_HTTPS:?}:9443
+    volumes:
+      - ./data/authentik/media:/media
+      - ./data/authentik/templates:/templates
+    env_file: .env
+    environment:
+      AUTHENTIK_LISTEN__HTTP: 0.0.0.0:9000
+      AUTHENTIK_LISTEN__HTTPS: 0.0.0.0:9443
+      AUTHENTIK_POSTGRESQL__PORT: 5432
+      AUTHENTIK_REDIS__PORT: 6379
+
+  authentik-database:
+    image: postgres:16-alpine
+    container_name: authentik-database
+    restart: unless-stopped
+    networks:
+      - authentik
+    ports:
+      - ${AUTHENTIK_DATABASE:?}:5432
+    healthcheck:
+      test: 
+        - CMD-SHELL 
+        - pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}
+      interval: 30s
+      retries: 5
+      timeout: 5s
+      start_period: 20s
+    volumes:
+      - authentik-database:/var/lib/postgresql/data
+    env_file: .env
+    environment:
+      PGPORT: 5432
+      POSTGRES_DB: ${AUTHENTIK_POSTGRESQL__NAME:?}
+      POSTGRES_PASSWORD: ${AUTHENTIK_POSTGRESQL__PASSWORD:?}
+      POSTGRES_USER: ${AUTHENTIK_POSTGRESQL__USER:?}
+      
+  authentik-redis:
+    image: redis:alpine
+    container_name: authentik-redis
+    restart: unless-stopped
+    entrypoint: redis-server
+    command:
+      - --port 6379
+      - --save 60 1
+    networks:
+      - authentik
+    ports:
+      - ${AUTHENTIK_REDIS:?}:6379
+    healthcheck:
+      test: 
+        - CMD-SHELL
+        - redis-cli -p 6379 ping | grep PONG
+      interval: 30s
+      retries: 5
+      timeout: 5s
+      start_period: 20s
+    volumes:
+      - authentik-cache:/data
+    env_file: .env
+
+  authentik-worker:
+    image: ghcr.io/goauthentik/server:2025.6.3
+    container_name: authentik-worker
+    restart: unless-stopped
+    command: worker
+    user: 1000:1000 # https://goauthentik.io/docs/outposts/integrations/docker
+    depends_on:
+      authentik-database:
+        condition: service_healthy
+      authentik-redis:
+        condition: service_healthy
+    networks:
+      - authentik
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./cert:/certs
+      - ./data/authentik/media:/media
+      - ./data/authentik/templates:/templates
+    env_file: .env

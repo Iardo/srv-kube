@@ -1,0 +1,34 @@
+# References
+# --------------------
+# https://github.com/bluet/docker-cronicle-docker/blob/master/Dockerfile
+# https://github.com/bluet/docker-cronicle-docker/blob/master/docker-compose.yml
+
+
+# Credentials
+# --------------------
+# user: admin
+# pass: admin
+
+networks:
+  cronicle:
+    name: cronicle
+
+services:
+  cronicle-web:
+    image: bluet/cronicle-docker:0.9.77
+    container_name: cronicle-web
+    restart: unless-stopped
+    networks:
+      - cronicle
+    ports:
+      - ${CRONICLE_WEB_HTTP:-3012}:3012
+    volumes:
+      - ./data/cronicle/data:/opt/cronicle/data
+      - ./data/cronicle/logs:/opt/cronicle/logs
+      - ./data/cronicle/plugins:/opt/cronicle/plugins
+      - ./data/cronicle/workloads/app:/app
+      - ./data/external:/external
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - TZ=America/Panama
+      - CRONICLE_base_app_url=${CRONICLE_PUBLIC_URL_WEB}

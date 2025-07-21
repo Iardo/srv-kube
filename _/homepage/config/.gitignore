@@ -1,16 +1,10 @@
 # ignore these folders:
-__pycache__
-/**/backups/*
-/**/cert/*
-/**/code/*
-/**/data/*
-/**/logs/*
-
 # ignore these files:
-.DS_Store
+*.log
 
 # --------------------
 # include these folders:
-!/**/cert
+!/.idea/
+!/.vscode/
+
 # include these files:
-!.gitkeep
