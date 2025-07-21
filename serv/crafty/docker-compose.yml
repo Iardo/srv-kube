@@ -1,0 +1,30 @@
+# References
+# --------------------
+# https://gitlab.com/crafty-controller/crafty-4/-/blob/master/docker-compose.yml.example?ref_type=heads
+# https://docs.craftycontrol.com/pages/getting-started/installation/docker/?h=docker
+
+networks:
+  crafty:
+    name: crafty
+
+services:
+  crafty:
+    image: arcadiatechnology/crafty-4:4.4.0
+    container_name: crafty
+    restart: unless-stopped
+    networks:
+      - crafty
+    ports:
+        - ${CRAFTY_WEB_HTTP:-8000}:8000              # HTTP
+        - ${CRAFTY_WEB_HTTPS:-8443}:8443             # HTTPS
+        - ${CRAFTY_DYNMAP:-8123}:8123                # DYNMAP
+        - ${CRAFTY_BEDROCK:-19132}:19132/udp         # BEDROCK
+        - ${CRAFTY_CLIENTS:-60000-60100}:25500-25600 # PORT RANGE
+    volumes:
+        - ./backups:/crafty/backups
+        - ./conf:/crafty/app/config
+        - ./data/import:/crafty/import
+        - ./data/servers:/crafty/servers
+        - ./logs:/crafty/logs
+    environment:
+      TZ: ${CRAFTY_TIMEZONE:-America/Panama}
