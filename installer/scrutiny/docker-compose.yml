@@ -1,0 +1,28 @@
+# REFERENCE
+# https://github.com/AnalogJ/scrutiny/blob/master/docker/example.omnibus.docker-compose.yml
+# https://github.com/AnalogJ/scrutiny?tab=readme-ov-file#docker
+
+networks:
+  scrutiny:
+    name: scrutiny
+
+services:
+  scrutiny:
+    image: ghcr.io/analogj/scrutiny:v0.8.1-omnibus
+    container_name: scrutiny
+    restart: unless-stopped
+    networks:
+      - scrutiny
+    ports:
+      - ${SCRUTINY_PORT:-8080}:8080 # webapp
+      - ${INFLUXDB_PORT:-8086}:8086 # influxDB admin
+    volumes:
+      - /run/udev:/run/udev:ro
+      - ./config:/opt/scrutiny/config
+      - ./influxdb:/opt/scrutiny/influxdb
+    cap_add:
+      - SYS_RAWIO
+    devices:
+      - "/dev/sda"
+      # - "/dev/sdb"
+    env_file: .env

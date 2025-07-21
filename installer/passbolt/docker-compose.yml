@@ -1,0 +1,59 @@
+# REFERENCE
+# https://github.com/passbolt/passbolt_docker/blob/master/docker-compose/docker-compose-ce-postgresql.yaml
+# https://github.com/passbolt/passbolt_docker?tab=readme-ov-file#docker-compose
+
+networks:
+  passbolt:
+    name: passbolt
+
+volumes:
+  database-data:
+    name: passbolt-database
+  gpg-data:
+    name: passbolt-gpg
+  jwt-data:
+    name: passbolt-jwt
+
+services:
+  passbolt:
+    image: passbolt/passbolt:4.8.0-1-ce-non-root
+    container_name: passbolt-web
+    restart: unless-stopped
+    command: >
+      bash -c "/usr/bin/wait-for.sh -t 0 database:5432 -- /docker-entrypoint.sh"
+    depends_on:
+      database:
+        condition: service_healthy
+    volumes:
+      - gpg-data:/etc/passbolt/gpg
+      - jwt-data:/etc/passbolt/jwt
+      # - ./certs/cert.pem:/etc/ssl/certs/certificate.crt:ro
+      # - ./certs/key.pem:/etc/ssl/certs/certificate.key:ro
+      # - ./certs/cert.pem:/etc/passbolt/certs/certificate.crt:ro
+      # - ./certs/key.pem:/etc/passbolt/certs/certificate.key:ro
+    networks:
+      - passbolt
+    ports:
+      - ${PASSBOLT_WEB_HTTP_PORT:-80}:8080
+      - ${PASSBOLT_WEB_HTTP_PORTS:-443}:4433
+    env_file: .env
+    environment:
+      - DATASOURCES_DEFAULT_DRIVER=Cake\Database\Driver\Postgres
+      - DATASOURCES_DEFAULT_ENCODING="utf8"
+
+  database:
+    image: postgres:16-alpine
+    container_name: passbolt-database
+    restart: unless-stopped
+    networks:
+      - passbolt
+    ports:
+      - ${PASSBOLT_POSTGRES_PORT:-5432}:5432
+    volumes:
+      - database-data:/var/lib/postgresql/data
+    healthcheck:
+      test: "pg_isready --username=${POSTGRES_USER} && psql --username=${POSTGRES_USER} --list"
+      interval: 5s
+      timeout: 10s
+      retries: 10
+    env_file: .env

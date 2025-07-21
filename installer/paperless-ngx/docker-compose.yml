@@ -1,0 +1,83 @@
+# REFERENCE
+# https://github.com/paperless-ngx/paperless-ngx/blob/dev/docker/compose/docker-compose.postgres-tika.yml
+# https://docs.paperless-ngx.com/setup/#docker_build
+
+networks:
+  paperless:
+    name: paperless
+
+volumes:
+  data:
+    name: paperless-data
+  database-data:
+    name: paperless-database
+  media:
+    name: paperless-media
+  redis-data:
+    name: paperless-redis
+
+services:
+  paperless:
+    image: ghcr.io/paperless-ngx/paperless-ngx:2.9
+    container_name: paperless-web
+    restart: unless-stopped
+    depends_on:
+      - broker
+      - database
+      - gotenberg
+      - tika
+    networks:
+      - paperless
+    ports:
+      - ${PAPERLESS_PORT:-8000}:8000
+    volumes:
+      - ./consume:/usr/src/paperless/consume
+      - ./export:/usr/src/paperless/export
+      - data:/usr/src/paperless/data
+      - media:/usr/src/paperless/media
+    env_file: .env
+    environment:
+      - USERMAP_UID=1000
+      - USERMAP_GID=1000
+
+  database:
+    image: docker.io/library/postgres:16
+    container_name: paperless-database
+    restart: unless-stopped
+    networks:
+      - paperless
+    volumes:
+      - database-data:/var/lib/postgresql/data
+    env_file: .env
+
+  broker:
+    image: docker.io/library/redis:7
+    container_name: paperless-broker
+    restart: unless-stopped
+    networks:
+      - paperless
+    volumes:
+      - redis-data:/data
+    env_file: .env
+  
+  gotenberg:
+    image: docker.io/gotenberg/gotenberg:7.10
+    container_name: paperless-gotenberg
+    restart: unless-stopped
+    # The gotenberg chromium route is used to convert .eml files. We do not
+    # want to allow external content like tracking pixels or even javascript.
+    command:
+      - "gotenberg"
+      - "--chromium-disable-javascript=true"
+      - "--chromium-allow-list=file:///tmp/.*"
+    networks:
+      - paperless
+    env_file: .env
+
+  tika:
+    image: docker.io/apache/tika:latest
+    container_name: paperless-tika
+    restart: unless-stopped
+    networks:
+      - paperless
+    env_file: .env

@@ -1,0 +1,3 @@
+FROM caddy:2
+
+ENTRYPOINT ["caddy", "run", "--config", "/etc/caddy/Caddyfile"]

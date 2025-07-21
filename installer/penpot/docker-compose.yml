@@ -1,0 +1,81 @@
+# REFERENCE
+# https://github.com/penpot/penpot/blob/develop/docker/images/docker-compose.yaml
+# https://help.penpot.app/technical-guide/getting-started/
+
+networks:
+  penpot:
+    name: penpot
+
+volumes:
+  database-data:
+    name: penpot-database
+  assets:
+    name: penpot-assets
+
+services:
+  penpot-frontend:
+    image: penpotapp/frontend:2.0.3
+    container_name: penpot-frontend
+    depends_on:
+      - penpot-backend
+      - penpot-exporter
+    networks:
+      - penpot
+    volumes:
+      - assets:/opt/data
+    ports:
+      - ${PENPOT_FRONTEND_PORT:-5020}:80
+    env_file: .env
+
+  penpot-backend:
+    image: penpotapp/backend:2.0.3
+    container_name: penpot-backend
+    depends_on:
+      - penpot-postgres
+      - penpot-redis
+    networks:
+      - penpot
+    volumes:
+      - assets:/opt/data
+    env_file: .env
+
+  penpot-exporter:
+    image: penpotapp/exporter:2.0.3
+    container_name: penpot-exporter
+    networks:
+      - penpot
+
+  penpot-postgres:
+    image: postgres:15
+    container_name: penpot-database
+    restart: unless-stopped
+    stop_signal: SIGINT
+    networks:
+      - penpot
+    ports:
+      - ${PENPOT_POSTGRES_PORT:-5432}:5432
+    volumes:
+      - database-data:/var/lib/postgresql/data
+    env_file: .env
+    environment:
+      - POSTGRES_INITDB_ARGS=--data-checksums
+
+  penpot-redis:
+    image: redis:7
+    container_name: penpot-redis
+    restart: unless-stopped
+    networks:
+      - penpot
+    env_file: .env
+
+  penpot-mailcatch:
+    image: sj26/mailcatcher:latest
+    container_name: penpot-mailcatch
+    restart: always
+    networks:
+      - penpot
+    ports:
+      - ${PENPOT_MAIL_PORT:-5021}:1080
+    expose:
+      - 1025:1025
+    env_file: .env

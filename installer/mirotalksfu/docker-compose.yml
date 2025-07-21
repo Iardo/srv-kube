@@ -1,0 +1,14 @@
+version: "3.2"
+
+services:
+  mirotalksfu:
+    image: mirotalksfu:latest
+    # build:
+    #   context: .
+    #   dockerfile: dockerfile
+    ports:
+      - 3010:3010/tcp
+      - 40000-40100:40000-40100/tcp
+      - 40000-40100:40000-40100/udp
+    restart: unless-stopped
+    container_name: mirotalksfu

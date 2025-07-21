@@ -1,0 +1,38 @@
+version: "3.2"
+
+volumes:
+  database-data:
+
+services:    
+  wikijs:
+    container_name: wikijs
+    image: requarks/wiki:canary-2.5.243
+    depends_on:
+      - postgres
+    environment:
+      DB_TYPE: postgres
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: wikijs
+      DB_USER: wikijs
+      DB_PASS: wikijsrocks
+    ports:
+      - "8025:3000"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.whoami.rule=Host(`local.wikijs.com`)"
+      - "traefik.http.routers.whoami.entrypoints=proxy"
+    restart: unless-stopped
+
+  postgres:
+    container_name: wikijs_database
+    image: postgres:11-alpine
+    environment:
+      POSTGRES_DB: wikijs
+      POSTGRES_USER: wikijs
+      POSTGRES_PASSWORD: wikijsrocks
+    logging:
+      driver: "none"
+    volumes:
+      - database-data:/var/lib/postgresql/data
+    restart: unless-stopped

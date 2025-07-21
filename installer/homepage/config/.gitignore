@@ -1,0 +1,10 @@
+# ignore these folders:
+# ignore these files:
+*.log
+
+# ------------------------------------------------------------------------------
+# include these folders:
+!/.idea/
+!/.vscode/
+
+# include these files:

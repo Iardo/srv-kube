@@ -1,0 +1,20 @@
+from source.head.color import *
+
+class msgs:
+    ERROR_NOT_ROOT: str= f'{color.back["normal"]["red"]}{color.fore["normal"]["white"]}This script needs to be run with root permissions.{color.text["reset"]}'
+    HOST_DO_CONFIG: str = f'{color.text["underline"]}Config:{color.text["reset"]}'
+    HOST_DO_DRIVER: str = f'{color.text["underline"]}Driver:{color.text["reset"]}'
+    HOST_DO_PACKAGES: str = f'{color.text["underline"]}Packages:{color.text["reset"]}'
+    HOST_DO_SYSTEM: str = f'{color.text["underline"]}System:{color.text["reset"]}'
+    HOST_PKGS_ERROR_PKG_FILE_DO_NOT_EXIST: str = f'{color.fore["bright"]["yellow"]}package file do not exist{color.text["reset"]}'
+    HOST_PKGS_ERROR_PKG_OPERATION_NOT_IMPLEMENTED: str = f'{color.fore["bright"]["yellow"]}package operation not yet implemented{color.text["reset"]}'
+    HOST_PROCESS_BULLET: str = f'{color.text["bold"]}{color.fore["bright"]["green"]}+{color.text["reset"]}'
+    HOST_PROCESS_CONFIG: str = f'{color.text["bold"]}{color.fore["bright"]["green"]}{"  `-":>0}{color.text["reset"]} config ...'
+    HOST_PROCESS_INSTALL: str = f'{color.text["bold"]}{color.fore["bright"]["green"]}{"  `-":>0}{color.text["reset"]} install ...'
+    HOST_PROCESS_UNINSTALL: str = f'{color.text["bold"]}{color.fore["bright"]["green"]}{"  `-":>0}{color.text["reset"]} uninstall ...'
+    OPERATION_DONE: str = f'{color.fore["bright"]["green"]}done{color.text["reset"]}'
+    OPERATION_FAIL: str = f'{color.fore["bright"]["red"]}fail{color.text["reset"]}'
+    OPERATION_SKIP: str = f'skip'
+    SELECT_HOST_ERROR_NOT_A_NUMBER: str = f'{color.fore["bright"]["red"]}That\'s not a valid option, please input one of the indexes from the list{color.text["reset"]}'
+    SELECT_HOST_ERROR_OUT_OF_RANGE: str = f'{color.fore["bright"]["red"]}The option you selected is not inside the list, please select a valid index{color.text["reset"]}'
+    SELECT_HOST_PICK: str = f'Select the host (input the number): '

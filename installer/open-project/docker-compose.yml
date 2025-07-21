@@ -1,0 +1,170 @@
+# REFERENCE
+#
+
+x-op-restart-policy: &restart_policy
+  restart: unless-stopped
+x-op-image: &image
+  image: openproject/openproject:${TAG:-16-slim}
+x-op-app: &app
+  <<: [*image, *restart_policy]
+  environment:
+    OPENPROJECT_HTTPS: "${OPENPROJECT_HTTPS:-true}"
+    OPENPROJECT_HOST__NAME: "${OPENPROJECT_HOST__NAME:-localhost:8080}"
+    OPENPROJECT_HSTS: "${OPENPROJECT_HSTS:-true}"
+    RAILS_CACHE_STORE: "memcache"
+    OPENPROJECT_CACHE__MEMCACHE__SERVER: "cache:11211"
+    OPENPROJECT_RAILS__RELATIVE__URL__ROOT: "${OPENPROJECT_RAILS__RELATIVE__URL__ROOT:-}"
+    DATABASE_URL: "${DATABASE_URL:-postgres://postgres:p4ssw0rd@db/openproject?pool=20&encoding=unicode&reconnect=true}"
+    RAILS_MIN_THREADS: ${RAILS_MIN_THREADS:-4}
+    RAILS_MAX_THREADS: ${RAILS_MAX_THREADS:-16}
+    # set to true to enable the email receiving feature. See ./docker/cron for more options
+    IMAP_ENABLED: "${IMAP_ENABLED:-false}"
+  volumes:
+    - "${OPDATA:-opdata}:/var/openproject/assets"
+
+networks:
+  # If the network does not exist run next command:
+  # docker network create --driver=bridge reverse-proxy
+  reverse-proxy:
+    name: reverse-proxy
+    external: true
+
+volumes:
+  pgdata:
+    name: open-project-pgdata
+  opdata:
+    name: open-project-opdata
+  pgupgrade:
+    name: open-project-pgupgrade
+
+services:
+  open-project-web:
+    <<: *app
+    container_name: open-project-web
+    command: "./docker/prod/web"
+    depends_on:
+      - open-project-database
+      - open-project-cache
+      - open-project-seeder
+    networks:
+      - reverse-proxy
+    labels:
+      - autoheal=true
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080${OPENPROJECT_RAILS__RELATIVE__URL__ROOT:-}/health_checks/default"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 30s
+
+  open-project-proxy:
+    <<: *restart_policy
+    image: openproject/proxy
+    container_name: open-project-proxy
+    depends_on:
+      - open-project-web
+    build:
+      context: .
+      dockerfile: dockerfile-proxy
+    networks:
+      - reverse-proxy
+    ports:
+      - "${PORT:-8080}:80"
+    volumes:
+      - "./caddyfile.template:/etc/caddy/Caddyfile"
+
+  open-project-database:
+    <<: *restart_policy
+    image: postgres:13
+    container_name: open-project-database
+    networks:
+      - reverse-proxy
+    volumes:
+      - "${PGDATA:-pgdata}:/var/lib/postgresql/data"
+    stop_grace_period: "3s"
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-p4ssw0rd}
+      POSTGRES_DB: openproject
+
+  open-project-cache:
+    <<: *restart_policy
+    image: memcached:1.6.38
+    container_name: open-project-cache
+    networks:
+      - reverse-proxy
+
+  open-project-autoheal:
+    image: willfarrell/autoheal:1.2.0
+    container_name: open-project-autoheal
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    environment:
+      AUTOHEAL_CONTAINER_LABEL: autoheal
+      AUTOHEAL_START_PERIOD: 600
+      AUTOHEAL_INTERVAL: 30
+
+  open-project-worker:
+    <<: *app
+    container_name: open-project-worker
+    command: "./docker/prod/worker"
+    depends_on:
+      - open-project-database
+      - open-project-cache
+      - open-project-seeder
+    networks:
+      - reverse-proxy
+
+  open-project-cron:
+    <<: *app
+    container_name: open-project-cron
+    command: "./docker/prod/cron"
+    depends_on:
+      - open-project-database
+      - open-project-cache
+      - open-project-seeder
+    networks:
+      - reverse-proxy
+
+  open-project-seeder:
+    <<: *app
+    container_name: open-project-seeder
+    restart: on-failure
+    command: "./docker/prod/seeder"
+    networks:
+      - reverse-proxy
+
+  open-project-upgrade:
+    container_name: open-project-upgrade
+    restart: on-failure
+    entrypoint: ["/upgrade.sh"]
+    build:
+      context: .
+      dockerfile: dockerfile-control
+    networks:
+      - reverse-proxy
+    volumes:
+      - "${PGDATA:-pgdata}:/var/lib/postgresql/data"
+      - "./upgrade-database.sh:/upgrade-database.sh"
+      - "./upgrade.sh:/upgrade.sh"
+    environment:
+      PGDATA: /var/lib/postgresql/data
+
+  open-project-backup:
+    container_name: open-project-backup
+    restart: on-failure
+    entrypoint: ["/backup.sh"]
+    networks:
+      - reverse-proxy
+    build:
+      context: .
+      dockerfile: dockerfile-control
+    environment:
+      PGDATA: /var/lib/postgresql/data
+      OPDATA: /var/openproject/assets
+    volumes:
+      - "${PGDATA:-pgdata}:/var/lib/postgresql/data"
+      - "${OPDATA:-opdata}:/var/openproject/assets"
+      - "./backups:/backups"
+      - "./backup.sh:/backup.sh"
+      - "./upgrade-database.sh:/upgrade-database.sh"
+      - "./upgrade.sh:/upgrade.sh"

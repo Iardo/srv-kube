@@ -1,0 +1,50 @@
+---
+# For configuration options and examples, please see:
+# https://gethomepage.dev/latest/configs/bookmarks
+
+- Services:
+  - Actual:
+    - abbr: AC
+      href: https://192.168.0.30:5006
+  - Azimutt:
+    - abbr: AZ
+      href: http://192.168.0.30:4000
+  - Cloudbeaver:
+    - abbr: CB
+      href: http://192.168.0.30:8978
+  - Excalidraw:
+    - abbr: EX
+      href: http://192.168.0.30:5000
+  - Infisical:
+    - abbr: IF
+      href: http://192.168.0.30:4300
+  - Linkwarden:
+    - abbr: LW
+      href: http://192.168.0.30:5173
+  - Netdata:
+    - abbr: ND
+      href: http://192.168.0.30:19999
+  - Paperless:
+    - abbr: PL
+      href: http://192.168.0.30:7330
+  - Passbolt:
+    - abbr: PA
+      href: https://192.168.0.30:4701
+  - Penpot:
+    - abbr: PE
+      href: http://192.168.0.30:5020
+  - Planka:
+    - abbr: PL
+      href: http://192.168.0.30:3000
+  - Portainer:
+    - abbr: PR
+      href: http://192.168.0.30:9005
+  - Scrutiny:
+    - abbr: SC
+      href: http://192.168.0.30:8900
+  - Stumpapp:
+    - abbr: ST
+      href: http://192.168.0.30:10801
+  - Tldraw:
+    - abbr: TD
+      href: http://192.168.0.30:3030

@@ -1,0 +1,24 @@
+# REFERENCE
+# https://github.com/Websoft9test/docker-cloudbeaver/blob/main/docker-compose.yml
+# https://github.com/dbeaver/cloudbeaver/wiki/CloudBeaver-Community-deployment-from-docker-image
+
+networks:
+  cloudbeaver:
+    name: cloudbeaver
+
+volumes:
+  workspace:
+    name: cloudbeaver-workspace
+
+services:
+  cloudbeaver:
+    image: dbeaver/cloudbeaver:24.1.0
+    container_name: cloudbeaver
+    restart: unless-stopped
+    networks:
+      - cloudbeaver
+    ports:
+      - ${CLOUDBEAVER_PORT:-8978}:8978
+    volumes: 
+      - workspace:/opt/cloudbeaver/workspace     
+    env_file: .env

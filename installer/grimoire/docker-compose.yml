@@ -1,0 +1,54 @@
+# REFERENCE
+# https://github.com/goniszewski/grimoire/blob/main/docker-compose.yml
+# https://github.com/goniszewski/grimoire?tab=readme-ov-file#installation
+
+networks:
+  grimoire:
+    name: grimoire
+
+volumes:
+  pocketbase-data:
+    name: grimoire-pocketbase-data
+  pocketbase-migrations:
+    name: grimoire-pocketbase-migrations
+
+services:
+  grimoire:
+    image: goniszewski/grimoire
+    container_name: grimoire-web
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: dockerfile
+    networks:
+      - grimoire
+    ports:
+      - ${GRIMOIRE_PORT:-5173}:5173
+    volumes:
+      - pocketbase-migrations:/app/pb_migrations/
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:5173/api/health || exit 1
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    env_file: .env
+
+  pocketbase:
+    image: spectado/pocketbase:0.22.10
+    container_name: grimoire-pocketbase
+    restart: unless-stopped
+    depends_on:
+      - grimoire
+    networks:
+      - grimoire
+    ports:
+      - ${POSTGRES_PORT:-8090}:80
+    volumes:
+      - pocketbase-data:/pb_data
+      - pocketbase-migrations:/pb_migrations/
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:80/api/health || exit 1
+      retries: 5
+      interval: 5s
+      timeout: 5s
+    env_file: .env

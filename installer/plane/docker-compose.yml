@@ -1,0 +1,200 @@
+version: "3.2"
+
+networks:
+  planespace:
+    driver: bridge
+
+volumes:
+  database-data:
+  redis-data:
+  uploads:
+
+services:
+  web:
+    container_name: plane_web
+    build:
+      context: ./source/web
+      dockerfile: Dockerfile.dev
+    restart: unless-stopped
+    networks:
+      - planespace
+    volumes:
+      - ./source/web:/app/web
+    env_file:
+      - ./source/web/.env
+    depends_on:
+      - api
+      - worker
+
+  space:
+    container_name: plane_space
+    build:
+      context: ./source/space
+      dockerfile: Dockerfile.dev
+    restart: unless-stopped
+    networks:
+      - planespace
+    volumes:
+      - ./source/space:/app/space
+    depends_on:
+      - api
+      - worker
+      - web
+
+  admin:
+    container_name: plane_admin
+    build:
+      context: ./source/admin
+      dockerfile: Dockerfile.dev
+    restart: unless-stopped
+    networks:
+      - planespace
+    volumes:
+      - ./source/admin:/app/admin
+    depends_on:
+      - api
+      - worker
+      - web
+
+  api:
+    container_name: plane_api
+    build:
+      context: ./source/apiserver
+      dockerfile: Dockerfile.dev
+      args:
+        DOCKER_BUILDKIT: 1
+    restart: unless-stopped
+    networks:
+      - planespace
+    volumes:
+      - ./source/apiserver:/code
+    command: ./bin/docker-entrypoint-api-local.sh
+    env_file:
+      - ./source/apiserver/.env
+    depends_on:
+      - postgres
+      - redis
+
+  worker:
+    container_name: plane_worker
+    build:
+      context: ./source/apiserver
+      dockerfile: Dockerfile.dev
+      args:
+        DOCKER_BUILDKIT: 1
+    restart: unless-stopped
+    networks:
+      - planespace
+    volumes:
+      - ./source/apiserver:/code
+    command: ./bin/docker-entrypoint-worker.sh
+    env_file:
+      - ./source/apiserver/.env
+    depends_on:
+      - api
+      - postgres
+      - redis
+
+  beat-worker:
+    container_name: plane_worker_beat
+    build:
+      context: ./source/apiserver
+      dockerfile: Dockerfile.dev
+      args:
+        DOCKER_BUILDKIT: 1
+    restart: unless-stopped
+    networks:
+      - planespace
+    volumes:
+      - ./source/apiserver:/code
+    command: ./bin/docker-entrypoint-beat.sh
+    env_file:
+      - ./source/apiserver/.env
+    depends_on:
+      - api
+      - postgres
+      - redis
+
+  migrator:
+    container_name: plane_migrator
+    build:
+      context: ./source/apiserver
+      dockerfile: Dockerfile.dev
+      args:
+        DOCKER_BUILDKIT: 1
+    restart: "no"
+    networks:
+      - planespace
+    volumes:
+      - ./source/apiserver:/code
+    command: ./bin/docker-entrypoint-migrator.sh --settings=plane.settings.local
+    env_file:
+      - ./source/apiserver/.env
+    depends_on:
+      - postgres
+      - redis
+
+  redis:
+    container_name: plane_redis
+    image: redis:7.2.4-alpine
+    restart: unless-stopped
+    networks:
+      - planespace
+    ports:
+      - "${REDIS_PORT}:6379"
+    volumes:
+      - redis-data:/data
+    env_file:
+      - .env
+
+  minio:
+    container_name: plane_minio
+    image: minio/minio:RELEASE.2024-05-10T01-41-38Z
+    restart: unless-stopped
+    networks:
+      - planespace
+    command: server /export --console-address ":9090"
+    volumes:
+      - uploads:/export
+    env_file:
+      - .env
+    environment:
+      MINIO_ROOT_USER: ${AWS_ACCESS_KEY_ID}
+      MINIO_ROOT_PASSWORD: ${AWS_SECRET_ACCESS_KEY}
+
+  postgres:
+    container_name: plane_postgres
+    image: postgres:15.2-alpine
+    restart: unless-stopped
+    networks:
+      - planespace
+    ports:
+      - "${POSTGRES_PORT}:5432"
+    volumes:
+      - database-data:/var/lib/postgresql/data
+    command: postgres -c 'max_connections=1000'
+    env_file:
+      - .env
+    environment:
+      PGDATA: /var/lib/postgresql/data
+
+  proxy:
+    container_name: plane_proxy
+    build:
+      context: ./source/nginx
+      dockerfile: Dockerfile.dev
+    restart: unless-stopped
+    networks:
+      - planespace
+    ports:
+      - "${NGINX_PORT}:80"
+    env_file:
+      - .env
+    environment:
+      FILE_SIZE_LIMIT: ${FILE_SIZE_LIMIT:-5242880}
+      BUCKET_NAME: ${AWS_S3_BUCKET_NAME:-uploads}
+    depends_on:
+      - admin
+      - api
+      - space
+      - web

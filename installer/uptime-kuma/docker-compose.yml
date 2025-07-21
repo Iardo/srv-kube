@@ -1,0 +1,12 @@
+# REFERENCE
+# 
+
+services:
+  uptime-kuma:
+    image: louislam/uptime-kuma:1
+    container_name: uptime_kuma
+    restart: unless-stopped
+    volumes:
+      - ./data:/app/data
+    ports:
+      - 8086:3001

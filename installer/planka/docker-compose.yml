@@ -1,0 +1,52 @@
+# REFERENCE
+# https://github.com/plankanban/planka/blob/master/docker-compose.yml
+# https://docs.planka.cloud/docs/installation/docker/production_version
+
+networks:
+  backend:
+    name: planka-backend
+
+volumes:
+  images-avatars:
+    name: planka-images-avatars
+  images-background:
+    name: planka-images-background
+  attachments:
+    name: planka-attachments
+  database-data:
+    name: planka-database
+
+services:
+  planka:
+    container_name: planka-web
+    image: ghcr.io/plankanban/planka:1.17.5
+    restart: on-failure
+    depends_on:
+      database:
+        condition: service_healthy
+    volumes:
+      - images-avatars:/app/public/user-avatars
+      - images-background:/app/public/project-background-images
+      - attachments:/app/private/attachments
+    networks:
+      - backend
+    ports:
+      - ${PLANKA_PORT:-1337}:1337
+    env_file: .env
+
+  database:
+    container_name: planka-database
+    image: postgres:14-alpine
+    restart: on-failure
+    volumes:
+      - database-data:/var/lib/postgresql/data
+      - ./logs:/logs
+    networks:
+      - backend
+    ports:
+      - ${POSTGRES_PORT:-5432}:5432
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d planka"]
+      interval: 10s
+      timeout: 5s
+      retries: 5

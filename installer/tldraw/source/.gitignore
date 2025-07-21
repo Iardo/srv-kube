@@ -1,0 +1,12 @@
+# ignore these folders:
+/build
+/node_modules
+
+# ignore these files:
+
+# ------------------------------------------------------------------------------
+# include these folders:
+!/.idea/
+!/.vscode/
+
+# include these files:

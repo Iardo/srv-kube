@@ -1,0 +1,18 @@
+# ignore these folders:
+__pycache__
+.cache
+.tmp
+backups
+installed
+logs
+redis
+
+# ignore these files:
+.DS_Store
+.env
+/service-list.yml
+/service-sync.yml
+
+# ------------------------------------------------------------------------------
+# include these folders:
+# include these files:

@@ -1,0 +1,8 @@
+FROM node:18.18-bullseye-slim
+ARG DEBIAN_FRONTEND=noninteractive
+COPY ./source /app
+WORKDIR /app
+
+RUN yarn install
+RUN yarn build
+CMD yarn serve

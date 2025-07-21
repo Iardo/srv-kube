@@ -1,0 +1,106 @@
+networks:
+  outline:
+    name: outline
+
+volumes:
+  database-data:
+  https-portal-data:
+  storage-data:
+
+services:
+  web:
+    container_name: outline-web
+    image: docker.getoutline.com/outlinewiki/outline:0.76.1
+    env_file: ./.env
+    networks:
+      - outline
+    # ports:
+    #   - "3000"
+    volumes:
+      - ./cert/selfhost.crt:/opt/outline/public.crt:ro
+      - ./cert/selfhost.key:/opt/outline/private.key:ro
+      - storage-data:/var/lib/outline/data
+    depends_on:
+      - postgres
+      - redis
+
+  postgres:
+    container_name: outline-postgres
+    image: postgres:16-alpine
+    env_file: ./.env
+    networks:
+      - outline
+    ports:
+      - "8007:5432"
+    volumes:
+      - database-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-d", "outline", "-U", "user"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+    environment:
+      POSTGRES_USER: 'user'
+      POSTGRES_PASSWORD: 'pass'
+      POSTGRES_DB: 'outline'
+
+  nginx:
+    container_name: outline-nginx
+    image: nginx:perl
+    env_file: ./.env
+    networks:
+      - outline
+    ports:
+      - "8005:80"
+      - "8006:443"
+    volumes:
+      - ./cert/selfhost.crt:/cert/selfhost.crt:ro
+      - ./cert/selfhost.key:/cert/selfhost.key:ro
+      - ./logs/nginx:/var/log/nginx
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./nginx.dhparam.pem:/etc/nginx/dhparam.pem:ro
+      - ./nginx.ssl:/etc/nginx/snippets/ssl-params.conf:ro
+    depends_on:
+      - web
+
+  redis:
+    container_name: outline-redis
+    image: redis:7.2.5-alpine
+    env_file: ./.env
+    networks:
+      - outline
+    ports:
+      - "8008:6379"
+    volumes:
+      - ./data/redis:/data
+      - ./redis.conf:/usr/local/etc/redis/redis.conf
+    command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      retries: 3
+      timeout: 30s
+      interval: 10s
+
+  # https-portal:
+  #   container_name: outline-ssl
+  #   image: steveltn/https-portal:1
+  #   env_file: ./.env
+  #   networks:
+  #     - outline
+  #   ports:
+  #     - "8005:80"
+  #     - "8006:443"
+  #   links:
+  #     - web
+  #   volumes:
+  #     - https-portal-data:/var/lib/https-portal
+  #   healthcheck:
+  #     test: ["CMD", "service", "nginx", "status"]
+  #     retries: 3
+  #     timeout: 20s
+  #     interval: 30s
+  #   environment:
+  #     DOMAINS: 'wiki.outline.dev -> http://web:3000'
+  #     STAGE: 'production'
+  #     WEBSOCKET: 'true'
+  #     CLIENT_MAX_BODY_SIZE: '0'

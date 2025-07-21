@@ -1,0 +1,42 @@
+version: "3.2"
+services:
+  n8n-postgres:
+    image: postgres:11
+    environment:
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+      - POSTGRES_DB
+      - POSTGRES_NON_ROOT_USER
+      - POSTGRES_NON_ROOT_PASSWORD
+    volumes:
+      - ./docker-init.sh:/docker-entrypoint-initdb.d/init-data.sh
+    restart: unless-stopped
+    container_name: n8n_postgres
+
+  n8n:
+    image: n8nio/n8n
+    # Wait 5 seconds to start n8n to make sure that PostgreSQL is ready
+    # when n8n tries to connect to it
+    command: /bin/sh -c "sleep 5; n8n start"
+    environment:
+      - DB_TYPE=postgresdb
+      - DB_POSTGRESDB_HOST=postgres
+      - DB_POSTGRESDB_PORT=5432
+      - DB_POSTGRESDB_DATABASE=${POSTGRES_DB}
+      - DB_POSTGRESDB_USER=${POSTGRES_NON_ROOT_USER}
+      - DB_POSTGRESDB_PASSWORD=${POSTGRES_NON_ROOT_PASSWORD}
+      - N8N_BASIC_AUTH_ACTIVE=true
+      - N8N_BASIC_AUTH_USER
+      - N8N_BASIC_AUTH_PASSWORD
+    volumes:
+      - ~/.n8n:/home/node/.n8n
+    ports:
+      - 5678:5678
+    links:
+      - n8n-postgres
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.whoami.rule=Host(`local.n8n.com`)"
+      - "traefik.http.routers.whoami.entrypoints=web"
+    restart: unless-stopped
+    container_name: n8n
