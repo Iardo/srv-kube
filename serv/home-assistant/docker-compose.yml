@@ -1,0 +1,21 @@
+# References
+# --------------------
+# 
+
+networks:
+  home-assistant:
+    name: home-assistant
+
+services:
+  home-assistant-web:
+    image: ghcr.io/home-assistant/home-assistant:stable
+    container_name: home-assistant-web
+    restart: unless-stopped
+    privileged: true
+    networks:
+      - home-assistant
+    ports:
+      - ${HOME_ASSISTANT_WEB_HTTP:-8123}:8123
+    volumes:
+      - ./config:/config
+      - ./config/etc/localtime:/etc/localtime:ro
