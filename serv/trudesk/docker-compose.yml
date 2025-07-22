@@ -1,0 +1,71 @@
+# References
+# --------------------
+# https://github.com/polonel/trudesk/blob/master/docker-compose.yml
+
+networks:
+  trudesk:
+    name: trudesk
+
+volumes:
+  trudesk-database:
+    name: trudesk-database
+  trudesk-mongo:
+    name: trudesk-mongo
+  trudesk-elasticsearch:
+    name: trudesk-elasticsearch
+
+services:
+  trudesk-web:
+    image: polonel/trudesk:1
+    container_name: trudesk-web
+    restart: always
+    networks:
+      - trudesk
+    ports:
+      - ${TRUDESK_WEB_HTTP:-8118}:8118
+    dns:
+      - 1.1.1.1
+      - 8.8.8.8
+    volumes:
+      - ./data/backups:/usr/src/trudesk/backups
+      - ./data/uploads:/usr/src/trudesk/public/uploads
+    environment:
+      NODE_ENV: production
+      TD_MONGODB_DATABASE: trudesk
+      TD_MONGODB_SERVER: trudesk-database
+      TRUDESK_DOCKER: "true"
+      USE_XFORWARDIP: "true"
+
+  trudesk-database:
+    image: mongo:5.0-focal
+    container_name: trudesk-database
+    restart: always
+    networks:
+      - trudesk
+    ports:
+      - ${TRUDESK_DATABASE:-27017}:27017
+    volumes:
+      - trudesk-database:/data/db:rw
+      - trudesk-mongo:/var/lib/mongo
+
+  trudesk-elasticsearch:
+    image: elastic/elasticsearch:8.18.4
+    container_name: trudesk-elasticsearch
+    restart: always
+    mem_limit: 1073741824
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    networks:
+      - trudesk
+    ports:
+      - ${TRUDESK_ELASTICSEARCH:-9200}:9200           # Server
+      - ${TRUDESK_ELASTICSEARCH_TRANSPORT:-9300}:9300 # Transport
+    volumes:
+      - trudesk-elasticsearch:/usr/share/elasticsearch/data
+    environment:
+      - xpack.security.enabled=false
+      - xpack.security.http.ssl.enabled=false
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
