@@ -1,0 +1,30 @@
+# References
+# --------------------
+# https://github.com/alexjustesen/speedtest-tracker/blob/main/.env.example
+# https://github.com/alexjustesen/speedtest-tracker/blob/main/docker-compose.yml
+
+networks:
+  speedtest-tracker:
+    name: speedtest-tracker
+    
+services:
+  speedtest-tracker-web:
+    image: henrywhitaker3/speedtest-tracker
+    container_name: speedtest-tracker-web
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "10"
+        max-size: "200k"
+    networks:
+      - speedtest-tracker
+    ports:
+      - ${SPEEDTEST_TRACKER_WEB_HTTP:-3000}:80
+    volumes:
+      - ./conf:/config
+    environment:
+      PGID: 1000
+      PUID: 1000
+      OOKLA_EULA_GDPR: true
+      TZ: ${SPEEDTEST_TRACKER_TIMEZONE:-America/Panama}
