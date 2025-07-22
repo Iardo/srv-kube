@@ -1,0 +1,63 @@
+# References
+# --------------------
+# https://github.com/n8n-io/n8n/blob/master/.devcontainer/docker-compose.yml
+# https://docs.n8n.io/hosting/installation/server-setups/docker-compose/#6-create-docker-compose-file
+
+networks:
+  n8n:
+    name: n8n
+
+volumes:
+  n8n-web:
+    name: n8n-web
+  n8n-database:
+    name: n8n-database
+
+services:
+  n8n-web:
+    image: docker.n8n.io/n8nio/n8n:stable
+    container_name: n8n-web
+    restart: unless-stopped
+    depends_on:
+      - n8n-database
+    networks:
+      - n8n
+    ports:
+      - ${N8N_WEB_HTTP:-5678}:5678
+    volumes:
+      - ./data/files:/files
+      # https://community.n8n.io/t/use-local-directory-instead-of-docker-volume-for-n8n-data/151593/2
+      - n8n-web:/home/node/.n8n
+    env_file: .env
+    environment:
+      N8N_HOST: ${N8N_DOMAIN}
+      N8N_PORT: 5678
+      N8N_PROTOCOL: https
+      NODE_ENV: production
+      WEBHOOK_URL: https://${N8N_DOMAIN}/
+      DB_TYPE: postgresdb
+      DB_POSTGRESDB_HOST: n8n-database
+      DB_POSTGRESDB_PORT: 5432
+      DB_POSTGRESDB_DATABASE: ${POSTGRESQL_NAME:?}
+      DB_POSTGRESDB_USER: ${POSTGRESQL_USER:?}
+      DB_POSTGRESDB_PASSWORD: ${POSTGRESQL_PASS:?}
+      GENERIC_TIMEZONE: ${TIMEZONE:-America/Panama}
+
+  n8n-database:
+    image: postgres:16-alpine 
+    container_name: n8n-database
+    restart: unless-stopped
+    ports:
+      - ${N8N_DATABASE:-5432}:5432
+    networks:
+      - n8n
+    volumes:
+      - n8n-database:/var/lib/postgresql/data
+    env_file: .env
+    environment:
+      PGPORT: 5432
+      POSTGRES_DB: ${POSTGRESQL_NAME:?}
+      POSTGRES_PASSWORD: ${POSTGRESQL_PASS:?}
+      POSTGRES_USER: ${POSTGRESQL_USER:?}
+      POSTGRES_NON_ROOT_USER: ${POSTGRESQL_USER_NON_ROOT:?}
+      POSTGRES_NON_ROOT_PASSWORD: ${POSTGRESQL_PASS_NON_ROOT:?}
