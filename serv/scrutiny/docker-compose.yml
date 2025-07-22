@@ -1,0 +1,34 @@
+# References
+# --------------------
+# https://github.com/AnalogJ/scrutiny/blob/master/docker/example.omnibus.docker-compose.yml
+# https://github.com/AnalogJ/scrutiny?tab=readme-ov-file#docker
+
+
+# Credentials
+# --------------------
+# user: admin
+# pass: password12345
+
+networks:
+  scrutiny:
+    name: scrutiny
+
+services:
+  scrutiny-web:
+    image: ghcr.io/analogj/scrutiny:master-omnibus
+    container_name: scrutiny-web
+    restart: unless-stopped
+    cap_add:
+      - SYS_RAWIO
+    networks:
+      - scrutiny
+    ports:
+      - ${SCRUTINY_WEB_HTTP:-8080}:8080 # Panel
+      - ${SCRUTINY_DATABASE:-8086}:8086 # Panel Database
+    volumes:
+      - ./conf:/opt/scrutiny/config
+      - ./data/influx:/opt/scrutiny/influxdb
+      - /run/udev:/run/udev:ro
+    devices:
+      - /dev/sda
+      - /dev/sdb
