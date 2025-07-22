@@ -34,7 +34,7 @@ services:
       DB_USERNAME: firefly
       DB_PASSWORD: firefly # Dummy
       DB_SOCKET: ''
-      TZ: ${FIREFLY3_TIMEZONE:-America/Panama}
+      TZ: ${TIMEZONE:-America/Panama}
 
   firefly3-database:
     image: mariadb

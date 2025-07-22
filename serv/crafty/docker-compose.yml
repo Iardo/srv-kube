@@ -27,4 +27,4 @@ services:
         - ./data/servers:/crafty/servers
         - ./logs:/crafty/logs
     environment:
-      TZ: ${CRAFTY_TIMEZONE:-America/Panama}
+      TZ: ${TIMEZONE:-America/Panama}

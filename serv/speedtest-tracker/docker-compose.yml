@@ -27,4 +27,4 @@ services:
       PGID: 1000
       PUID: 1000
       OOKLA_EULA_GDPR: true
-      TZ: ${SPEEDTEST_TRACKER_TIMEZONE:-America/Panama}
+      TZ: ${TIMEZONE:-America/Panama}

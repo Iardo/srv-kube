@@ -28,4 +28,4 @@ services:
       - ./data/dnsmasq.d:/etc/dnsmasq.d     
     environment:
       FTLCONF_webserver_api_password: pihole # Dummy
-      TZ: ${PIHOLE_TIMEZONE:-America/Panama}
+      TZ: ${TIMEZONE:-America/Panama}

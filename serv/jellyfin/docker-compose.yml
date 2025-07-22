@@ -27,4 +27,4 @@ services:
       PUID: 1000
       PGID: 1000
       UMASK_SET: 022
-      TZ: ${JELLYFIN_TIMEZONE:-America/Panama}
+      TZ: ${TIMEZONE:-America/Panama}

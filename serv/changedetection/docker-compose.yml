@@ -44,7 +44,7 @@ services:
       # HTTPS_PROXY: socks5h://10.10.1.10:1080 # Proxy Support
       # NO_PROXY: "localhost,192.168.0.0/24"   # An exclude list (useful for notification URLs above)
       # BASE_URL: ${CHANGEDETECTION_PUBLIC_URL_WEB:-https://mysite.com}
-      TZ: ${CHANGEDETECTION_TIMEZONE:-America/Panama}
+      TZ: ${TIMEZONE:-America/Panama}
 
   # Sockpuppetbrowser is chrome wrapped in an API for allowing fast fetching of web-pages.
   # RECOMMENDED FOR FETCHING PAGES WITH CHROME, be sure to enable "PLAYWRIGHT_DRIVER_URL"

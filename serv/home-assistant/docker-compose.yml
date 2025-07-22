@@ -25,4 +25,4 @@ services:
       - ./conf/etc/localtime:/etc/localtime:ro
       - /run/dbus:/run/dbus:ro
     environment:
-      TZ: ${HOME_ASSISTANT_TIMEZONE:-America/Panama}
+      TZ: ${TIMEZONE:-America/Panama}

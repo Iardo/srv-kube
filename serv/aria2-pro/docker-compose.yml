@@ -33,7 +33,7 @@ services:
       PUID: 65534
       RPC_PORT: 6800
       UMASK_SET: 022
-      TZ: ${ARIA2_PRO_TIMEZONE:-America/Panama}
+      TZ: ${TIMEZONE:-America/Panama}
 
   aria2-pro-web:
     image: p3terx/ariang

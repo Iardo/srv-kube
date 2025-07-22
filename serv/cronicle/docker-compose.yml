@@ -30,5 +30,5 @@ services:
       - ./data/external:/external
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
-      - TZ=America/Panama
-      - CRONICLE_base_app_url=${CRONICLE_PUBLIC_URL_WEB}
+      CRONICLE_base_app_url: ${CRONICLE_PUBLIC_URL_WEB}
+      TZ: ${TIMEZONE:-America/Panama}
