@@ -1,4 +1,5 @@
-# REFERENCE
+# References
+# --------------------
 # https://github.com/excalidraw/excalidraw/blob/master/docker-compose.yml
 # https://docs.excalidraw.com/docs/introduction/development#self-hosting
 
@@ -7,14 +8,13 @@ networks:
     name: excalidraw
 
 services:
-  excalidraw:
+  excalidraw-web:
     image: excalidraw/excalidraw:sha-4bfc5bb
-    container_name: excalidraw
+    container_name: excalidraw-web
     restart: unless-stopped
     networks:
       - excalidraw
     ports:
-      - ${PORT_EXCALIDRAW:-5000}:80
-    env_file: .env
+      - ${EXCALIDRAW_WEB_HTTP:-5000}:80
     environment:
       - NODE_ENV=development
