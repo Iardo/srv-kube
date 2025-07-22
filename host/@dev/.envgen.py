@@ -61,7 +61,7 @@ serv_list: dict = {
     'stumpapp': ['web-http'],
     'timetagger': ['web-http'],
     'tldraw': ['web-http'],
-    'traefik': ['web-http', 'panel'],
+    'traefik': ['web-http', 'web-https', 'panel'],
     'trudesk': ['web-http', 'database', 'elasticsearch', 'elasticsearch-transport'],
     'tuleap': ['web-http'],
     'uptime-kuma': ['web-http'],

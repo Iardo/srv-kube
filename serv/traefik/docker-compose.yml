@@ -1,0 +1,35 @@
+# References
+# --------------------
+# https://github.com/traefik/traefik/blob/master/docs/content/user-guides/docker-compose/basic-example/docker-compose.yml
+
+services:
+  traefik-web:
+    image: traefik:v3.4.4
+    container_name: traefik-web
+    restart: unless-stopped
+    network_mode: host
+    command:
+      # - --log.level=DEBUG
+      - --api.insecure=true
+      # - --providers.docker=true
+      - --providers.docker.exposedbydefault=false
+      - --entryPoints.web.address=:80
+    ports:
+      - ${TRAEFIK_WEB_HTTP:-80}:80
+      - ${TRAEFIK_WEB_HTTPS:-8080}:8080
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+  traefik-whoami:
+    image: traefik/whoami:v1.11
+    container_name: traefik-whoami
+    restart: unless-stopped
+    network_mode: host
+    command:
+       - --port=81
+       - --name=whoami
+    labels:
+      - traefik.enable=true
+      - traefik.http.services.whoami.loadbalancer.server.port=81
+      - traefik.http.routers.whoami.entrypoints=web
+      - traefik.http.routers.whoami.rule=Host(`whoami.localhost`)
