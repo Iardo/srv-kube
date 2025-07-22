@@ -23,7 +23,7 @@ serv_list: dict = {
     'dockermon': ['web-http', 'api', 'websocket'],
     'docmost': ['web-http', 'database', 'redis'],
     'drawdb': ['web-http'],
-    'epicstore-claimer': ['web-http'],
+    'epicstore-claimer': ['server'],
     'excalidraw': ['web-http'],
     'firefly3': ['web-http', 'database'],
     # 'gatus': ['web-http'],
