@@ -1,4 +1,5 @@
-# REFERENCE
+# References
+# --------------------
 # https://hub.docker.com/r/aaronleopold/stump
 # https://www.stumpapp.dev/installation/docker
 
@@ -7,18 +8,17 @@ networks:
     name: stumpapp
 
 services:
-  stumpapp:
+  stumpapp-web:
     image: aaronleopold/stump:0.0.3
-    container_name: stumpapp
+    container_name: stumpapp-web
     restart: unless-stopped
     networks:
       - stumpapp
     ports:
-      - ${PORT_STUMPAPP:-10801}:10801
+      - ${STUMPAPP_WEB_HTTP:-10801}:10801
     volumes:
-      - ./config:/config
+      - ./conf:/config
       - ./data:/data
     environment:
-      - PUID=1000
-      - PGID=1000
-    env_file: .env
+      PUID: 1000
+      PGID: 1000
