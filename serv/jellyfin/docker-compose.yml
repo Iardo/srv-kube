@@ -1,0 +1,30 @@
+# References
+# --------------------
+# https://jellyfin.org/docs/general/installation/container/
+
+networks:
+  jellyfin-web:
+    name: jellyfin-web
+    
+services:
+  jellyfin-web:
+    image: lscr.io/linuxserver/jellyfin:latest
+    container_name: jellyfin-web
+    restart: unless-stopped
+    networks:
+      - jellyfin-web
+    ports:
+      - ${JELLYFIN_WEB_HTTP:-8096}:8096      # HTTP
+      - ${JELLYFIN_WEB_HTTPS:-8920}:8920     # HTTPS
+      - ${JELLYFIN_DISCOVERY:-7359}:7359/udp # Discovery
+      - ${JELLYFIN_DLNA:-1900}:1900/udp      # DLNA UPnP
+    devices:
+      - /dev/dri:/dev/dri
+    volumes:
+      - ./conf:/config
+      - ./data:/data
+    environment:
+      PUID: 1000
+      PGID: 1000
+      UMASK_SET: 022
+      TZ: ${JELLYFIN_TIMEZONE:-America/Panama}
