@@ -1,4 +1,5 @@
-# REFERENCE
+# References
+# --------------------
 # https://github.com/Lissy93/web-check/blob/master/docker-compose.yml
 # https://github.com/Lissy93/web-check?tab=readme-ov-file#deploying---option-3-docker
 
@@ -8,11 +9,10 @@ networks:
 
 services:
   webcheck:
-    image: lissy93/web-check
+    image: lissy93/web-check:latest
     container_name: webcheck
     restart: unless-stopped
     networks:
       - webcheck
     ports:
-      - ${WEBCHECK_PORT:-3000}:3000
-    env_file: .env
+      - ${WEBCHECK_WEB_HTTP:-3000}:3000
