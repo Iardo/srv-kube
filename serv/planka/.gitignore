@@ -1,0 +1,17 @@
+# ignore these folders:
+data/attachments/*
+data/images/avatars/*
+data/images/background/*
+
+# ignore these files:
+
+# --------------------
+# include these folders:
+!data
+!data/attachments
+!data/images
+!data/images/avatars
+!data/images/background
+
+# include these files:
+!.gitkeep

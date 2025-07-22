@@ -1,0 +1,59 @@
+# References
+# --------------------
+# https://github.com/plankanban/planka/blob/master/docker-compose.yml
+# https://docs.planka.cloud/docs/installation/docker/production_version
+
+networks:
+  planka:
+    name: planka
+
+volumes:
+  planka-database:
+    name: planka-database
+
+services:
+  planka-web:
+    image: ghcr.io/plankanban/planka:1.26.1
+    container_name: planka-web
+    restart: unless-stopped
+    depends_on:
+      planka-database:
+        condition: service_healthy
+    networks:
+      - planka
+    ports:
+      - ${PLANKA_WEB_HTTP:-1337}:1337
+    volumes:
+      - ./data/images/avatars:/app/public/user-avatars
+      - ./data/images/background:/app/public/project-background-images
+      - ./data/attachments:/app/private/attachments
+    env_file: .env
+    environment:
+      BASE_URL: http://localhost:${PLANKA_WEB_HTTP:-1337}
+      DATABASE_URL: postgresql://${POSTGRES_USER:?}:${POSTGRES_PASS:?}@planka-database:5432/${POSTGRES_NAME:?}
+      TZ: ${PLANKA_TIMEZONE:-America/Panama}
+
+  planka-database:
+    image: postgres:14-alpine
+    container_name: planka-database
+    restart: unless-stopped
+    networks:
+      - planka
+    ports:
+      - ${PLANKA_DATABASE:-5432}:5432
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d planka"]
+      retries: 5
+      timeout: 5s
+      interval: 10s
+      start_period: 60s
+    volumes:
+      - ./logs/database:/logs
+      - planka-database:/var/lib/postgresql/data
+    env_file: .env
+    environment:
+      PGPORT: 5432
+      POSTGRES_DB: ${POSTGRES_NAME:?}
+      POSTGRES_PASSWORD: ${POSTGRES_PASS:?}
+      POSTGRES_USER: ${POSTGRES_USER:?}
+      # POSTGRES_HOST_AUTH_METHOD: trust
