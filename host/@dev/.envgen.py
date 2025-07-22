@@ -50,7 +50,7 @@ serv_list: dict = {
     'paperless-ngx': ['web-http', 'database'],
     'passbolt': ['web-http', 'web-https', 'database'],
     'penpot': ['web-http', 'database', 'redis', 'mailcatch'],
-    # 'pihole': ['web-http'],
+    'pihole': ['web-http', 'dns-tcp', 'dns-udp', 'dhcp'],
     'plane': ['web-http', 'database', 'redis', 'minio'],
     'planka': ['web-http', 'database'],
     'portainer': ['web-http'],
