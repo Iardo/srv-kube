@@ -1,4 +1,5 @@
-# REFERENCE
+# References
+# --------------------
 # https://tldraw.dev/installation
 
 networks:
@@ -10,10 +11,9 @@ services:
     container_name: tldraw
     restart: unless-stopped
     build:
-      context: .
+      context: ./code
       dockerfile: dockerfile
     networks:
       - tldraw
     ports:
-      - ${TLDRAW_PORT:-3000}:3000
-    env_file: .env
+      - ${TLDRAW_WEB_HTTP:-3000}:3000
