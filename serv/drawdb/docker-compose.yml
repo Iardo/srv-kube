@@ -1,0 +1,18 @@
+# References
+# --------------------
+# https://github.com/drawdb-io/drawdb/blob/main/.env.sample
+# https://github.com/drawdb-io/drawdb/blob/main/compose.yml
+
+networks:
+  drawdb:
+    name: drawdb
+    
+services:
+  drawdb-web:
+    image: xinsodev/drawdb:latest
+    container_name: drawdb-web
+    restart: unless-stopped
+    networks:
+      - drawdb
+    ports:
+      - ${DRAWDB_WEB_HTTP:-3000}:80
