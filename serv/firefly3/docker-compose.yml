@@ -1,0 +1,55 @@
+# References
+# --------------------
+# https://github.com/firefly-iii/firefly-iii/blob/main/.env.example
+# https://docs.firefly-iii.org/how-to/firefly-iii/installation/docker/
+
+networks:
+  firefly3:
+    name: firefly3
+
+volumes:
+  firefly3-database:
+    name: firefly3-database
+
+services:
+  firefly3-web:
+    image: fireflyiii/core:latest
+    container_name: firefly3-web
+    depends_on:
+      - firefly3-database
+    networks:
+      - firefly3
+    ports:
+      - ${FIREFLY3_WEB_HTTP:-8080}:8080
+    volumes:
+      - ./data/upload:/var/www/html/storage/upload
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      # pgsql | mysql | sqlite
+      DB_CONNECTION: mysql
+      DB_HOST: firefly3-database
+      DB_PORT: 3306
+      DB_DATABASE: firefly
+      DB_USERNAME: firefly
+      DB_PASSWORD: firefly # Dummy
+      DB_SOCKET: ''
+      TZ: ${FIREFLY3_TIMEZONE:-America/Panama}
+
+  firefly3-database:
+    image: mariadb
+    container_name: firefly3-database
+    restart: unless-stopped
+    networks:
+      - firefly3
+    ports:
+      - ${FIREFLY3_DATABASE:-3306}:3306 
+    volumes:
+      - firefly3-database:/var/lib/mysql
+    env_file: .env
+    environment:
+      MYSQL_RANDOM_ROOT_PASSWORD: yes
+      MYSQL_TCP_PORT: 3306
+      MYSQL_USER: firefly
+      MYSQL_PASSWORD: firefly # Dummy
+      MYSQL_DATABASE: firefly
