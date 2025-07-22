@@ -1,6 +1,7 @@
 # References
 # --------------------
-# 
+# https://hub.docker.com/r/linuxserver/homeassistant
+# https://www.home-assistant.io/installation/alternative/#docker-compose
 
 networks:
   home-assistant:
@@ -16,6 +17,12 @@ services:
       - home-assistant
     ports:
       - ${HOME_ASSISTANT_WEB_HTTP:-8123}:8123
+    # https://www.home-assistant.io/installation/alternative/#exposing-devices
+    # devices:
+    #   - /dev/ttyUSB0:/dev/ttyUSB0 # Dummy
     volumes:
       - ./conf:/config
       - ./conf/etc/localtime:/etc/localtime:ro
+      - /run/dbus:/run/dbus:ro
+    environment:
+      TZ: ${HOME_ASSISTANT_TIMEZONE:-America/Panama}
