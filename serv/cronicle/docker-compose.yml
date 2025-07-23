@@ -9,9 +9,41 @@
 # user: admin
 # pass: admin
 
+
+# NOTE:
+# Stuck in "Waiting for master server..."
+# ---
+# Your server's hostname has changed, and thus Cronicle 
+# can no longer find it in one of its internal lists
+# https://github.com/jhuckaby/Cronicle/issues/36#issuecomment-332930842
+# 
+# In docker the best solution is to lock the hostname of a container inside
+#   /opt/cronicle/bin/storage-cli.js 
+# https://github.com/jhuckaby/Cronicle/issues/36#issuecomment-1370136367
+
 networks:
   cronicle:
     name: cronicle
+
+# NOTE:
+# Named Volumes with Copy-on-First-Use
+# ----
+# Upon the initial creation of the named volume,
+# if the target directory inside the container
+# (as defined in the Dockerfile with VOLUME) contains files,
+# these files will be copied into the named volume.
+# 
+# Subsequent container runs will then use the content of this named volume,
+# which now includes the original container files.
+volumes:
+  cronicle-web:
+    name: cronicle-web
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./data/cronicle      # <- Does not rewrite dir inside container,
+                                   #    but it has to exist in host first
 
 services:
   cronicle-web:
@@ -23,12 +55,11 @@ services:
     ports:
       - ${CRONICLE_WEB_HTTP:-3012}:3012
     volumes:
-      - ./data/cronicle/data:/opt/cronicle/data
-      - ./data/cronicle/logs:/opt/cronicle/logs
-      - ./data/cronicle/plugins:/opt/cronicle/plugins
-      - ./data/cronicle/workloads/app:/app
       - ./data/external:/external
+      - ./data/workloads:/app
       - /var/run/docker.sock:/var/run/docker.sock
+      - cronicle-web:/opt/cronicle # <- Does not rewrite dir inside container
+                                   #    but it has to exist in host first
     environment:
       CRONICLE_base_app_url: ${CRONICLE_PUBLIC_URL_WEB}
       TZ: ${TIMEZONE:-America/Panama}
