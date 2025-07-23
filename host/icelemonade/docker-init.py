@@ -9,7 +9,8 @@ parent_dir = os.path.dirname(parent_dir)
 parent_dir = os.path.join(parent_dir, '..')
 sys.path.append(parent_dir)
 
-from envgen import EnvGen
+from initenv import InitEnv
+from initserv import InitServ
 
 serv_list: dict = {
     'actual': ['web-http'],
@@ -44,7 +45,8 @@ serv_list: dict = {
 os.system("")
 
 def main():
-    EnvGen.clean()
-    EnvGen.build(serv_list)
+    InitEnv.clean()
+    InitEnv.build(serv_list)
+    InitServ.init(serv_list)
 
 main()

@@ -39,7 +39,7 @@ Z = 30000→30999
 
 from enum import Enum
 
-class EnvGen:
+class InitEnv:
     env_filepath = ".env"
     env_line_target = "# Generated"
     env_line_start = 0
@@ -56,16 +56,16 @@ class EnvGen:
         global env_line_start
 
         try:
-            env = open(EnvGen.env_filepath, 'r')
+            env = open(InitEnv.env_filepath, 'r')
             lines = env.readlines()
             for index, text in enumerate(lines):
-                if EnvGen.env_line_target in text:
+                if InitEnv.env_line_target in text:
                     env_line_start = index
                     break
             env.close()
 
-            env = open(EnvGen.env_filepath, 'w')
-            env.writelines(lines[:env_line_start + EnvGen.env_line_offset])
+            env = open(InitEnv.env_filepath, 'w')
+            env.writelines(lines[:env_line_start + InitEnv.env_line_offset])
             env.close()
         except Exception as err:
             print(err)
@@ -81,13 +81,13 @@ class EnvGen:
         length = len(serv_list)
 
         try:
-            env = open(EnvGen.env_filepath, 'a')
+            env = open(InitEnv.env_filepath, 'a')
             for index, (serv_name, serv_containers) in enumerate(serv_list.items()):
                 passes = passes + 1
 
                 if group != serv_name[0]:
                     group = serv_name[0]
-                    count = (EnvGen.port_list[serv_name[0]].value * 1000) + EnvGen.port_start_at
+                    count = (InitEnv.port_list[serv_name[0]].value * 1000) + InitEnv.port_start_at
                     env.write(f'# {group}\n')
                     env.write(f'# ----\n')
                 if not serv_containers:
