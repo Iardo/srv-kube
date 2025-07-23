@@ -210,11 +210,19 @@ services:
     # https: //github.com/wg-easy/wg-easy
 
   notes-managers:
+    - Overleaf
+    # ----
+    # https://github.com/overleaf/overleaf/blob/main/docker-compose.yml
+
     - Privatebin
     # ----
     # Notas efimeras, se ve util para compartir cosas dentro de LAN
     # 
     # https: //privatebin.info/
+
+    - Memos
+    # ----
+    # https://github.com/usememos/memos/blob/main/scripts/Dockerfile
 
   notifications:
     - NTFY
