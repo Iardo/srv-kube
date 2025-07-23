@@ -1,0 +1,21 @@
+# References
+# --------------------
+# https://github.com/TriliumNext/Trilium/blob/main/docker-compose.yml
+
+networks:
+  trilium-next:
+    name: trilium-next
+
+services:
+  trilium-next:
+    image: triliumnext/trilium:stable
+    container_name: trilium-next
+    restart: unless-stopped
+    networks:
+      - trilium-next
+    ports:
+      - ${TRILLIUM_NEXT_WEB_HTTP:-8080}:8080
+    volumes:
+      - ./data/trilium:/home/node/trilium-data
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
