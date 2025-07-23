@@ -43,7 +43,7 @@ serv_list: dict = {
     'netdata': ['web-http'],
     'nginx': ['web-http'],
     'nginx-proxy-manager': ['web-http', 'web-https', 'panel'],
-    'notesnook': ['server', 'identity', 'events', 'monograph', 'minio', 'database'],
+    'notesnook': ['server', 'identity', 'events', 'monograph', 'minio-api', 'minio-web', 'database'],
     # 'oneuptime': ['web-http'],
     'open-project': ['web-http', 'database'],
     'outline': ['web-http', 'web-https', 'database', 'redis'],

@@ -18,20 +18,19 @@ volumes:
 x-discovery: 
   &discovery
     SELF_HOSTED: ${SELF_HOSTED:?}
-    API_HOST: http://notesnook-server:${NOTESNOOK_SERVER:-5264}
-    IDENTITY_SERVER_HOST: notesnook-identity
-    IDENTITY_SERVER_PORT: 8264  # Internal
-    IDENTITY_SERVER_URL: http://localhost:${NOTESNOOK_IDENTITY:-8264}
-    NOTESNOOK_APP_HOST: ${NOTESNOOK_PUBLIC_URL_WEB:?}
+    # Ports
+    NOTESNOOK_SERVER_PORT: 5264
+    IDENTITY_SERVER_PORT: 8264
+    SSE_SERVER_PORT: 7264
+    # Hosts
     NOTESNOOK_SERVER_HOST: notesnook-server
-    NOTESNOOK_SERVER_PORT: 5264 # Internal
-    PUBLIC_URL: http://localhost:${NOTESNOOK_MONOGRAPH:-6264}
-    S3_ACCESS_KEY_ID: ${MINIO_ROOT_USER:?}
-    S3_ACCESS_KEY: ${MINIO_ROOT_PASSWORD:?}
-    S3_INTERNAL_SERVICE_URL: "http://notesnook-minio:9000"
-    S3_SERVICE_URL: http://localhost:9000
+    IDENTITY_SERVER_HOST: notesnook-identity
     SSE_SERVER_HOST: notesnook-events
-    SSE_SERVER_PORT: 7264       # Internal
+    # Public
+    NOTESNOOK_APP_HOST: ${NOTESNOOK_PUBLIC_URL:-http://localhost}:${NOTESNOOK_SERVER:-5264}
+    ATTACHMENTS_SERVER_PUBLIC_URL: ${NOTESNOOK_PUBLIC_URL:-http://localhost}:${NOTESNOOK_MINIO_API:-9000}
+    IDENTITY_SERVER_URL: ${NOTESNOOK_PUBLIC_URL:-http://localhost}:${NOTESNOOK_IDENTITY:-8264}
+    MONOGRAPH_PUBLIC_URL: ${NOTESNOOK_PUBLIC_URL:-http://localhost}:${NOTESNOOK_MONOGRAPH:-6264}
 
 services:
   notesnook-validate:
@@ -61,7 +60,7 @@ services:
     healthcheck:
       test:
         - CMD-SHELL
-        - wget --tries=1 -nv -q http://localhost:${NOTESNOOK_SERVER:-5264}/health -O- || exit 1
+        - wget --tries=1 -nv -q http://notesnook-server:5264/health -O- || exit 1
       interval: 40s
       retries: 3
       timeout: 30s
@@ -71,6 +70,12 @@ services:
       <<: *discovery
       MONGODB_CONNECTION_STRING: mongodb://notesnook-database:27017/?replSet=rs0
       MONGODB_DATABASE_NAME: notesnook
+      S3_ACCESS_KEY_ID: ${MINIO_ROOT_USER:?}
+      S3_ACCESS_KEY: ${MINIO_ROOT_PASSWORD:?}
+      S3_BUCKET_NAME: "attachments"
+      S3_INTERNAL_SERVICE_URL: http://notesnook-minio:9000
+      S3_REGION: "us-east-1"
+      S3_SERVICE_URL: http://localhost:${NOTESNOOK_MINIO_API:?}
 
   notesnook-identity:
     image: streetwriters/identity:latest
@@ -84,7 +89,7 @@ services:
     healthcheck:
       test:
         - CMD-SHELL
-        - wget --tries=1 -nv -q  http://localhost:8264/health -O- || exit 1
+        - wget --tries=1 -nv -q http://notesnook-identity:8264/health -O- || exit 1
       interval: 40s
       retries: 3
       timeout: 30s
@@ -108,7 +113,7 @@ services:
     healthcheck:
       test:
         - CMD-SHELL
-        - wget --tries=1 -nv -q  http://localhost:${NOTESNOOK_EVENTS:-7264}/health -O- || exit 1
+        - wget --tries=1 -nv -q http://notesnook-events:7264/health -O- || exit 1
       interval: 40s
       retries: 3
       timeout: 30s
@@ -129,7 +134,7 @@ services:
     healthcheck:
       test:
         - CMD-SHELL
-        - wget --tries=1 -nv -q  http://localhost:${NOTESNOOK_MONOGRAPH:-6264}/api/health -O- || exit 1
+        - wget --tries=1 -nv -q http://notesnook-monograph:3000/api/health -O- || exit 1
       interval: 40s
       retries: 3
       timeout: 30s
@@ -137,6 +142,8 @@ services:
     env_file: .env
     environment:
       <<: *discovery
+      API_HOST: http://notesnook-server:5264
+      PUBLIC_URL: http://localhost:${NOTESNOOK_MONOGRAPH:-6264}
 
   notesnook-autoheal:
     image: willfarrell/autoheal:latest
@@ -170,7 +177,7 @@ services:
     healthcheck:
       test: 
         - CMD-SHELL
-        - echo 'db.runCommand("ping").ok' | mongosh mongodb://localhost:${NOTESNOOK_DATABASE:-27017} --quiet
+        - echo 'db.runCommand("ping").ok' | mongosh mongodb://notesnook-database:27017 --quiet
       interval: 40s
       retries: 3
       timeout: 30s
@@ -190,7 +197,7 @@ services:
     command:
       - -c
       - |
-        mongosh mongodb://notesnook-database:${NOTESNOOK_DATABASE:-27017} <<EOF
+        mongosh mongodb://notesnook-database:27017 <<EOF
           rs.initiate();
           rs.status();
         EOF
@@ -205,8 +212,8 @@ services:
     networks:
       - notesnook
     ports:
-      - 9000:9000
-      - ${NOTESNOOK_MINIO:-9090}:9090
+      - ${NOTESNOOK_MINIO_API:-9090}:9000 # API
+      - ${NOTESNOOK_MINIO_WEB:-9090}:9090 # Panel
     healthcheck:
       test:
         - CMD-SHELL 
