@@ -13,11 +13,28 @@ from envgen import EnvGen
 
 serv_list: dict = {
     'actual': ['web-http'],
+    'cloudbeaver': ['web-http'],
+    'cronicle': ['web-http'],
+    'dockermon': ['web-http', 'api', 'websocket'],
     'docmost': ['web-http', 'database', 'redis'],
+    'excalidraw': ['web-http'],
+    'home-assistant': ['web-http'],
+    'homepage': ['web-http'],
+    'infisical': ['web-http', 'database', 'redis'],
+    'linkwarden': ['web-http'],
+    'monica': ['web-http'],
+    'n8n': ['web-http', 'database'],
     'nginx-proxy-manager': ['web-http', 'web-https', 'panel'],
-    'notesnook': ['server', 'identity', 'events', 'monograph', 'minio', 'database'],
+    'notesnook': ['server', 'identity', 'events', 'monograph', 'minio-api', 'minio-web', 'database'],
+    'open-project': ['web-http', 'database'],
+    'passbolt': ['web-http', 'web-https', 'database'],
+    'penpot': ['web-http', 'database', 'redis', 'mailcatch'],
     'portainer': ['web-http'],
+    'postal': ['web-http', 'database'],
+    'scrutiny': ['web-http', 'database'],
+    'speedtest-tracker': ['web-http'],
     'timetagger': ['web-http'],
+    'uptime-kuma': ['web-http'],
 }
 
 # Main
