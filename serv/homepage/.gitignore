@@ -1,0 +1,10 @@
+# ignore these folders:
+conf/logs
+
+# ignore these files:
+
+# --------------------
+# include these folders:
+!conf/*
+
+# include these files:
