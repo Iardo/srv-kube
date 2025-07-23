@@ -9,8 +9,6 @@ networks:
 volumes:
   trudesk-database:
     name: trudesk-database
-  trudesk-mongo:
-    name: trudesk-mongo
   trudesk-elasticsearch:
     name: trudesk-elasticsearch
 
@@ -46,7 +44,7 @@ services:
       - ${TRUDESK_DATABASE:-27017}:27017
     volumes:
       - trudesk-database:/data/db:rw
-      - trudesk-mongo:/var/lib/mongo
+      - trudesk-database:/var/lib/mongo
 
   trudesk-elasticsearch:
     image: elastic/elasticsearch:8.18.4

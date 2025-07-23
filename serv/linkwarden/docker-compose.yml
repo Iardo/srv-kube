@@ -8,10 +8,10 @@ networks:
     name: linkwarden
 
 volumes:
-  linkwarden-data:
-    name: linkwarden-data
-  linkwarden-database:
-    name: linkwarden-database
+  linkwarden-web:
+    name: linkwarden-web
+  linkwarden-webbase:
+    name: linkwarden-webbase
 
 services:
   linkwarden-web:
@@ -19,19 +19,19 @@ services:
     container_name: linkwarden-web
     restart: unless-stopped
     depends_on:
-      - linkwarden-database
+      - linkwarden-webbase
     networks:
       - linkwarden
     ports:
       - ${LINKWARDEN_WEB_HTTP:-5173}:3000
     volumes:
       - ./logs:/logs
-      - linkwarden-data:/data/data
+      - linkwarden-web:/data/data
     env_file: .env
 
-  linkwarden-database:
+  linkwarden-webbase:
     image: postgres:16-alpine
-    container_name: linkwarden-database
+    container_name: linkwarden-webbase
     restart: unless-stopped
     networks:
       - linkwarden
@@ -40,7 +40,7 @@ services:
     volumes:
       - ./backups:/backups
       - ./logs:/logs
-      - linkwarden-database:/var/lib/postgresql/data
+      - linkwarden-webbase:/var/lib/postgresql/data
     env_file: .env
     environment:
       PGPORT: 8090
