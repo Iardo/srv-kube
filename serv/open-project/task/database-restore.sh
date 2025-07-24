@@ -1,9 +1,26 @@
-database=1751134974-pgdata.tar.gz
+#!/bin/bash
+set -e
+set -o pipefail
 
-docker-compose stop open-project-web open-project-worker
-docker exec -it open-project-database psql -U postgres -c 'drop database openproject;'
-docker cp ./backups/$database open-project-database:/
-docker exec -it open-project-database psql -U postgres \c openproject \i $database \q
-# docker exec -it open-project-database rm $database
-docker-compose start seeder
-docker-compose start open-project-web open-project-worker
+quiet="> /dev/null 2>&1"
+
+fullpath=$(dirname "$0")
+database_path=$fullpath/../data/backup
+database_file=
+
+source $fullpath/../.env
+
+read -p "Enter the filename: " database_file
+if ! [ -f $database_path/$database_file.sql ]; then
+  echo "Couldn't find the file"
+  exit 0
+fi
+
+cmd_restore="\"\
+DROP SCHEMA public CASCADE;\
+CREATE SCHEMA public;\
+\""
+
+echo "Restoring: $database_file.sql ..."
+docker exec -it open-project-database sh -c "PGPASSWORD=$POSTGRESQL_PASS psql --quiet -h localhost -U $POSTGRESQL_USER -d $POSTGRESQL_NAME -c $cmd_restore $quiet"
+docker exec -it open-project-database sh -c "PGPASSWORD=$POSTGRESQL_PASS psql --quiet -h localhost -U $POSTGRESQL_USER -d $POSTGRESQL_NAME -f /backups/$database_file.sql -L /logs/$database_file-restore.log $quiet"
