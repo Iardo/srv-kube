@@ -9,8 +9,8 @@
 
 include: [
   '${SERV:?}/actual/${FILE:?}',
-  '${SERV:?}/cronicle/${FILE:?}',
   '${SERV:?}/cloudbeaver/${FILE:?}',
+  '${SERV:?}/cronicle/${FILE:?}',
   '${SERV:?}/dockermon/${FILE:?}',
   '${SERV:?}/docmost/${FILE:?}',
   '${SERV:?}/excalidraw/${FILE:?}',
@@ -31,5 +31,6 @@ include: [
   '${SERV:?}/scrutiny/${FILE:?}',
   '${SERV:?}/speedtest-tracker/${FILE:?}',
   '${SERV:?}/timetagger/${FILE:?}',
+  '${SERV:?}/trillium-next/${FILE:?}',
   '${SERV:?}/uptime-kuma/${FILE:?}',
 ]
