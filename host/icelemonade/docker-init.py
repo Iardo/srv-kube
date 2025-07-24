@@ -27,6 +27,6 @@ def main():
     user_conf = UserConf.read(conf_path)
     InitEnv.clean()
     InitEnv.build(serv_list, user_conf)
-    # InitServ.init(serv_list)
+    InitServ.init(serv_list)
 
 main()
