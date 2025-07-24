@@ -21,8 +21,8 @@ services:
         - ${CRAFTY_BEDROCK:-19132}:19132/udp         # BEDROCK
         - ${CRAFTY_CLIENTS:-60000-60100}:25500-25600 # PORT RANGE
     volumes:
-        - ./backups:/crafty/backups
         - ./conf:/crafty/app/config
+        - ./data/backup:/crafty/backups
         - ./data/import:/crafty/import
         - ./data/servers:/crafty/servers
         - ./logs:/crafty/logs
