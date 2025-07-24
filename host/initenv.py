@@ -74,7 +74,7 @@ class InitEnv:
     Generates ports for all services and write them to the environment file
     '''
     @staticmethod
-    def build(serv_list: dict):
+    def build(serv_list: dict, user_conf: list):
         count = None
         group = ""
         passes = 0
@@ -85,6 +85,8 @@ class InitEnv:
             for index, (serv_name, serv_containers) in enumerate(serv_list.items()):
                 passes = passes + 1
 
+                if not serv_name in user_conf:
+                    continue
                 if group != serv_name[0]:
                     group = serv_name[0]
                     count = (InitEnv.port_list[serv_name[0]].value * 1000) + InitEnv.port_start_at

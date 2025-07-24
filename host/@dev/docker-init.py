@@ -4,72 +4,17 @@ import os
 import sys
 
 # Add parent directory to path
-parent_dir = os.path.abspath(__file__)
-parent_dir = os.path.dirname(parent_dir)
+actual_dir = os.path.abspath(__file__)
+actual_dir = os.path.dirname(actual_dir)
+parent_dir = actual_dir
 parent_dir = os.path.join(parent_dir, '..')
 sys.path.append(parent_dir)
 
+from libyaml import load as ymlload, FullLoader
 from initenv import InitEnv
 from initserv import InitServ
-
-serv_list: dict = {
-    'actual': ['web-http'],
-    'aria2-pro': ['web-http', 'rpc', 'muse-tcp', 'muse-udp'],
-    'authentik': ['web-http', 'web-https', 'database', 'redis'],
-    'azimutt': ['web-http', 'database', 'gateway'],
-    'changedetection': ['web-http'],
-    'cloudbeaver': ['web-http'],
-    'crafty': ['web-http', 'web-https', 'dynmap', 'bedrock'],
-    'cronicle': ['web-http'],
-    'dockermon': ['web-http', 'api', 'websocket'],
-    'docmost': ['web-http', 'database', 'redis'],
-    'drawdb': ['web-http'],
-    'epicstore-claimer': ['server'],
-    'excalidraw': ['web-http'],
-    'firefly3': ['web-http', 'database'],
-    'gatus': ['web-http'],
-    'grimoire': ['web-http', 'database'],
-    'grist': ['web-http', 'database', 'redis'],
-    'guacamole': ['web-http'],
-    'highlight': ['web-http'],
-    'home-assistant': ['web-http'],
-    'homepage': ['web-http'],
-    'huly': ['web-http', 'database', 'account', 'collaborator', 'transactor', 'rekoni', 'minio', 'elasticsearch'],
-    'infisical': ['web-http', 'database', 'redis'],
-    'jellyfin': ['web-http', 'web-https', 'discovery', 'dlna'],
-    'linkwarden': ['web-http'],
-    'mirotalksfu': ['web-http'],
-    'monica': ['web-http'],
-    'n8n': ['web-http', 'database'],
-    'netdata': ['web-http'],
-    'nginx-proxy-manager': ['web-http', 'web-https', 'panel'],
-    'nginx': ['web-http'],
-    'notesnook': ['server', 'identity', 'events', 'monograph', 'minio-api', 'minio-web', 'database'],
-    'oneuptime': ['web-http'],
-    'open-project': ['web-http', 'database'],
-    'outline': ['web-http', 'web-https', 'database', 'redis'],
-    'paperless-ngx': ['web-http', 'database'],
-    'passbolt': ['web-http', 'web-https', 'database'],
-    'penpot': ['web-http', 'database', 'redis', 'mailcatch'],
-    'pihole': ['web-http', 'dns-tcp', 'dns-udp', 'dhcp'],
-    'plane': ['web-http', 'database', 'redis', 'minio'],
-    'planka': ['web-http', 'database'],
-    'portainer': ['web-http'],
-    'postal': ['web-http', 'database'],
-    'scrutiny': ['web-http', 'database'],
-    'sentry': ['web-http'],
-    'speedtest-tracker': ['web-http'],
-    'stumpapp': ['web-http'],
-    'timetagger': ['web-http'],
-    'tldraw': ['web-http'],
-    'traefik': ['web-http', 'web-https', 'panel'],
-    'trillium-next': ['web-http'],
-    'trudesk': ['web-http', 'database', 'elasticsearch', 'elasticsearch-transport'],
-    'tuleap': ['web-http'],
-    'uptime-kuma': ['web-http'],
-    'webcheck': ['web-http'],
-    'wikijs': ['web-http', 'web-https', 'database'],
-}
+from servlist import serv_list
+from userconf import UserConf
 
 # Main
 # ----------------------
@@ -78,8 +23,10 @@ serv_list: dict = {
 os.system("")
 
 def main():
+    conf_path = f'{actual_dir}/docker-compose.yml'
+    user_conf = UserConf.read(conf_path)
     InitEnv.clean()
-    InitEnv.build(serv_list)
-    InitServ.init(serv_list)
+    InitEnv.build(serv_list, user_conf)
+    # InitServ.init(serv_list)
 
 main()

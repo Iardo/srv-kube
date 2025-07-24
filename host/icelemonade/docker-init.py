@@ -4,39 +4,17 @@ import os
 import sys
 
 # Add parent directory to path
-parent_dir = os.path.abspath(__file__)
-parent_dir = os.path.dirname(parent_dir)
+actual_dir = os.path.abspath(__file__)
+actual_dir = os.path.dirname(actual_dir)
+parent_dir = actual_dir
 parent_dir = os.path.join(parent_dir, '..')
 sys.path.append(parent_dir)
 
+from libyaml import load as ymlload, FullLoader
 from initenv import InitEnv
 from initserv import InitServ
-
-serv_list: dict = {
-    'actual': ['web-http'],
-    'cloudbeaver': ['web-http'],
-    'cronicle': ['web-http'],
-    'dockermon': ['web-http', 'api', 'websocket'],
-    'docmost': ['web-http', 'database', 'redis'],
-    'excalidraw': ['web-http'],
-    'home-assistant': ['web-http'],
-    'homepage': ['web-http'],
-    'infisical': ['web-http', 'database', 'redis'],
-    'linkwarden': ['web-http'],
-    'monica': ['web-http'],
-    'n8n': ['web-http', 'database'],
-    'nginx-proxy-manager': ['web-http', 'web-https', 'panel'],
-    'notesnook': ['server', 'identity', 'events', 'monograph', 'minio-api', 'minio-web', 'database'],
-    'open-project': ['web-http', 'database'],
-    'passbolt': ['web-http', 'web-https', 'database'],
-    'penpot': ['web-http', 'database', 'redis', 'mailcatch'],
-    'portainer': ['web-http'],
-    'postal': ['web-http', 'database'],
-    'scrutiny': ['web-http', 'database'],
-    'speedtest-tracker': ['web-http'],
-    'timetagger': ['web-http'],
-    'uptime-kuma': ['web-http'],
-}
+from servlist import serv_list
+from userconf import UserConf
 
 # Main
 # ----------------------
@@ -45,8 +23,10 @@ serv_list: dict = {
 os.system("")
 
 def main():
+    conf_path = f'{actual_dir}/docker-compose.yml'
+    user_conf = UserConf.read(conf_path)
     InitEnv.clean()
-    InitEnv.build(serv_list)
-    InitServ.init(serv_list)
+    InitEnv.build(serv_list, user_conf)
+    # InitServ.init(serv_list)
 
 main()
