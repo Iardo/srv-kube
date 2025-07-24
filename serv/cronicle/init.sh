@@ -10,7 +10,7 @@ sh -c $fullpath/task/data-gen-directories.sh
 sh -c $fullpath/task/data-set-permissions.sh
 
 message=$(cat << EOF
-CRONICLE
+CRONICLE: Init Done
 ----
 The setup requires some manual steps
 Once the container is running:
@@ -21,8 +21,8 @@ Once the container is running:
 EOF
 )
 
-echo -e "
-  ${color_green}\
-  ${message}\
-  ${color_reset}
+echo -e "\
+${color_green}\
+${message}\
+${color_reset}
 "
