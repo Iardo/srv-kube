@@ -1,0 +1,15 @@
+# References
+# --------------------
+# https://rosengren.me/blog/shared-variables-in-docker-compose/
+
+
+# Instructions
+# --------------------
+# docker compose up -d --build
+
+include: [
+  '${SERV:?}/cloudbeaver/${FILE:?}',
+  '${SERV:?}/nginx-proxy-manager/${FILE:?}',
+  '${SERV:?}/open-project/${FILE:?}',
+  '${SERV:?}/portainer/${FILE:?}',
+]
