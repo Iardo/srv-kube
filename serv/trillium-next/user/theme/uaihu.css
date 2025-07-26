@@ -111,13 +111,6 @@
   --tooltip-background-color: rgb(var(--color-gray-333333));
   --tree-font-family: var(--fonts-iosevka);
   --tree-font-size: normal;
-
-  /**
-    * User Defined
-    * ----
-    */
-  
-  
 }
 
 
@@ -242,6 +235,15 @@
 }
 
 /**
+  * Link
+  * ----
+  */
+.note-detail .note-detail-editable-text a[href^="http://"],
+.note-detail .note-detail-editable-text a[href^="https://"] {
+  cursor: pointer !important;
+}
+
+/**
   * Backlinks
   * ----
   */
@@ -356,7 +358,7 @@ span.fancytree-node.protected.fancytree-active > span.fancytree-custom-icon + .f
 .input-group-text {
   border-radius: 0 !important;
 }
-.input-group-text {
+.options-section .input-group-text {
   background-color: rgb(var(--color-green-266909)) !important;
 }
 
@@ -416,7 +418,7 @@ span.fancytree-node.protected.fancytree-active > span.fancytree-custom-icon + .f
 /* .ck.ck-toolbar {} */
 
 /**
-  * highlights
+  * Highlights
   * ----
   */
 .ck.ck-button.ck-on {
@@ -430,6 +432,34 @@ span.fancytree-node.protected.fancytree-active > span.fancytree-custom-icon + .f
 .ck-find-result_selected {
   color: #000 !important;
 }
+
+/**
+  * Table
+  * ----
+  */
+.ck-content figure.table:not(.layout-table) > table {
+  width: auto !important;
+}
+.ck-content table .ck-editor__nested-editable:not(.ck-editor__editable_selected):focus {
+  font-weight: bold;
+  background: rgb(var(--color-brown-b08631)) !important;
+}
+.ck-content table .ck-editor__nested-editable:not(.ck-editor__editable_selected):focus a {
+  color: rgb(var(--color-white-ffffff));
+}
+
+/**
+  * Table
+  * ----
+  */
+.ck-balloon-panel .ck-toolbar_floating {
+  background-color: rgb(var(--color-black-070707)) !important;
+}
+.ck-balloon-panel[class*="arrow_n"]::after {
+  border-color: transparent transparent rgb(var(--color-black-070707)) transparent !important;
+}
+
+
 
 /**
   * Code
