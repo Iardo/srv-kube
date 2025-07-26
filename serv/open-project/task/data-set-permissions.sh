@@ -6,4 +6,5 @@ fullpath=$(dirname "$0")
 
 echo "Setting Permissions: /data ..."
 sudo chown -R $USER:$USER $fullpath/../data/
+echo "Setting Permissions: /logs ..."
 sudo chown -R $USER:$USER $fullpath/../logs/
