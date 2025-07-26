@@ -10,7 +10,6 @@ parent_dir = actual_dir
 parent_dir = os.path.join(parent_dir, '..')
 sys.path.append(parent_dir)
 
-from libyaml import load as ymlload, FullLoader
 from initenv import InitEnv
 from initserv import InitServ
 from servlist import serv_list
@@ -27,6 +26,6 @@ def main():
     user_conf = UserConf.read(conf_path)
     InitEnv.clean()
     InitEnv.build(serv_list, user_conf)
-    InitServ.init(serv_list)
+    InitServ.init(serv_list, user_conf)
 
 main()
