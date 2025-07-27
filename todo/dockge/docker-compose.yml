@@ -1,0 +1,27 @@
+# References
+# --------------------
+# https://github.com/louislam/dockge
+
+networks:
+  serv:
+    name: serv
+
+volumes:
+  serv-database:
+    name: serv-database
+
+services:
+  serv-web:
+    image: serv
+    container_name: serv-web
+    restart: unless-stopped
+    networks:
+      - serv
+    ports:
+      - ${SERV_WEB_HTTP:?}:80
+      - ${SERV_WEB_HTTPS:?}:443
+    volumes:
+      - ./data/serv:/serv
+    env_file: .env
+    environment:
+      serv: null

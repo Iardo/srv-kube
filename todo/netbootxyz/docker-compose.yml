@@ -1,0 +1,31 @@
+# References
+# --------------------
+# https://github.com/netbootxyz/netboot.xyz-custom/blob/master/readme.md  
+# https://netboot.xyz/docs/docker  
+# https://netboot.xyz/docs/selfhosting  
+# https://netboot.xyz/docs/kb/pxe/windows/  
+# https://netboot.xyz/docs/faq/
+
+networks:
+  serv:
+    name: serv
+
+volumes:
+  serv-database:
+    name: serv-database
+
+services:
+  serv-web:
+    image: serv
+    container_name: serv-web
+    restart: unless-stopped
+    networks:
+      - serv
+    ports:
+      - ${SERV_WEB_HTTP:?}:80
+      - ${SERV_WEB_HTTPS:?}:443
+    volumes:
+      - ./data/serv:/serv
+    env_file: .env
+    environment:
+      serv: null
