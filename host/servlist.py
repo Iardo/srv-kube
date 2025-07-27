@@ -51,7 +51,7 @@ serv_list: dict = {
     'timetagger': ['web-http'],
     'tldraw': ['web-http'],
     'traefik': ['web-http', 'web-https', 'panel'],
-    'trillium-next': ['web-http'],
+    'trilium-next': ['web-http'],
     'trudesk': ['web-http', 'database', 'elasticsearch', 'elasticsearch-transport'],
     'tuleap': ['web-http'],
     'uptime-kuma': ['web-http'],

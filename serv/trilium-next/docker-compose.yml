@@ -23,14 +23,14 @@ volumes:
       device: ./data/theme
 
 services:
-  trilium-next:
+  trilium-next-web:
     image: triliumnext/trilium:stable
-    container_name: trilium-next
+    container_name: trilium-next-web
     restart: unless-stopped
     networks:
       - trilium-next
     ports:
-      - ${TRILLIUM_NEXT_WEB_HTTP:-8080}:8080
+      - ${TRILIUM_NEXT_WEB_HTTP:-8080}:8080
     volumes:
       - ./data/trilium:/home/node/trilium-data
       - /etc/localtime:/etc/localtime:ro

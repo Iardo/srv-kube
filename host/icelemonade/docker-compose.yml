@@ -31,6 +31,6 @@ include: [
   '${SERV:?}/scrutiny/${FILE:?}',
   '${SERV:?}/speedtest-tracker/${FILE:?}',
   '${SERV:?}/timetagger/${FILE:?}',
-  '${SERV:?}/trillium-next/${FILE:?}',
+  '${SERV:?}/trilium-next/${FILE:?}',
   '${SERV:?}/uptime-kuma/${FILE:?}',
 ]
