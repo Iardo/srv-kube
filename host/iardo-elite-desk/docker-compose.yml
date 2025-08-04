@@ -1,0 +1,18 @@
+# Instructions
+# --------------------
+# docker compose up -d --build
+
+include: [
+  # '${SERV:?}/actual/${FILE:?}',
+  # '${SERV:?}/cronicle/${FILE:?}',
+  # '${SERV:?}/docmost/${FILE:?}',
+  # '${SERV:?}/excalidraw/${FILE:?}',
+  # '${SERV:?}/homepage/${FILE:?}',
+  # '${SERV:?}/linkwarden/${FILE:?}',
+  # '${SERV:?}/nginx-proxy-manager/${FILE:?}',
+  '${SERV:?}/open-project/${FILE:?}',
+  # '${SERV:?}/portainer/${FILE:?}',
+  # '${SERV:?}/scrutiny/${FILE:?}',
+  # '${SERV:?}/speedtest-tracker/${FILE:?}',
+  # '${SERV:?}/trilium-next/${FILE:?}',
+]
