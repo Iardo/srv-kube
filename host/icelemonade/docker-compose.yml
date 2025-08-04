@@ -1,8 +1,3 @@
-# References
-# --------------------
-# https://rosengren.me/blog/shared-variables-in-docker-compose/
-
-
 # Instructions
 # --------------------
 # docker compose up -d --build

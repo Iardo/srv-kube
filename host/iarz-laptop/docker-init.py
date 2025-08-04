@@ -7,7 +7,7 @@ import sys
 actual_dir = os.path.abspath(__file__)
 actual_dir = os.path.dirname(actual_dir)
 parent_dir = actual_dir
-parent_dir = os.path.join(parent_dir, '..')
+parent_dir = os.path.join(parent_dir, '../../source')
 sys.path.append(parent_dir)
 
 from initenv import InitEnv
