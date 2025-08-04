@@ -7,13 +7,13 @@ import sys
 actual_dir = os.path.abspath(__file__)
 actual_dir = os.path.dirname(actual_dir)
 parent_dir = actual_dir
-parent_dir = os.path.join(parent_dir, '../../source')
+parent_dir = os.path.join(parent_dir, '..', '..')
 sys.path.append(parent_dir)
 
-from initenv import InitEnv
-from initserv import InitServ
-from servlist import serv_list
-from userconf import UserConf
+from source.initenv import InitEnv
+from source.initserv import InitServ
+from source.servlist import serv_list
+from source.userconf import UserConf
 
 # Main
 # ----------------------
@@ -26,6 +26,6 @@ def main():
     user_conf = UserConf.read(conf_path)
     InitEnv.clean()
     InitEnv.build(serv_list, user_conf)
-    InitServ.init(serv_list, conf_path)
+    InitServ.init(serv_list, user_conf)
 
 main()

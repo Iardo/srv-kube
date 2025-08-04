@@ -16,7 +16,6 @@ class InitServ:
         for path, subdirs, files in os.walk(serv_path):
             for subdir in subdirs:
                 subdir_path = os.path.join(serv_path, subdir)
-
                 if not subdir in user_conf:
                     continue
                 for file in os.listdir(subdir_path):

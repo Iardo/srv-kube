@@ -9,7 +9,7 @@ parent_dir = os.path.dirname(parent_dir)
 parent_dir = os.path.join(parent_dir, '..')
 sys.path.append(parent_dir)
 
-from libyaml import load as ymlload, FullLoader
+from source.libyaml import load as ymlload, FullLoader
 
 class UserConf:
     '''
