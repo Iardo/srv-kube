@@ -3,6 +3,7 @@
 # docker compose up -d --build
 
 include: [
+  '${SERV:?}/nginx-proxy-manager/${FILE:?}',
   '${SERV:?}/open-project/${FILE:?}',
   '${SERV:?}/portainer/${FILE:?}',
   '${SERV:?}/scrutiny/${FILE:?}',
