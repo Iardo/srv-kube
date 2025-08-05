@@ -31,4 +31,4 @@ services:
       - /run/udev:/run/udev:ro
     devices:
       - /dev/sda
-      - /dev/sdb
+      # - /dev/sdb
