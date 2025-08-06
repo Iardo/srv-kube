@@ -37,10 +37,12 @@ Y = 29000→29999
 Z = 30000→30999
 '''
 
-from enum import Enum
+import os
 
-class InitEnv:
-    env_filepath = ".env"
+from enum import Enum
+from source.service import Service
+
+class Env:
     env_line_target = "# Generated"
     env_line_start = 0
     env_line_offset = 5 # Offset to preserve the comments
@@ -52,21 +54,22 @@ class InitEnv:
     Cleans-up all the ports from the environment file
     '''
     @staticmethod
-    def clean():
+    def clean(host):
         global env_line_start
 
         try:
-            env = open(InitEnv.env_filepath, 'r')
-            lines = env.readlines()
+            env_path = os.path.join(host, '.env')
+            env_file = open(env_path, 'r')
+            lines = env_file.readlines()
             for index, text in enumerate(lines):
-                if InitEnv.env_line_target in text:
+                if Env.env_line_target in text:
                     env_line_start = index
                     break
-            env.close()
+            env_file.close()
 
-            env = open(InitEnv.env_filepath, 'w')
-            env.writelines(lines[:env_line_start + InitEnv.env_line_offset])
-            env.close()
+            env_file = open(env_path, 'w')
+            env_file.writelines(lines[:env_line_start + Env.env_line_offset])
+            env_file.close()
         except Exception as err:
             print(err)
 
@@ -74,24 +77,25 @@ class InitEnv:
     Generates ports for all services and write them to the environment file
     '''
     @staticmethod
-    def build(serv_list: dict, user_conf: list):
+    def build(host: str, user_conf: list):
         count = None
         group = ""
         passes = 0
-        length = len(serv_list)
+        length = len(Service.serv_list)
 
         try:
-            env = open(InitEnv.env_filepath, 'a')
-            for index, (serv_name, serv_containers) in enumerate(serv_list.items()):
+            env_path = os.path.join(host, '.env')
+            env_file = open(env_path, 'a')
+            for index, (serv_name, serv_containers) in enumerate(Service.serv_list.items()):
                 passes = passes + 1
 
                 if not serv_name in user_conf:
                     continue
                 if group != serv_name[0]:
                     group = serv_name[0]
-                    count = (InitEnv.port_list[serv_name[0]].value * 1000) + InitEnv.port_start_at
-                    env.write(f'# {group}\n')
-                    env.write(f'# ----\n')
+                    count = (Env.port_list[serv_name[0]].value * 1000) + Env.port_start_at
+                    env_file.write(f'# {group}\n')
+                    env_file.write(f'# ----\n')
                 if not serv_containers:
                     passes = passes + 1
                     continue
@@ -100,10 +104,10 @@ class InitEnv:
                     postfix = serv_container.replace('-', '_')
                     setting = [prefix, postfix]
                     setting = "_".join(setting).upper()
-                    env.write(f'{setting}={count}\n')
+                    env_file.write(f'{setting}={count}\n')
                     count = count + 1
                 if passes is not length:
-                    env.write(f'\n')
-            env.close()
+                    env_file.write(f'\n')
+            env_file.close()
         except Exception as err:
             print(err)
