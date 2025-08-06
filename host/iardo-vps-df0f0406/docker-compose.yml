@@ -1,9 +1,6 @@
 include: [
-  '${SERV:?}/highlight/${FILE:?}',
-  '${SERV:?}/mirotalksfu/${FILE:?}',
+  '${SERV:?}/linkwarden/${FILE:?}',
   '${SERV:?}/nginx-proxy-manager/${FILE:?}',
-  '${SERV:?}/paperless-ngx/${FILE:?}',
-  '${SERV:?}/passbolt/${FILE:?}',
-  '${SERV:?}/portainer/${FILE:?}',
-  '${SERV:?}/postal/${FILE:?}',
+  '${SERV:?}/open-project/${FILE:?}',
+  '${SERV:?}/trilium-next/${FILE:?}',
 ]
