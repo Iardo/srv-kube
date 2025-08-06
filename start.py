@@ -17,6 +17,6 @@ def main():
     args = Args.read()
     host = Host.select(args.host)
     file = os.path.join(host, 'docker-compose.yml')
-    subprocess.call(["docker-compose", '-f', file, "up", "-d"])
+    subprocess.call(["docker-compose", '-f', file, "up", "-d", "--build"])
 
 main()
