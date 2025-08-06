@@ -98,8 +98,8 @@ The utilities vary from service to service but there are some common ones:
 ```
 data-gen-directories.sh : Generate required directories.
 data-set-permissions.sh : Concedes file permissions to $USER.
-database-backup         : Generate a backup for the service.
-database-restore        : Restores a backup for the service.
+database-backup.sh      : Generate a backup for the service.
+database-restore.sh     : Restores a backup for the service.
 ```
 
 ---
