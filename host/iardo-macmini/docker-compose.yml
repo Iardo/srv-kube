@@ -1,12 +1,7 @@
-# Instructions
-# --------------------
-# docker compose up -d --build
-
 include: [
   '${SERV:?}/actual/${FILE:?}',
   '${SERV:?}/cloudbeaver/${FILE:?}',
   '${SERV:?}/cronicle/${FILE:?}',
-  '${SERV:?}/dockermon/${FILE:?}',
   '${SERV:?}/docmost/${FILE:?}',
   '${SERV:?}/excalidraw/${FILE:?}',
   '${SERV:?}/home-assistant/${FILE:?}',

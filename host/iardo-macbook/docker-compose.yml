@@ -1,10 +1,5 @@
-# Instructions
-# --------------------
-# docker compose up -d --build
-
 include: [
-  # '${SERV:?}/nginx-proxy-manager/${FILE:?}',
-  '${SERV:?}/portainer/${FILE:?}',
+  '${SERV:?}/nginx-proxy-manager/${FILE:?}',
   '${SERV:?}/scrutiny/${FILE:?}',
   '${SERV:?}/speedtest-tracker/${FILE:?}',
 ]
