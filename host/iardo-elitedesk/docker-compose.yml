@@ -1,6 +1,6 @@
 include: [
+  '${SERV:?}/linkwarden/${FILE:?}',
   '${SERV:?}/nginx-proxy-manager/${FILE:?}',
-  '${SERV:?}/portainer/${FILE:?}',
-  '${SERV:?}/scrutiny/${FILE:?}',
-  '${SERV:?}/speedtest-tracker/${FILE:?}',
+  '${SERV:?}/open-project/${FILE:?}',
+  '${SERV:?}/trilium-next/${FILE:?}',
 ]
