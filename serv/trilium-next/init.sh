@@ -15,8 +15,8 @@ TRILLIUM-NEXT: Init Done
 ----
 The setup requires some manual steps
 Once the container is running:
-- cd /serv/trillium-next
-- sh -c ./task/data-set-permissions.sh
+    cd /serv/trillium-next
+    sh -c ./task/data-set-permissions.sh
 
 EOF
 )

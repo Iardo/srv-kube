@@ -15,9 +15,9 @@ CRONICLE: Init Done
 ----
 The setup requires some manual steps
 Once the container is running:
-- cd /serv/cronicle
-- sh -c ./task/data-set-permissions.sh
-- sh -c ./task/cluster-init.sh
+    cd /serv/cronicle
+    sh -c ./task/data-set-permissions.sh
+    sh -c ./task/cluster-init.sh
 
 EOF
 )

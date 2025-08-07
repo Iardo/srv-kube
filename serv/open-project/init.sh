@@ -15,9 +15,9 @@ OPEN-PROJECT: Init Done
 ----
 The setup requires some manual steps
 Once the container is running:
-- cd /serv/open-project
-- sh -c ./task/data-set-permissions.sh
-- sh -c ./task/data-delete-demo-projects.sh
+    cd /serv/open-project
+    sh -c ./task/data-set-permissions.sh
+    sh -c ./task/data-delete-demo-projects.sh
 
 EOF
 )
