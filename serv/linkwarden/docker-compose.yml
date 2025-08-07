@@ -3,6 +3,23 @@
 # https://docs.linkwarden.app/self-hosting/installation
 # https://github.com/linkwarden/linkwarden/blob/main/docker-compose.yml
 
+
+# Warning ⚠️
+# --------------------
+# Memory Hungry
+# ----
+# Linkwarden uses Playwright to obtain some data from the sites,
+# this spawns a headless browser process
+# and as you may know, modern browsers consumes a lot of RAM,
+# therefore, it is very memory instensive application.
+# 
+# Be wary of this if you intent to use this in a VPS,
+# you will need above ~4GBs of RAM to be able to use it.
+# 
+# https://playwright.dev/
+# 
+
+
 networks:
   linkwarden:
     name: linkwarden
@@ -28,6 +45,8 @@ services:
       - ./logs:/logs
       - linkwarden-web:/data/data
     env_file: .env
+    environment:
+      NEXT_PUBLIC_DISABLE_REGISTRATION: ${LINKWARDEN_DISABLE_REGISTRATION:-false}
 
   linkwarden-database:
     image: postgres:16-alpine
