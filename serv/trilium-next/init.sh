@@ -8,6 +8,7 @@ color_reset='\033[0m'
 
 sh -c $fullpath/task/data-gen-directories.sh
 sh -c $fullpath/task/data-set-permissions.sh
+echo ''
 
 message=$(cat << EOF
 TRILLIUM-NEXT: Init Done
