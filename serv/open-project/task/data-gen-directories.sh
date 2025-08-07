@@ -4,7 +4,7 @@ set -o pipefail
 
 fullpath=$(dirname "$0")
 
-if ! [ -d data ]; then
+if [ ! -d $fullpath/../data ]; then
   echo "Creating: /data/assets ..."
   mkdir -p $fullpath/../data/assets
   echo "Creating: /data/backup ..."

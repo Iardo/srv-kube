@@ -4,6 +4,6 @@ set -o pipefail
 
 fullpath=$(dirname "$0")
 
-if ! [ -d data ]; then
+if [ ! -d $fullpath/../data ]; then
   mkdir -p $fullpath/../data/cronicle
 fi
