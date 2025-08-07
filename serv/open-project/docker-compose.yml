@@ -18,6 +18,7 @@ x-discovery:
     OPENPROJECT_APP__TITLE: ${OPEN_PROJECT_TITLE:-OpenProject}
     OPENPROJECT_HOST__NAME: ${OPEN_PROJECT_HOST_NAME:-localhost}
     OPENPROJECT_ADDITIONAL__HOST__NAMES: ${OPEN_PROJECT_HOST_NAME_ADDITIONAL:-'["127.0.0.1","localhost"]'}
+    OPENPROJECT_SELF__REGISTRATION: ${OPEN_PROJECT_SELF_REGISTRATION:-2}
     OPENPROJECT_CACHE__MEMCACHE__SERVER: open-project-cache:11211
     DATABASE_URL: postgres://openproject:openproject@open-project-database:5432/openproject?pool:20&encoding=unicode&reconnect=true
 
