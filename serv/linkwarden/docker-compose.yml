@@ -25,8 +25,13 @@ networks:
     name: linkwarden
 
 volumes:
-  linkwarden-web:
-    name: linkwarden-web
+  linkwarden-archives:
+    name: linkwarden-archives
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./data/archives
   linkwarden-database:
     name: linkwarden-database
 
@@ -43,7 +48,7 @@ services:
       - ${LINKWARDEN_WEB_HTTP:-5173}:3000
     volumes:
       - ./logs:/logs
-      - linkwarden-web:/data/data
+      - linkwarden-archives:/data/data/archives
     env_file: .env
     environment:
       NEXT_PUBLIC_DISABLE_REGISTRATION: ${LINKWARDEN_DISABLE_REGISTRATION:-false}
@@ -66,3 +71,4 @@ services:
       POSTGRES_DB: ${LINKWARDEN_POSTGRES_NAME:?}
       POSTGRES_PASSWORD: ${LINKWARDEN_POSTGRES_PASS:?}
       POSTGRES_USER: ${LINKWARDEN_POSTGRES_USER:?}
+  
