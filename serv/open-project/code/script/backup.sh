@@ -4,8 +4,8 @@ set -o pipefail
 
 source /.env
 
-timestamp=$(date + "%Y.%m%.d-%H.%M.%S")
-file_sql="${timestamp}-backup.sql"
+timestamp=$(date "+%Y.%m.%d-%H.%M.%S")
+file_sql="${timestamp}-database.sql"
 file_pgdata="${timestamp}-pgdata.tar.gz"
 file_opdata="${timestamp}-opdata.tar.gz"
 
