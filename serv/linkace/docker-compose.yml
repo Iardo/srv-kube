@@ -24,7 +24,7 @@ services:
       - ${LINKACE_WEB_HTTPS:?}:443
     volumes:
       - ./.env:/app/.env
-      - ./data/backups:/app/storage/app/backups
+      - ./data/backup:/app/storage/app/backups
     env_file: .env
     environment:
       DB_HOST: linkace-database
@@ -42,7 +42,7 @@ services:
     ports:
       - ${LINKACE_DATABASE:?}:3306
     volumes:
-      - ./data/backups:/backups
+      - ./data/backup:/backups
       - linkace-database:/var/lib/mysql
     environment:
       - MYSQL_DATABASE=${MYSQL_NAME:?}

@@ -2,19 +2,14 @@
 set -e
 set -o pipefail
 
-source /.env
-
 quiet() { "$@" > /dev/null 2>&1; }
 
+fullpath=$(dirname "$0")
+source $fullpath/../.env
+color_green='\033[0;32m'
+color_reset='\033[0m'
 timestamp=$(date "+%Y.%m.%d-%H.%M.%S")
-file_sql="${timestamp}-database.sql"
+database_file="${timestamp}-database.sql"
 
-echo "Generating: ${file_sql} ..."
-docker exec -it linkace-database sh -c "\
-  mariadb-dump\
-    -h linkace-database \
-    -U $MYSQL_USER \
-    -p$MYSQL_PASS \
-    -d $MYSQL_NAME \
-  >> \"/backups/$file_sql\"
-  "
+echo -e "Generating: ${color_green}$database_file.sql${color_reset} ..."
+docker exec -it linkace-database sh -c "mariadb-dump -h linkace-database -u $MYSQL_USER -p$MYSQL_PASS $MYSQL_NAME >> \"/backups/$database_file\""
