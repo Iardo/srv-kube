@@ -29,6 +29,7 @@ class Service:
         'huly': ['web-http', 'database', 'account', 'collaborator', 'transactor', 'rekoni', 'minio', 'elasticsearch'],
         'infisical': ['web-http', 'database', 'redis'],
         'jellyfin': ['web-http', 'web-https', 'discovery', 'dlna'],
+        'linkace': ['web-http', 'web-https', 'database', 'redis'],
         'linkwarden': ['web-http', 'database'],
         'mirotalksfu': ['web-http'],
         'monica': ['web-http'],

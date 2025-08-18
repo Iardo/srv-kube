@@ -1,0 +1,61 @@
+# References
+# --------------------
+# https://github.com/Kovah/LinkAce
+
+networks:
+  linkace:
+    name: linkace
+
+volumes:
+  linkace-database:
+    name: linkace-database
+
+services:
+  linkace-web:
+    image: docker.io/linkace/linkace:v2.1.9
+    container_name: linkace-web
+    restart: unless-stopped
+    depends_on:
+      - linkace-database
+    networks:
+      - linkace
+    ports:
+      - ${LINKACE_WEB_HTTP:?}:80
+      - ${LINKACE_WEB_HTTPS:?}:443
+    volumes:
+      - ./.env:/app/.env
+      - ./data/backups:/app/storage/app/backups
+    env_file: .env
+    environment:
+      DB_HOST: linkace-database
+      DB_DATABASE: ${MYSQL_NAME:-linkace}
+      DB_USERNAME: ${MYSQL_USER:-linkace}
+      DB_PASSWORD: ${MYSQL_PASS:-linkace} # Dummy
+
+  linkace-database:
+    image: docker.io/library/mariadb:11.5
+    container_name: linkace-database
+    restart: unless-stopped
+    command: mariadbd --character-set-server=utf8mb4 --collation-server=utf8mb4_bin
+    networks:
+      - linkace
+    ports:
+      - ${LINKACE_DATABASE:?}:3306
+    volumes:
+      - linkace-database:/var/lib/mysql
+    environment:
+      - MYSQL_DATABASE=${MYSQL_NAME:?}
+      - MYSQL_USER=${MYSQL_USER:?}
+      - MYSQL_PASSWORD=${MYSQL_PASS:?}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_PASS:?}
+
+  linkace-redis:
+    image: docker.io/bitnami/redis:7.4
+    container_name: linkace-redis
+    restart: unless-stopped
+    networks:
+      - linkace
+    ports:
+      - ${LINKACE_REDIS:?}:6379
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASS:?}
