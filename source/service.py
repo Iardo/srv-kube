@@ -79,9 +79,32 @@ class Service:
                 if not subdir in user_conf:
                     continue
                 for file in os.listdir(subdir_path):
-                    file_path = os.path.join(subdir_path, 'init.sh')
-                    if os.path.exists(file_path):
+                    file_init = os.path.join(subdir_path, 'init.sh')
+                    if os.path.exists(file_init):
                         if subdir in Service.serv_list:
-                            subprocess.call(["sh", "-c", file_path])
+                            subprocess.call(["sh", "-c", file_init])
                     break
             break
+
+    '''
+    Executes post install tasks for services
+    '''
+    @staticmethod
+    def post(user_conf: list):
+        serv_path = os.path.dirname(__file__)
+        serv_path = os.path.join(serv_path, '..', 'serv')
+        serv_path = os.path.abspath(serv_path)
+
+        for path, subdirs, files in os.walk(serv_path):
+            for subdir in subdirs:
+                subdir_path = os.path.join(serv_path, subdir)
+                if not subdir in user_conf:
+                    continue
+                for file in os.listdir(subdir_path):
+                    task_chmod = os.path.join(subdir_path, 'task', 'data-set-permissions.sh')
+                    if os.path.exists(task_chmod):
+                        if subdir in Service.serv_list:
+                            subprocess.call(["sh", "-c", task_chmod], stdout=subprocess.DEVNULL)
+                    break
+            break
+    
