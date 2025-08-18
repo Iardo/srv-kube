@@ -1,5 +1,5 @@
 include: [
-  '${SERV:?}/linkwarden/${FILE:?}',
+  '${SERV:?}/linkace/${FILE:?}',
   '${SERV:?}/nginx-proxy-manager/${FILE:?}',
   '${SERV:?}/open-project/${FILE:?}',
   '${SERV:?}/trilium-next/${FILE:?}',
