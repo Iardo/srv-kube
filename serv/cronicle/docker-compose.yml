@@ -16,10 +16,20 @@
 # Your server's hostname has changed, and thus Cronicle 
 # can no longer find it in one of its internal lists
 # https://github.com/jhuckaby/Cronicle/issues/36#issuecomment-332930842
-# 
-# In docker the best solution is to lock the hostname of a container inside
-#   /opt/cronicle/bin/storage-cli.js 
 # https://github.com/jhuckaby/Cronicle/issues/36#issuecomment-1370136367
+# 
+# In docker the best solution is to lock the hostname
+# Follow these steps:
+#   > Stop the container
+#   > Run the script:
+#       /bin/control.sh setup
+#   > Do a search for your ip inside the directory:
+#       /data/global
+#     There should be some file with a hostname:
+#       ex: file: /data/cronicle/data/global/af/56/5a/af565a097a0cf8d7d5855ecc92c24c34.json
+#           data: {"type":"list_page","items":[{"hostname":"pop-os","ip":"192.168.1.10"}]}
+#   > Add the hostnames that you need inside the items array
+# 
 
 networks:
   cronicle:

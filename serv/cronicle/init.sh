@@ -16,8 +16,10 @@ CRONICLE: Init Done
 ----
 The setup requires some manual steps
 Once the container is running:
-    cd /serv/cronicle
-    sh -c ./task/cluster-init.sh
+    > make sure to have nodejs installed
+      https://www.nodejs.tech
+    > cd /serv/cronicle
+    > ./task/cluster-init.sh
 EOF
 )
 
