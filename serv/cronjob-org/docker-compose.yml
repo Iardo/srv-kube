@@ -1,0 +1,147 @@
+# References
+# --------------------
+# https://github.com/pschlan/cron-job.org/blob/master/.env.example
+# https://github.com/pschlan/cron-job.org/blob/master/docker-compose.yml
+
+x-discovery:
+  &discovery
+    CJO_DOMAIN: ${CRONJOB_ORG_DOMAIN:-localhost}
+    CJO_BASE_URL: http://${CRONJOB_ORG_DOMAIN:-localhost}:${CRONJOB_ORG_WEB_HTTP:-8010}/
+    CJO_PROJECT_NAME: ${CJO_PROJECT_NAME}
+
+networks:
+  cronjoborg:
+    name: cronjoborg
+
+volumes:
+  cronjoborg-database-master:
+    name: cronjoborg-database-master
+  cronjoborg-database-node:
+    name: cronjoborg-database-node
+
+services:
+  cronjoborg-web:
+    container_name: cronjoborg-web
+    build:
+      context: ./code/web
+      dockerfile: dockerfile
+      args:
+        <<: *discovery
+    networks:
+      - cronjoborg
+    ports:
+      - ${CRONJOB_ORG_WEB_HTTP:-8010}:80
+    env_file: .env
+
+  cronjoborg-api:
+    container_name: cronjoborg-api
+    build:
+      context: ./code/api
+      dockerfile: dockerfile
+    depends_on:
+      - cronjoborg-database-master
+      - cronjoborg-job
+      - cronjoborg-redis
+    networks:
+      - cronjoborg
+    volumes:
+      - ./code/config/config.inc.php:/var/www/html/config/config.inc.php
+    env_file: .env
+    environment:
+      <<: *discovery
+      CJO_SESSION_TOKEN_SECRET: ${CJO_SESSION_TOKEN_SECRET}
+      CJO_EMAIL_VERIFICATION_TOKEN_SECRET: ${CJO_EMAIL_VERIFICATION_TOKEN_SECRET}
+      CJO_LOST_PASSWORD_TOKEN_SECRET: ${CJO_LOST_PASSWORD_TOKEN_SECRET}
+      CJO_ACCOUNT_CONFIRMATION_TOKEN_SECRET: ${CJO_ACCOUNT_CONFIRMATION_TOKEN_SECRET}
+      CJO_VERP_SECRET: ${CJO_VERP_SECRET}
+      CJO_STATUS_BADGE_TOKEN_SECRET: ${CJO_STATUS_BADGE_TOKEN_SECRET}
+      CJO_EMAIL_SENDER: ${CJO_EMAIL_SENDER}
+      CJO_EMAIL_RETURN_PATH: ${CJO_EMAIL_RETURN_PATH}
+      SMTP_SERVER: ${SMTP_SERVER}
+      MYSQL_DATABASE: ${MYSQL_NAME_MASTER}
+      MYSQL_USER: ${MYSQL_USER_MASTER}
+      MYSQL_PASSWORD: ${MYSQL_PASS_MASTER}
+
+  cronjoborg-job:
+    container_name: cronjoborg-job
+    build:
+      context: ./code/job
+      dockerfile: dockerfile
+    depends_on:
+      - cronjoborg-database-master
+      - cronjoborg-database-node
+    networks:
+      - cronjoborg
+    volumes:
+      - ./data/cronjob:/var/lib/cron-job.org-data
+    env_file: .env
+    environment:
+      <<: *discovery
+      CJO_VERP_SECRET: ${CJO_VERP_SECRET}
+      CJO_EMAIL_SENDER: ${CJO_EMAIL_SENDER}
+      CJO_EMAIL_RETURN_PATH: ${CJO_EMAIL_RETURN_PATH}
+      SMTP_SERVER: ${SMTP_SERVER}
+      MASTER_MYSQL_HOST: cronjoborg-database-master
+      MASTER_MYSQL_DATABASE: ${MYSQL_NAME_MASTER}
+      MASTER_MYSQL_USER: ${MYSQL_USER_MASTER}
+      MASTER_MYSQL_PASSWORD: ${MYSQL_PASS_MASTER}
+      NODE_MYSQL_HOST: cronjoborg-database-node
+      NODE_MYSQL_DATABASE: ${MYSQL_NAME_NODE}
+      NODE_MYSQL_USER: ${MYSQL_USER_NODE}
+      NODE_MYSQL_PASSWORD: ${MYSQL_PASS_NODE}
+      
+  cronjoborg-database-master:
+    image: mysql:8
+    container_name: cronjoborg-database-master
+    command: 
+      - mysqld
+      - --mysql-native-password=ON
+      - --sql-mode=
+      - --skip-name-resolve
+      - --tls-version=TLSv1.2,TLSv1.3
+    restart: unless-stopped
+    networks:
+      - cronjoborg
+    ports:
+      - ${CRONJOB_ORG_DATABASE_MASTER:-8015}:3306
+    volumes:
+      - ./code/config/config-master.sql:/docker-entrypoint-initdb.d/01_config_master.sql
+      - ./code/database/struct-master.sql:/docker-entrypoint-initdb.d/00_struct_master.sql
+      - ./data/backup:/backups
+      - ./logs/database/master:/var/log/mysql
+      - cronjoborg-database-master:/var/lib/mysql
+    env_file: .env
+    environment:
+      MYSQL_DATABASE: ${MYSQL_NAME_MASTER}
+      MYSQL_USER: ${MYSQL_USER_MASTER}
+      MYSQL_PASSWORD: ${MYSQL_PASS_MASTER}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_PASS_MASTER}
+
+  cronjoborg-database-node:
+    image: mysql:8
+    container_name: cronjoborg-database-node
+    command: 
+      - mysqld
+      - --mysql-native-password=ON
+      - --sql-mode=
+      - --skip-name-resolve
+      - --tls-version=TLSv1.2,TLSv1.3
+    networks:
+      - cronjoborg
+    ports:
+      - ${CRONJOB_ORG_DATABASE_NODE:-8016}:3306
+    volumes:
+      - ./code/database/struct-node.sql:/docker-entrypoint-initdb.d/struct_node.sql
+      - ./data/backup:/backups
+      - ./logs/database/node:/var/log/mysql
+      - cronjoborg-database-node:/var/lib/mysql
+    env_file: .env
+    environment:
+      MYSQL_DATABASE: ${MYSQL_NAME_NODE}
+      MYSQL_USER: ${MYSQL_USER_NODE}
+      MYSQL_PASSWORD: ${MYSQL_PASS_NODE}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_PASS_NODE}
+
+  cronjoborg-redis:
+    image: redis:7-alpine
+    container_name: cronjoborg-redis

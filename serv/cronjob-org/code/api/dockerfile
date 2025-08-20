@@ -1,0 +1,29 @@
+FROM vandot/alpine-bash:3 AS code
+
+RUN apk add --no-cache git
+RUN git clone https://github.com/pschlan/cron-job.org /code
+
+
+FROM php:8.1-fpm
+
+RUN apt-get -y update \
+    && apt-get install -y msmtp msmtp-mta zlib1g-dev libpng-dev libfreetype-dev \
+	  && apt-get clean \
+	  && rm -r /var/lib/apt/lists/*
+
+RUN docker-php-ext-install pdo pdo_mysql gd
+RUN pecl install redis \
+    && rm -rf /tmp/pear \
+    && docker-php-ext-enable redis opcache gd
+
+RUN mv "$PHP_INI_DIR/php.ini-development" "$PHP_INI_DIR/php.ini"
+
+COPY --from=code /code/api/ /var/www/html/
+COPY --from=code /code/api/docker/msmtprc /etc/msmtprc
+COPY --from=code /code/api/docker/api-entry /usr/local/bin/
+
+RUN chmod 0755 /usr/local/bin/api-entry
+
+RUN rm -rf /var/www/html/docker
+
+ENTRYPOINT ["api-entry"]

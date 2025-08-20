@@ -13,6 +13,7 @@ class Service:
         'cloudbeaver': ['web-http'],
         'crafty': ['web-http', 'web-https', 'dynmap', 'bedrock'],
         'cronicle': ['web-http'],
+        'cronjob-org': ['web-http', 'database-master', 'database-node'],
         'dockermon': ['web-http', 'api', 'websocket'],
         'docmost': ['web-http', 'database', 'redis'],
         'drawdb': ['web-http'],

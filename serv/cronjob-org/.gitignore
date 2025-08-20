@@ -1,0 +1,8 @@
+# ignore these folders:
+# ignore these files:
+
+# --------------------
+# include these folders:
+!code/*
+
+# include these files:
