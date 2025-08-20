@@ -73,6 +73,7 @@ services:
       - ${CRONICLE_WEB_HTTP:-3012}:3012
     volumes:
       - ./data/external:/external
+      - ./data/secrets:/secrets
       - ./data/workloads:/app
       - /var/run/docker.sock:/var/run/docker.sock
       - cronicle-web:/opt/cronicle # <- Does not rewrite dir inside container
