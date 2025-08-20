@@ -36,6 +36,13 @@
 #       /data/cronicle/data/global/af/56/5a/af565a097a0cf8d7d5855ecc92c24c34.json
 # 
 #   > Update the hostname or ip that inside the items array
+#   > Update the mastergroup with a regex like this to support multiple hostnames and wildcards
+#       {
+#         "id": "mastergrp",
+#         "title": "Master Group",
+#         "regexp": "^((.+)?example.com|pop-os)$",
+#         "master": 1
+#       }
 # 
 
 networks:
