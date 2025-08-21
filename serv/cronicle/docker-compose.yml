@@ -13,11 +13,15 @@
 # NOTE:
 # Stuck in "Waiting for master server..."
 # ---
-# Your server's hostname has changed, and thus Cronicle 
-# can no longer find it in one of its internal lists
-# https://github.com/jhuckaby/Cronicle/issues/36#issuecomment-332930842
-# https://github.com/jhuckaby/Cronicle/issues/36#issuecomment-1370136367
-# https://github.com/jhuckaby/Cronicle/wiki/Troubleshooting
+# 1. Check browser configuration local storage
+#    and remove old session if any. 
+# 
+# 
+# 2. Your server's hostname has changed, and thus Cronicle 
+#     can no longer find it in one of its internal lists
+#     https://github.com/jhuckaby/Cronicle/issues/36#issuecomment-332930842
+#     https://github.com/jhuckaby/Cronicle/issues/36#issuecomment-1370136367
+#     https://github.com/jhuckaby/Cronicle/wiki/Troubleshooting
 # 
 # In docker the best solution is to lock the hostname
 # Follow these steps:
@@ -66,8 +70,7 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: ./data/cronicle      # <- Does not rewrite dir inside container,
-                                   #    but it has to exist in host first
+      device: ./data/cronicle
 
 services:
   cronicle-web:
@@ -83,8 +86,7 @@ services:
       - ./data/secrets:/secrets
       - ./data/workloads:/app
       - /var/run/docker.sock:/var/run/docker.sock
-      - cronicle-web:/opt/cronicle # <- Does not rewrite dir inside container
-                                   #    but it has to exist in host first
+      - cronicle-web:/opt/cronicle/data
     environment:
       CRONICLE_base_app_url: ${CRONICLE_PUBLIC_URL_WEB}
       TZ: ${TIMEZONE:-America/Panama}
