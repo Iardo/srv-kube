@@ -23,5 +23,5 @@ fi
 echo ""
 echo -e "Restoring: ${color_green}$database_file.sql${color_reset} ..."
 quiet docker exec linkace-web php artisan setup:complete
-docker exec -it linkace-database sh -c "mariadb -h localhost -u $MYSQL_USER -p$MYSQL_PASS $MYSQL_NAME -e $database_drop"
-docker exec -it linkace-database sh -c "mariadb -h localhost -u $MYSQL_USER -p$MYSQL_PASS $MYSQL_NAME < \"/backups/$database_file.sql\""
+docker exec linkace-database sh -c "mariadb -h localhost -u $MYSQL_USER -p$MYSQL_PASS $MYSQL_NAME -e $database_drop"
+docker exec linkace-database sh -c "mariadb -h localhost -u $MYSQL_USER -p$MYSQL_PASS $MYSQL_NAME < \"/backups/$database_file.sql\""

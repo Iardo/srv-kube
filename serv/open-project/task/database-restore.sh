@@ -24,8 +24,8 @@ CREATE SCHEMA public;\
 \""
 
 echo "Restoring: $database_file.sql ..."
-docker exec -it open-project-database sh -c "PGPASSWORD=$POSTGRESQL_PASS psql --quiet -h localhost -U $POSTGRESQL_USER -d $POSTGRESQL_NAME -c $cmd_restore $quiet"
-docker exec -it open-project-database sh -c "PGPASSWORD=$POSTGRESQL_PASS psql --quiet -h localhost -U $POSTGRESQL_USER -d $POSTGRESQL_NAME -f /backups/$database_file.sql -L /logs/$database_file-restore.log $quiet"
+docker exec open-project-database sh -c "PGPASSWORD=$POSTGRESQL_PASS psql --quiet -h localhost -U $POSTGRESQL_USER -d $POSTGRESQL_NAME -c $cmd_restore $quiet"
+docker exec open-project-database sh -c "PGPASSWORD=$POSTGRESQL_PASS psql --quiet -h localhost -U $POSTGRESQL_USER -d $POSTGRESQL_NAME -f /backups/$database_file.sql -L /logs/$database_file-restore.log $quiet"
 
 message=$(cat << EOF
 OPEN-PROJECT: Database Restored

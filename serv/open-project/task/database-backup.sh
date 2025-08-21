@@ -4,4 +4,4 @@ set -o pipefail
 
 quiet() { "$@" > /dev/null 2>&1; }
 
-docker exec -it open-project-backup sh -c "/backup.sh"
+docker exec open-project-backup sh -c "/backup.sh"

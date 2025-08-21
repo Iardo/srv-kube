@@ -12,4 +12,4 @@ timestamp=$(date "+%Y.%m.%d-%H.%M.%S")
 database_file="${timestamp}-database.sql"
 
 echo -e "Generating: ${color_green}$database_file.sql${color_reset} ..."
-docker exec -it linkace-database sh -c "mariadb-dump -h linkace-database -u $MYSQL_USER -p$MYSQL_PASS $MYSQL_NAME >> \"/backups/$database_file\""
+docker exec linkace-database sh -c "mariadb-dump -h linkace-database -u $MYSQL_USER -p$MYSQL_PASS $MYSQL_NAME >> \"/backups/$database_file\""
