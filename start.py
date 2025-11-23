@@ -3,7 +3,7 @@
 import os
 import subprocess
 
-from source.core.args import Args
+from source.struct.args import Args
 from source.host import Host
 from source.service import Service
 

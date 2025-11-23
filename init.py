@@ -3,7 +3,7 @@
 import os
 import sys
 
-from source.core.args import Args
+from source.struct.args import Args
 from source.environment import Env
 from source.host import Host
 from source.service import Service
