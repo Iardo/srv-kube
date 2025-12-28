@@ -39,6 +39,7 @@ class Service:
         'nginx-proxy-manager': ['web-http', 'web-https', 'panel'],
         'nginx': ['web-http'],
         'notesnook': ['server', 'identity', 'events', 'monograph', 'minio-api', 'minio-web', 'database'],
+        'ntfy': ['web-http'],
         'oneuptime': ['web-http'],
         'open-project': ['web-http', 'database'],
         'outline': ['web-http', 'web-https', 'database', 'redis'],

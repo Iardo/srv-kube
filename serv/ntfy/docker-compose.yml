@@ -1,0 +1,26 @@
+# References
+# --------------------
+# https://github.com/binwiederhier/ntfy/blob/main/docker-compose.yml
+
+networks:
+  ntfy:
+    name: ntfy
+
+services:
+  ntfy-web:
+    image: binwiederhier/ntfy:v2.15
+    container_name: ntfy-web
+    restart: unless-stopped
+    command:
+      - serve
+    networks:
+      - ntfy
+    ports:
+      - ${NTFY_WEB_HTTP:?}:80
+    volumes:
+      - ./conf:/etc/ntfy
+      - /var/cache/ntfy:/var/cache/ntfy
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: ${TIMEZONE:-America/Panama}
