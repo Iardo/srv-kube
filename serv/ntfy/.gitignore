@@ -1,9 +1,9 @@
-# folders include:
+# folders included:
 !conf/*
 
-# folders ignore:
+# folders ignored:
 
 # --------------------
-# files include:
-# files ignore:
+# files included:
+# files ignored:
 conf/server.yml

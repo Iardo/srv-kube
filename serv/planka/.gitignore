@@ -1,17 +1,17 @@
-# ignore these folders:
-data/attachments/*
-data/images/avatars/*
-data/images/background/*
-
-# ignore these files:
-
-# --------------------
-# include these folders:
+# folders included:
 !data
 !data/attachments
 !data/images
 !data/images/avatars
 !data/images/background
 
-# include these files:
+# folders ignored:
+data/attachments/*
+data/images/avatars/*
+data/images/background/*
+
+# --------------------
+# files included:
 !.gitkeep
+
+# files ignored:

@@ -1,9 +1,9 @@
-# ignore these folders:
-# ignore these files:
+# folders included:
+# folders ignored:
 
 # --------------------
-# include these folders:
+# files included:
 !cert/selfhost.crt
 !cert/selfhost.key
 
-# include these files:
+# files ignored:

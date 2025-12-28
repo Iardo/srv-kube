@@ -1,8 +1,7 @@
-# ignore these folders:
-# ignore these files:
-
-# --------------------
-# include these folders:
+# folders included:
+# folders ignored:
 !conf/proxies.json
 
-# include these files:
+# --------------------
+# files included:
+# files ignored:

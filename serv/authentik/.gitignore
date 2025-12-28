@@ -1,15 +1,15 @@
-# ignore these folders:
-data/authentik/media/*
-data/authentik/templates/*
-
-# ignore these files:
-
-# --------------------
-# include these folders:
+# folders included:
 !data
 !data/authentik
 !data/authentik/media
 !data/authentik/templates
 
-# include these files:
+# folders ignored:
+data/authentik/media/*
+data/authentik/templates/*
+
+# --------------------
+# files included:
 !.gitkeep
+
+# files ignored:

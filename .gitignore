@@ -1,4 +1,7 @@
-# ignore these folders:
+# folders include:
+!/**/cert
+
+# folders ignore:
 __pycache__
 /**/backups/*
 /**/cert/*
@@ -7,11 +10,9 @@ __pycache__
 /**/data/*
 /**/logs/*
 
-# ignore these files:
-.DS_Store
-
 # --------------------
-# include these folders:
-!/**/cert
-# include these files:
+# files include:
 !.gitkeep
+
+# files ignore:
+.DS_Store

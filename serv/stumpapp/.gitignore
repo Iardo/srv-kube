@@ -1,8 +1,8 @@
-# ignore these folders:
-# ignore these files:
+# folders included:
+# folders ignored:
 
 # --------------------
-# include these folders:
+# files included:
 !conf/Stump.toml
 
-# include these files:
+# files ignored:
