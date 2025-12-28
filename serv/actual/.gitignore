@@ -3,7 +3,7 @@
 
 # --------------------
 # include these folders:
-!./cert/selfhost.crt
-!./cert/selfhost.key
+!cert/selfhost.crt
+!cert/selfhost.key
 
 # include these files:
