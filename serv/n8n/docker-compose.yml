@@ -34,6 +34,8 @@ services:
       N8N_PORT: 5678
       N8N_PROTOCOL: https
       NODE_ENV: production
+      NODE_FUNCTION_ALLOW_BUILTIN: ${NODE_FUNCTION_ALLOW_BUILTIN:?}
+      NODE_FUNCTION_ALLOW_EXTERNAL: ${NODE_FUNCTION_ALLOW_EXTERNAL:?}
       WEBHOOK_URL: https://${N8N_DOMAIN}/
       DB_TYPE: postgresdb
       DB_POSTGRESDB_HOST: n8n-database
