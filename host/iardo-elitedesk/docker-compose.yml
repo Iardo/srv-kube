@@ -1,5 +1,7 @@
 include: [
+  '${SERV:?}/actual/${FILE:?}',
   '${SERV:?}/cronicle/${FILE:?}',
+  '${SERV:?}/docmost/${FILE:?}',
   '${SERV:?}/linkace/${FILE:?}',
   '${SERV:?}/nginx-proxy-manager/${FILE:?}',
   '${SERV:?}/open-project/${FILE:?}',
