@@ -18,7 +18,8 @@ services:
     ports:
       - ${NTFY_WEB_HTTP:?}:80
     volumes:
-      - ./conf:/etc/ntfy
+      - ./conf/server.yml:/etc/ntfy/server.yml
+      - ./data/template:/etc/ntfy/templates
       - /var/cache/ntfy:/var/cache/ntfy
     environment:
       PUID: 1000

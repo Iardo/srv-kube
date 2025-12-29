@@ -1,5 +1,6 @@
 # folders included:
 !conf/*
+!data/template
 
 # folders ignored:
 
