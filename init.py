@@ -3,10 +3,12 @@
 import os
 import sys
 
-from source.struct.args import Args
 from source.environment import Env
+from source.globals.error import Error
+from source.globals.strings import Strings
 from source.host import Host
 from source.service import Service
+from source.struct.args import Args
 
 
 # Main
@@ -16,6 +18,9 @@ from source.service import Service
 os.system("")
 
 def main():
+    Error.init()
+    Strings.init()
+
     args = Args.read()
     host = Host.select(args.host)
     conf = Host.conf_read(host)

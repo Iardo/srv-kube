@@ -6,7 +6,7 @@ import sys
 from source.lib.libyaml import load as ymlload, FullLoader
 from source.globals.color import Color
 from source.globals.error import Error
-from source.globals.text import Text
+from source.globals.strings import Strings
 
 
 host_dir = os.path.abspath(__file__)
@@ -48,19 +48,19 @@ class Host:
         if arg_host:
             arg_host = os.path.join(host_dir, arg_host)
             if not os.path.exists(arg_host):
-                print(Error.SCRIPT_ARG_HOST_NOT_EXIST)
+                print(Error.get('SCRIPT_ARG_HOST_NOT_EXIST'))
                 print()
                 sys.exit()
             return arg_host
 
         # Prints a list of available hosts
-        print(Text.HOST_SELECTION_TITLE)
+        print(Strings.get('HOST_SELECTION_TITLE'))
         for path, subdirs, files in os.walk(host_dir):
             subdirs.sort()
             host_list = subdirs
             host_length = len(subdirs) - 1
             for index, subdir in enumerate(subdirs):
-                print(f'{Color.text["bold"]}{Color.fore["bright"]["green"]}{index}.{Color.text["reset"]} {subdir}')
+                print(f'{Color.text["type"]["bold"]}{Color.fore["bright"]["green"]}{index}.{Color.text["type"]["reset"]} {subdir}')
             break
 
         # Wait for user input
@@ -68,11 +68,11 @@ class Host:
         while host_pick < 0 or \
               host_pick > host_length:
             try:
-                host_pick = input(Text.HOST_SELECTION_TEXT)
+                host_pick = input(Strings.get('HOST_SELECTION_TEXT'))
                 host_pick = int(host_pick)
             except ValueError:
                 host_pick = -1
-                print(Error.INPUT_NAN)
+                print(Error.get('INPUT_NAN'))
                 print()
             except KeyboardInterrupt:
                 print()

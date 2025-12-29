@@ -1,9 +1,11 @@
 class Color:
     text = {
-        "bold": "\033[1m",
-        "header": "\033[95m",
-        "reset": "\033[0m",
-        "underline": "\033[4m",
+        "type": {
+            "bold": "\033[1m",
+            "header": "\033[95m",
+            "reset": "\033[0m",
+            "underline": "\033[4m",
+        }
     }
     fore = {
         "normal": {
