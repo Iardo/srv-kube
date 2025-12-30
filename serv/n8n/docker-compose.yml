@@ -54,6 +54,8 @@ services:
     networks:
       - n8n
     volumes:
+      - ./data/backup:/backup
+      - ./logs/backup:/logs
       - n8n-database:/var/lib/postgresql/data
     env_file: .env
     environment:
