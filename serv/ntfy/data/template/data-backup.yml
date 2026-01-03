@@ -1,6 +1,6 @@
 title: |
-  🚨 Backup: {{ .service }}
+  🚨 Backup: {{ default "" .service }}
 message: |
   Time to make a Backup!
-  URL: {{ .url }}
-  Timestamp: {{ .timestamp }}
+  URL: {{ default "" .url }}
+  Timestamp: {{ default "" .timestamp }}

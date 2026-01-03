@@ -1,0 +1,5 @@
+title: |
+  {{ default "" .title }}
+message: |
+  {{ default "" .msg1 }}
+  {{ default "" .msg2 }}
