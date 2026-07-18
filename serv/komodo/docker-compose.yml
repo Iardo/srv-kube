@@ -1,0 +1,73 @@
+# References
+# --------------------
+# https://github.com/moghtech/komodo/blob/main/compose/compose.env
+# https://github.com/moghtech/komodo/blob/main/compose/mongo.compose.yaml
+# https://github.com/moghtech/komodo/blob/main/config/periphery.config.toml
+
+networks:
+  komodo:
+    name: komodo
+
+volumes:
+  komodo-database:
+    name: komodo-database
+    driver: local
+  komodo-dbconfig:
+    name: komodo-dbconfig
+    driver: local
+  komodo-keys:
+    name: komodo-keys
+    driver: local
+
+services:
+  komodo-core:
+    image: ghcr.io/moghtech/komodo-core:2
+    container_name: komodo-core
+    init: true
+    restart: unless-stopped
+    depends_on:
+      - komodo-database
+    networks:
+      - komodo
+    ports:
+      - ${KOMODO_WEB_HTTP:-9120}:9120
+    volumes:
+      - komodo-keys:/config/keys
+      - ${KOMODO_PATH_BACKUP:?}:/backups
+    env_file: .env
+    environment:
+      KOMODO_DATABASE_ADDRESS: komodo-database:27017
+      TZ: ${TIMEZONE:-America/Panama}
+
+  komodo-periphery:
+    image: ghcr.io/moghtech/komodo-periphery:2
+    init: true
+    restart: unless-stopped
+    depends_on:
+      - komodo-core
+    networks:
+      - komodo
+    volumes:
+      - /proc:/proc
+      - /var/run/docker.sock:/var/run/docker.sock
+      - komodo-keys:/config/keys
+      - ${PERIPHERY_ROOT_DIRECTORY:-/etc/komodo}:${PERIPHERY_ROOT_DIRECTORY:-/etc/komodo}
+    env_file: .env
+
+  komodo-database:
+    image: mongo
+    container_name: komodo-database
+    restart: unless-stopped
+    command: --quiet --wiredTigerCacheSizeGB 0.25
+    labels:
+      komodo.skip: # Prevent Komodo from stopping with StopAllContainers
+    networks:
+      - komodo
+    ports:
+      - ${KOMODO_DATABASE:-27017}:27017
+    volumes:
+      - komodo-database:/data/db
+      - komodo-dbconfig:/data/configdb
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${KOMODO_DATABASE_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${KOMODO_DATABASE_PASSWORD}
