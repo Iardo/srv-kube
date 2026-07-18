@@ -33,6 +33,7 @@ include: [
   '${SERV:?}/huly/${FILE:?}',
   '${SERV:?}/infisical/${FILE:?}',
   '${SERV:?}/jellyfin/${FILE:?}',
+  '${SERV:?}/komodo/${FILE:?}',
   '${SERV:?}/linkwarden/${FILE:?}',
   '${SERV:?}/mirotalksfu/${FILE:?}',
   '${SERV:?}/monica/${FILE:?}',
