@@ -20,12 +20,32 @@ def main():
     Error.init()
     Strings.init()
 
+    cmd = None
     args = Args.read()
     host = Host.select(args.host)
     conf = Host.conf_read(host)
     file = os.path.join(host, 'docker-compose.yml')
 
-    subprocess.call(["docker-compose", '-f', file, "up", "-d", "--build"])
-    Service.post(conf)
+    # Docker Compose Plugin
+    if cmd is None:
+        try:
+            subprocess.call(['docker', 'compose', 'version'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            cmd = ['docker', 'compose']
+        except FileNotFoundError:
+            pass
 
+    # Docker Compose Legacy
+    if cmd is None:
+        try:
+            subprocess.call(['docker-compose', '--version'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            cmd = ['docker-compose']
+        except FileNotFoundError:
+            pass
+
+    try:
+        subprocess.call([*cmd, '-f', file, 'up', '-d', '--build'])
+        Service.post(conf)
+    except Exception as error:
+        print(error)
+    
 main()
