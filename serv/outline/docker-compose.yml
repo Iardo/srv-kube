@@ -1,0 +1,100 @@
+# References
+# ---
+# https://github.com/outline/outline/blob/main/.env.sample
+# https://github.com/outline/outline/blob/main/docker-compose.yml
+# https://docs.getoutline.com/s/hosting/doc/docker-7pfeLP5a8t
+
+networks:
+  outline:
+    name: outline
+
+volumes:
+  # outline-database:
+  #   name: outline-database
+  # outline-portal:
+  #   name: outline-portal
+  outline-storage:
+    name: outline-storage
+
+services:
+  outline-web:
+    container_name: outline-web
+    image: docker.getoutline.com/outlinewiki/outline:sha256:32d76719c378931dd65d93945930ca380d8376a0337d98a991fcc12b266f33cf # 1.9.2
+    depends_on:
+      - outline-database
+      - outline-redis
+    networks:
+      - outline
+    volumes:
+      - ./cert/selfhost.crt:/opt/outline/public.crt:ro
+      - ./cert/selfhost.key:/opt/outline/private.key:ro
+      - outline-storage:/var/lib/outline/data
+    env_file: ./.env
+
+  outline-database:
+    container_name: outline-database
+    image: postgres:sha256:3a82e1f56c8f0f5616a11103ac3d47e632c3938698946a7ad26da0df1334744a # 18.4
+    networks:
+      - outline
+    ports:
+      - ${OUTLINE_DATABASE:?}:5432
+    volumes:
+      - outline-database:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-d", "outline", "-U", "user"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+    env_file: ./.env
+    environment:
+      POSTGRES_USER: 'outline'
+      POSTGRES_PASSWORD: 'outline'
+      POSTGRES_DB: 'outline'
+
+  outline-server:
+    container_name: outline-server
+    image: steveltn/https-portal:sha256:2d65ba1e6dd47f15fbc7b5fd5b3a2d646f835643b794fed98522e595f7c97699 # 1
+    restart: always
+    depends_on:
+      - outline-web
+    networks:
+      - outline
+    ports:
+      - ${OUTLINE_HTTP:?}:80
+      - ${OUTLINE_HTTPS:?}:443
+    volumes:
+      - ./cert/selfhost.crt:/cert/selfhost.crt:ro
+      - ./cert/selfhost.key:/cert/selfhost.key:ro
+      - ./logs/nginx:/var/log/nginx
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./nginx.dhparam.pem:/etc/nginx/dhparam.pem:ro
+      - ./nginx.ssl:/etc/nginx/snippets/ssl-params.conf:ro
+    healthcheck:
+      test: ["CMD", "service", "nginx", "status"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+    env_file: ./.env
+    environment:
+      DOMAINS: 'docs.outline.com -> http://outline-web:3000'
+      STAGE: 'production'
+      WEBSOCKET: 'true'
+      CLIENT_MAX_BODY_SIZE: '0'
+
+  outline-cache:
+    container_name: outline-cache
+    image: redis:sha256:e7723ff73d963f5cc6d9c4643ea3d989527a402a319239054e9472a7fb9219a2 # 7.4.10-alpine
+    networks:
+      - outline
+    ports:
+      - ${OUTLINE_CACHE:?}:6379
+    volumes:
+      - ./data/redis:/data
+      - ./conf/redis/redis.conf:/usr/local/etc/redis/redis.conf
+    command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      retries: 3
+      timeout: 30s
+      interval: 10s
+    env_file: ./.env

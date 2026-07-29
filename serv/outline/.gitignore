@@ -1,0 +1,12 @@
+# folders included:
+!conf/nginx
+!conf/redis
+
+# folders ignored:
+
+# --------------------
+# files included:
+!cert/selfhost.crt
+!cert/selfhost.key
+
+# files ignored:
