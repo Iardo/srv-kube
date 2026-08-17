@@ -1,0 +1,19 @@
+[[stack]]
+name = "iardo-desktop"
+
+[stack.config]
+server = "local"
+run_directory = "/opt/srv-kube"
+files_on_host = true
+file_paths = [
+    "serv/linkace/docker-compose.yml",
+]
+additional_env_files = [
+    { path = "host/iardo-desktop/.env", track = true },
+    { path = "serv/linkace/.env", track = true }
+]
+pre_deploy.shell_mode = false
+pre_deploy.command = """
+    bash serv/linkace/task/task-gen-directories.sh
+    bash serv/linkace/task/task-set-permissions.sh
+"""

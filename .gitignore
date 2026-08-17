@@ -1,14 +1,14 @@
 # include folders:
-!/**/cert
+!/serv/cert
 
 # ignored folders:
 __pycache__
-/**/backups/*
-/**/cert/*
-/**/code/*
-/**/conf/*
-/**/data/*
-/**/logs/*
+/serv/backups/*
+/serv/cert/*
+/serv/code/*
+/serv/conf/*
+/serv/data/*
+/serv/logs/*
 
 # --------------------
 # include files:
