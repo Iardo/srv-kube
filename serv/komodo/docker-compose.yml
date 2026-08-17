@@ -54,7 +54,7 @@ services:
       - ${PERIPHERY_ROOT_DIRECTORY:-/etc/komodo}:${PERIPHERY_ROOT_DIRECTORY:-/etc/komodo}
       - /proc:/proc
       - /var/run/docker.sock:/var/run/docker.sock
-      - ./../../:/opt/srv-kube
+      - ./../../:/opt/komodo
     env_file: .env
 
   # Postgres
