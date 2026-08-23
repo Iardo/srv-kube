@@ -9,11 +9,13 @@ clone_path    = "/etc/srv-kube"
 run_directory = "/etc/srv-kube"
 
 file_paths = [
-  "serv/linkace/docker-compose.yml"
+  "serv/linkace/docker-compose.yml",
+  "serv/docmost/docker-compose.yml",
 ]
 additional_env_files = [
   { track = true, path = "host/iardo-vps-iardodev/.env" },
-  { track = true, path = "serv/linkace/.env" }
+  { track = true, path = "serv/linkace/.env" },
+  { track = true, path = "serv/docmost/.env" },
 ]
 pre_deploy.shell_mode = false
 pre_deploy.command = """
