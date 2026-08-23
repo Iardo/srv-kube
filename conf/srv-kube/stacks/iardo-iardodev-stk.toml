@@ -1,0 +1,22 @@
+[[stack]]
+name = "iardo-iardodev"
+
+[stack.config]
+server        = "iardo-iardodev"
+branch        = "kubernetes"
+repo          = "iardo/srv-kube"
+clone_path    = "/etc/srv-kube"
+run_directory = "/etc/srv-kube"
+
+file_paths = [
+  "serv/linkace/docker-compose.yml"
+]
+additional_env_files = [
+  { track = true, path = "host/iardo-vps-iardodev/.env" },
+  { track = true, path = "serv/linkace/.env" }
+]
+pre_deploy.shell_mode = false
+pre_deploy.command = """
+    bash serv/linkace/task/task-gen-directories.sh
+    bash serv/linkace/task/task-set-permissions.sh
+"""

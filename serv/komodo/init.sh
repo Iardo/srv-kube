@@ -9,10 +9,7 @@ rootpath=$(realpath "$fullpath/../../")
 color_green='\033[0;32m'
 color_reset='\033[0m'
 
-sudo ln -sf "$rootpath" /opt/srv-kube
-
-quiet sh -c $fullpath/task/task-gen-directories.sh
-quiet sh -c $fullpath/task/task-set-permissions.sh
+sudo ln -sf "$rootpath" /etc/srv-kube
 
 message=$(cat << EOF
 Komodo: Init Done

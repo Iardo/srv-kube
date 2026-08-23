@@ -21,7 +21,7 @@ volumes:
 
 services:
   komodo-core:
-    image: ghcr.io/moghtech/komodo-core:2
+    image: ghcr.io/moghtech/komodo-core:2.3.2
     container_name: komodo-core
     init: true
     restart: unless-stopped
@@ -34,14 +34,15 @@ services:
     volumes:
       - komodo-keys:/config/keys
       - ${KOMODO_PATH_BACKUP:?}:/backups
-      - ./../../conf/komodo:${KOMODO_SYNC_DIRECTORY}/komodo
+      - ./../../:/etc/srv-kube
+      - ./../../conf:${KOMODO_SYNC_DIRECTORY}
     env_file: .env
     environment:
       KOMODO_DATABASE_ADDRESS: komodo-ferretdb:27017
       TZ: ${TIMEZONE:-America/Panama}
 
   komodo-periphery:
-    image: ghcr.io/moghtech/komodo-periphery:2
+    image: ghcr.io/moghtech/komodo-periphery:2.3.2
     container_name: komodo-periphery
     init: true
     restart: unless-stopped
@@ -54,7 +55,7 @@ services:
       - ${PERIPHERY_ROOT_DIRECTORY:-/etc/komodo}:${PERIPHERY_ROOT_DIRECTORY:-/etc/komodo}
       - /proc:/proc
       - /var/run/docker.sock:/var/run/docker.sock
-      - ./../../:/opt/komodo
+      - ./../../:/etc/srv-kube
     env_file: .env
 
   # Postgres

@@ -1,0 +1,6 @@
+[[server]]
+name = "iardo-iardodev"
+
+[server.config]
+enabled = true
+address = "http://148.113.174.76:9120"
