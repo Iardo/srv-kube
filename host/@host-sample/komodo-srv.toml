@@ -1,0 +1,6 @@
+[[server]]
+name = "host-sample"
+
+[server.config]
+enabled = true
+# address = "http://host-sample:9120"

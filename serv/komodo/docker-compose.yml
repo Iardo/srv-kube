@@ -34,8 +34,8 @@ services:
     volumes:
       - komodo-keys:/config/keys
       - ${KOMODO_PATH_BACKUP:?}:/backups
+      - ${KOMODO_SYNC_DIRECTORY:?}:/sync
       - ./../../:/etc/srv-kube
-      - ./../../conf:${KOMODO_SYNC_DIRECTORY}
     env_file: .env
     environment:
       KOMODO_DATABASE_ADDRESS: komodo-ferretdb:27017

@@ -1,0 +1,16 @@
+[[stack]]
+name = "iardo-vps-icelemonade"
+
+[stack.config]
+server        = "iardo-vps-icelemonade"
+branch        = "kubernetes"
+repo          = "iardo/srv-kube"
+clone_path    = "/etc/srv-kube"
+run_directory = "/etc/srv-kube"
+
+file_paths = []
+additional_env_files = [
+  { track = true, path = "host/iardo-vps-icelemonade/.env" },
+]
+pre_deploy.shell_mode = false
+pre_deploy.command = """ """

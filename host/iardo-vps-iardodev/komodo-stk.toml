@@ -1,8 +1,8 @@
 [[stack]]
-name = "iardo-iardodev"
+name = "iardo-vps-iardodev"
 
 [stack.config]
-server        = "iardo-iardodev"
+server        = "iardo-vps-iardodev"
 branch        = "kubernetes"
 repo          = "iardo/srv-kube"
 clone_path    = "/etc/srv-kube"
