@@ -10,3 +10,4 @@
 !cert/selfhost.key
 
 # files ignored:
+dump*

@@ -20,5 +20,5 @@ services:
       - ./conf:/config
       - ./data:/data
     environment:
-      PUID: 1000
-      PGID: 1000
+      PUID: ${STUMPAPP_UID:-1000}
+      PGID: ${STUMPAPP_GID:-1000}

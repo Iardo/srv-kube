@@ -37,3 +37,6 @@ services:
       - /etc/timezone:/etc/timezone:ro
       - trilium-next-assets:/usr/src/app/assets
       - trilium-next-theme:/usr/src/app/share-theme
+    environment:
+      USER_UID: ${TRILIUM_NEXT_UID:-1000}
+      USER_GID: ${TRILIUM_NEXT_GID:-1000}

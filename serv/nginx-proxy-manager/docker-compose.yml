@@ -34,3 +34,6 @@ services:
     volumes:
       - ./data:/data
       - ./cert:/etc/letsencrypt
+    environment:
+      PUID: ${NGINX_PROXY_MANAGER_UID:-1000}
+      PGID: ${NGINX_PROXY_MANAGER_GID:-1000}

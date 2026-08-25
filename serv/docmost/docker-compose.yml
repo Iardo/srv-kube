@@ -56,13 +56,13 @@ services:
 
   docmost-redis:
     image: redis:7.2-alpine
-    container_name: docmost-redis
+    container_name: docmost-cache
     restart: unless-stopped
     command: --port 6379
     networks:
       - docmost
     ports:
-      - ${DOCMOST_REDIS:?}:6379
+      - ${DOCMOST_CACHE:?}:6379
     volumes:
       - docmost-redis:/data
     env_file: .env

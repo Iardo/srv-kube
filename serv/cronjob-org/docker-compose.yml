@@ -144,4 +144,4 @@ services:
 
   cronjoborg-redis:
     image: redis:7-alpine
-    container_name: cronjoborg-redis
+    container_name: cronjoborg-cache

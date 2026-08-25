@@ -52,11 +52,11 @@ services:
 
   linkace-redis:
     image: redis:8.8.0
-    container_name: linkace-redis
+    container_name: linkace-cache
     restart: unless-stopped
     networks:
       - linkace
     ports:
-      - ${LINKACE_REDIS:?}:6379
+      - ${LINKACE_CACHE:?}:6379
     environment:
       REDIS_PASSWORD: ${REDIS_PASS:?}

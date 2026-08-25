@@ -12,4 +12,4 @@ if [[ "$sys_name" == "Darwin" ]]; then
 fi
 
 echo "Setting Permissions: /data ..."
-sudo chown -R $sys_user:$sys_group $fullpath/../data/
+chown -R $sys_user:$sys_group $fullpath/../data/

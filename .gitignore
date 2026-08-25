@@ -3,12 +3,14 @@
 
 # ignored folders:
 __pycache__
-/serv/backups/*
-/serv/cert/*
-/serv/code/*
-/serv/conf/*
-/serv/data/*
-/serv/logs/*
+/logs/*
+/serv/**/backups/*
+/serv/**/cert/*
+/serv/**/code/*
+/serv/**/conf/*
+/serv/**/data/*
+/serv/**/logs/*
+/temp/*
 
 # --------------------
 # include files:

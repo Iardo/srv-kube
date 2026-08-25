@@ -79,7 +79,7 @@ services:
       
   authentik-redis:
     image: redis:alpine
-    container_name: authentik-redis
+    container_name: authentik-cache
     restart: unless-stopped
     entrypoint: redis-server
     command:
@@ -88,7 +88,7 @@ services:
     networks:
       - authentik
     ports:
-      - ${AUTHENTIK_REDIS:?}:6379
+      - ${AUTHENTIK_CACHE:?}:6379
     healthcheck:
       test: 
         - CMD-SHELL

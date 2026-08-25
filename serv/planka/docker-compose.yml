@@ -16,6 +16,7 @@ services:
     image: ghcr.io/plankanban/planka:1.26.1
     container_name: planka-web
     restart: unless-stopped
+    user: "${PLANKA_UID:-1000}:${PLANKA_GID:-1000}"
     depends_on:
       planka-database:
         condition: service_healthy

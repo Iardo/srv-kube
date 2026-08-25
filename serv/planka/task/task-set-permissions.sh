@@ -11,4 +11,4 @@ if [[ "$sys_name" == "Darwin" ]]; then
     sys_group=staff
 fi
 
-sudo chown -R $sys_user:$sys_group $fullpath/../data/
+chown -R $sys_user:$sys_group $fullpath/../data/
