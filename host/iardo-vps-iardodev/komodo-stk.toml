@@ -9,8 +9,17 @@ clone_path    = "/etc/srv-kube"
 run_directory = "/etc/srv-kube"
 
 file_paths = [
-    "serv/linkace/docker-compose.yml",
+    "serv/actual/docker-compose.yml",
+    "serv/authentik/docker-compose.yml",
     "serv/docmost/docker-compose.yml",
+    "serv/komodo/docker-compose.yml",
+    "serv/linkace/docker-compose.yml",
+    "serv/n8n/docker-compose.yml",
+    "serv/nginx-proxy-manager/docker-compose.yml",
+    "serv/ntfy/docker-compose.yml",
+    "serv/open-project/docker-compose.yml",
+    "serv/outline/docker-compose.yml",
+    "serv/trilium-next/docker-compose.yml",
 ]
 additional_env_files = [
     # HOST

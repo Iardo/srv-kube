@@ -39,7 +39,14 @@ services:
     env_file: .env
     environment:
       KOMODO_DATABASE_ADDRESS: komodo-ferretdb:27017
+      KOMODO_HOST: ${KOMODO_HOST:?}
+      KOMODO_FIRST_SERVER_NAME: ${KOMODO_FIRST_SERVER_NAME:-local}
       TZ: ${TIMEZONE:-America/Panama}
+      # /etc/srv-kube is a bind mount from the host; git refuses to
+      # operate on a repo it doesn't "own" (uid mismatch) unless told to.
+      GIT_CONFIG_COUNT: 1
+      GIT_CONFIG_KEY_0: safe.directory
+      GIT_CONFIG_VALUE_0: '*'
 
   komodo-periphery:
     image: ghcr.io/moghtech/komodo-periphery:2.3.2
@@ -57,6 +64,13 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./../../:/etc/srv-kube
     env_file: .env
+    environment:
+      PERIPHERY_CONNECT_AS: ${KOMODO_FIRST_SERVER_NAME:-local}
+      # /etc/srv-kube is a bind mount from the host; git refuses to
+      # operate on a repo it doesn't "own" (uid mismatch) unless told to.
+      GIT_CONFIG_COUNT: 1
+      GIT_CONFIG_KEY_0: safe.directory
+      GIT_CONFIG_VALUE_0: '*'
 
   # Postgres
   # ----

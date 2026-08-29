@@ -3,4 +3,4 @@ name = "iardo-vps-iardodev"
 
 [server.config]
 enabled = true
-address = "http://iardo.dev:9120"
+# address = "http://iardo.dev:9120"
