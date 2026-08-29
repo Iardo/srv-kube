@@ -14,18 +14,11 @@ run_directory = "/etc/srv-kube"
 # "--build" tells it to build the image instead.
 extra_args = ["--build"]
 
+# The host file already includes every service,
+# each service keeps its own folder for paths like (./data, ./code, etc.),
+# listing every service's file here instead would break that.
 file_paths = [
-    "serv/actual/docker-compose.yml",
-    "serv/authentik/docker-compose.yml",
-    "serv/docmost/docker-compose.yml",
-    "serv/komodo/docker-compose.yml",
-    "serv/linkace/docker-compose.yml",
-    "serv/n8n/docker-compose.yml",
-    "serv/nginx-proxy-manager/docker-compose.yml",
-    "serv/ntfy/docker-compose.yml",
-    "serv/open-project/docker-compose.yml",
-    "serv/outline/docker-compose.yml",
-    "serv/trilium-next/docker-compose.yml",
+    "host/iardo-vps-iardodev/docker-compose.yml",
 ]
 additional_env_files = [
     # HOST
