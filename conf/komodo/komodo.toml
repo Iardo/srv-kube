@@ -2,6 +2,6 @@
 name = "srv-kube"
 [resource_sync.config]
 files_on_host = true
-resource_path = ["/etc/srv-kube/host"]
+resource_path = ["/mnt/srv-kube-dev/host"]
 include_variables = true
 include_user_groups = true

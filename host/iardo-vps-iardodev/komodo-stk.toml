@@ -56,6 +56,7 @@ pre_deploy.command = """
     bash serv/n8n/task/task-set-permissions.sh
 
     # Nginx Proxy Manager
+    bash serv/nginx-proxy-manager/task/task-gen-directories.sh
     bash serv/nginx-proxy-manager/task/task-set-permissions.sh
 
     # Ntfy

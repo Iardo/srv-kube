@@ -36,6 +36,9 @@ services:
       - ${KOMODO_PATH_BACKUP:?}:/backups
       - ${KOMODO_SYNC_DIRECTORY:?}:/sync
       - /etc/srv-kube:/etc/srv-kube
+      # NOTE: Lets "resource_sync.files_on_host" read straight from this repo,
+      # wherever it's actually cloned, instead of waiting on a stack deploy to populate /etc/srv-kube first.
+      - ./../../:/mnt/srv-kube-dev:ro
     env_file: .env
     environment:
       KOMODO_DATABASE_ADDRESS: komodo-ferretdb:27017
