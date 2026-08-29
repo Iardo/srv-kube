@@ -35,7 +35,7 @@ services:
       - komodo-keys:/config/keys
       - ${KOMODO_PATH_BACKUP:?}:/backups
       - ${KOMODO_SYNC_DIRECTORY:?}:/sync
-      - ./../../:/etc/srv-kube
+      - /etc/srv-kube:/etc/srv-kube
     env_file: .env
     environment:
       KOMODO_DATABASE_ADDRESS: komodo-ferretdb:27017
@@ -62,7 +62,7 @@ services:
       - ${PERIPHERY_ROOT_DIRECTORY:-/etc/komodo}:${PERIPHERY_ROOT_DIRECTORY:-/etc/komodo}
       - /proc:/proc
       - /var/run/docker.sock:/var/run/docker.sock
-      - ./../../:/etc/srv-kube
+      - /etc/srv-kube:/etc/srv-kube
     env_file: .env
     environment:
       PERIPHERY_CONNECT_AS: ${KOMODO_FIRST_SERVER_NAME:-local}
