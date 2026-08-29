@@ -1,0 +1,14 @@
+# NOTE:
+# Used only by Komodo's own stack deploy (see komodo-stk.toml).
+include: [
+  '${SERV:?}/actual/${FILE:?}',
+  '${SERV:?}/authentik/${FILE:?}',
+  '${SERV:?}/docmost/${FILE:?}',
+  '${SERV:?}/linkace/${FILE:?}',
+  '${SERV:?}/n8n/${FILE:?}',
+  '${SERV:?}/nginx-proxy-manager/${FILE:?}',
+  '${SERV:?}/ntfy/${FILE:?}',
+  '${SERV:?}/open-project/${FILE:?}',
+  '${SERV:?}/outline/${FILE:?}',
+  '${SERV:?}/trilium-next/${FILE:?}',
+]

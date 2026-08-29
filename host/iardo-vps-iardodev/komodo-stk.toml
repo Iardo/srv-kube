@@ -14,11 +14,8 @@ run_directory = "/etc/srv-kube"
 # "--build" tells it to build the image instead.
 extra_args = ["--build"]
 
-# The host file already includes every service,
-# each service keeps its own folder for paths like (./data, ./code, etc.),
-# listing every service's file here instead would break that.
 file_paths = [
-    "host/iardo-vps-iardodev/docker-compose.yml",
+    "host/iardo-vps-iardodev/komodo-dpl.yml",
 ]
 additional_env_files = [
     # HOST
@@ -28,7 +25,6 @@ additional_env_files = [
     { track = true, path = "serv/actual/.env" },
     { track = true, path = "serv/authentik/.env" },
     { track = true, path = "serv/docmost/.env" },
-    { track = true, path = "serv/komodo/.env" },
     { track = true, path = "serv/linkace/.env" },
     { track = true, path = "serv/n8n/.env" },
     { track = true, path = "serv/open-project/.env" },
