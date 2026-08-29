@@ -14,16 +14,92 @@ run_directory = "/etc/srv-kube"
 # "--build" tells it to build the image instead.
 extra_args = ["--build"]
 
-file_paths = []
+# NOTE:
+# "komodo" is deployed separately, not through this stack,
+# a stack redeploying its own core/periphery would cut itself off mid-deploy,
+# see host/host-sample/komodo-dpl.yml for the rest of the services.
+file_paths = [
+    "host/host-sample/komodo-dpl.yml",
+]
 
 additional_env_files = [
     # HOST
     { track = true,  path = "host/host-sample/.env" },
     { track = false, path = "host/host-sample/.env-secrets" },
     { track = false, path = "host/host-sample/.env-secrets.local" },
+    # SERV
+    { track = true, path = "serv/actual/.env" },
+    { track = true, path = "serv/aria2-pro/.env" },
+    { track = true, path = "serv/authentik/.env" },
+    { track = true, path = "serv/azimutt/.env" },
+    { track = true, path = "serv/changedetection/.env" },
+    { track = true, path = "serv/cronjob-org/.env" },
+    { track = true, path = "serv/docmost/.env" },
+    { track = true, path = "serv/firefly3/.env" },
+    { track = true, path = "serv/linkace/.env" },
+    { track = true, path = "serv/linkwarden/.env" },
+    { track = true, path = "serv/n8n/.env" },
+    { track = true, path = "serv/notesnook/.env" },
+    { track = true, path = "serv/open-project/.env" },
+    { track = true, path = "serv/outline/.env" },
+    { track = true, path = "serv/planka/.env" },
+    { track = true, path = "serv/timetagger/.env" },
+    { track = true, path = "serv/wikijs/.env" },
 ]
 
 pre_deploy.shell_mode = false
 pre_deploy.command = """
     [ -f host/host-sample/.env-secrets.local ] || cp host/host-sample/.env-secrets host/host-sample/.env-secrets.local
+
+    # Actual
+    bash serv/actual/task/task-gen-directories.sh
+    bash serv/actual/task/task-set-permissions.sh
+
+    # Authentik
+    bash serv/authentik/task/task-gen-directories.sh
+    bash serv/authentik/task/task-set-permissions.sh
+
+    # Cronicle
+    bash serv/cronicle/task/task-gen-directories.sh
+    bash serv/cronicle/task/task-set-permissions.sh
+
+    # Cronjob-org
+    bash serv/cronjob-org/task/task-gen-directories.sh
+    bash serv/cronjob-org/task/task-set-permissions.sh
+
+    # Home Assistant
+    bash serv/home-assistant/task/task-set-permissions.sh
+
+    # Linkace
+    bash serv/linkace/task/task-gen-directories.sh
+    bash serv/linkace/task/task-set-permissions.sh
+
+    # Linkwarden
+    bash serv/linkwarden/task/task-gen-directories.sh
+    bash serv/linkwarden/task/task-set-permissions.sh
+
+    # n8n
+    bash serv/n8n/task/task-gen-directories.sh
+    bash serv/n8n/task/task-set-permissions.sh
+
+    # Nginx Proxy Manager
+    bash serv/nginx-proxy-manager/task/task-gen-directories.sh
+    bash serv/nginx-proxy-manager/task/task-set-permissions.sh
+
+    # Ntfy
+    bash serv/ntfy/task/task-set-initial-files.sh
+
+    # Open Project
+    bash serv/open-project/task/task-gen-directories.sh
+    bash serv/open-project/task/task-set-permissions.sh
+
+    # Planka
+    bash serv/planka/task/task-set-permissions.sh
+
+    # Stumpapp
+    bash serv/stumpapp/task/task-set-permissions.sh
+
+    # Trilium Next
+    bash serv/trilium-next/task/task-gen-directories.sh
+    bash serv/trilium-next/task/task-set-permissions.sh
 """

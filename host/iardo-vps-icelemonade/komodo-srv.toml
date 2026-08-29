@@ -2,5 +2,5 @@
 name = "iardo-vps-icelemonade"
 
 [server.config]
-enabled = true
+enabled = false
 address = "http://icelemonade.com:9120"

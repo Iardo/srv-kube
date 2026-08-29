@@ -1,119 +1,66 @@
 # Dockerfiles
 
-Collection of docker files for a lot of different services
+Collection of docker files for a lot of different services.
 
 ---
 
-## Config
+## How This Works
 
-### 1. Create a Host
+Two ways to deploy,
+`./start.py` (local, one host at a time),
+or Komodo (web UI, deploys to any machine, auto-redeploys on git push).
 
-You can create separated `host` configurations,
-copy the `/host/@host-sample` directory and rename it as you wish.
+Komodo is optional,
+Komodo itself is just another service in this repo.
 
-It has two files inside:
-```
-.env               : Environment variables overrides
-docker-compose.yml : List of services that you want to install
-```
-
-### 2. Set the Environment
-
-The environment file overrides the variables that the services needs at initialization so you can personalize the values to your needs.
-
-The file has three main sections:
-```
-# Principal : DO NOT TOUCH THIS,
-              It is required for the docker-compose.yml file
-              to work correctly.
-
-# Override  : This is were you can put your static,
-              ENV variables for example the `timezone`.
-
-# Generated : DO NOT TOUCH THIS,
-              This section is auto generated based on the
-              services that you listed on docker-compose.yml.
-```
-
-### 3. List your services
-
-In the `docker-compose.yml` file there is an `include` definition where you list all the services that you want to install.
-
-The sample file includes all the services available to you, you can remove the ones that you dont need.
-
-The services base files are inside the `/serv` directory.
+First time cloning the repo: run `./start.py`, pick a host, install Komodo on it.
+From then on, use Komodo for every other host.
+You can always fall back to `./start.py` for any host, Komodo or not.
 
 ---
 
-## Usage
+## Host Config
 
-You can always just go to the specific services that you want and run `docker-compose up -d` as normal, but this method have some limitations:
+Copy `/host/@host-sample` to make a new host, it has:
 ```
-1. You'll need to run some initialization task manually
-2. Is going to use the default .env file provided in the service directory
-3. You have to do this whole process for each service
-```
-
-Or you can use the scripts provided that takes care of this for you instead.
-
-You can run the scripts in two ways, and it applies to all the scripts:
-```
-./init.py                     : This shows you a list
-                                of available hosts to choose from
-                                and let you select which one
-                                you want to install.
-
-./init.py --host=@host-sample : This receive the hostname
-                                directly.
+docker-compose.yml  : Which services to install (the "include" list)
+.env                : Non-secret overrides (ports, timezone, etc), the ports section is auto-generated
+.env-secrets        : One dummy value per secret var, tracked in git, just a reference
+.env-secrets.local  : Gitignored, real secret values go here, never wiped by a re-deploy
 ```
 
-There are three scripts you can use:
-```
-./init.py  : Initializes the services,
-             it requires to be ran at first.
-
-./start.py : Starts all the host services
-             leveraging docker-compose.
-             
-./stops.py : Stops all the host services.
-```
-
-> Note: ⚠️  
-> ----
-> 1. There could be some manual tasks required for some services though, so stay observant of the console output.
-> 
-> 2. The `stops.py` script do not remove any docker volumes, for that you need to remove them manually.
+The file `.env-secrets.local` is what you edit by hand (or over SSH on a VPS) to put real values in.\
+Komodo copies `.env-secrets` into it automatically the first time, so it's ready to fill in.\
+It always wins over `.env-secrets` when both set the same variable.
 
 ---
 
-## Tasks
+## Scripts
 
-All services has a `/task` directory with utilities functions.
-
-Unfortunately these needs to be ran manually, so you'll have to `cd` to the service directory and run them from there.
-
-Do not `cd` inside the `/task` directory itself, the scripts asume to be ran from the service directory as the root like this: `./task/data-set-permissions.sh`
-
-The utilities vary from service to service but there are some common ones:
 ```
-data-gen-directories.sh : Generate required directories.
-data-set-permissions.sh : Concedes file permissions to $USER.
-database-backup.sh      : Generate a backup for the service.
-database-restore.sh     : Restores a backup for the service.
+./init.py  : One-time setup, generates ports, runs each service's init.sh
+./start.py : Docker compose up for a host
+./stops.py : Docker compose down for a host (does not remove volumes)
 ```
+Run with no args to pick a host from a list, or `--host=name` to skip the prompt.
+
+Each service can also have a `/task` folder (gen directories, fix permissions, backup, restore).\
+Run them from the service's own directory `./task/data-set-permissions.sh`, not from inside `/task`.
+
+---
+
+## Komodo Notes
+
+Komodo clones this repo into its own directory (`/etc/srv-kube`),
+separate from wherever you're developing, never point it at your dev clone.
+A deploy runs `git checkout -f` + `git pull --force`,
+which wipes any uncommitted changes in whatever directory it's pointed at.
+
+Commit and push before every deploy, Komodo only ever sees what's on `origin`.
 
 ---
 
 ## Clean-up
 
-> Note: ⚠️  
-> ----
-> Stopping the containers are not going to remove your previous configurations,
-so you have to do this manually.
-
-All the services uses it's own directory to store their local configurations,
-this means that, once you initialized a service on a machine,
-you'll need to clean up their folders if you want to start the services from scratch.
-
-Almost all services store their data inside the `/serv/${SERVICE_NAME}/data` directory.
-
+Stopping services doesn't delete their data or config.
+Most services store everything under `/serv/<service>/data`, remove it by hand to start fresh.

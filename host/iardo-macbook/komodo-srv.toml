@@ -2,5 +2,5 @@
 name = "iardo-macbook"
 
 [server.config]
-enabled = true
+enabled = false
 address = "http://home.iardo-macbook:9120"

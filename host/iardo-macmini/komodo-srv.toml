@@ -2,5 +2,5 @@
 name = "iardo-macmini"
 
 [server.config]
-enabled = true
+enabled = false
 address = "http://home.iardo-macmini:9120"
