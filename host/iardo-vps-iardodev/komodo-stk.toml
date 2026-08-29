@@ -14,9 +14,18 @@ run_directory = "/etc/srv-kube"
 # "--build" tells it to build the image instead.
 extra_args = ["--build"]
 
+# NOTE:
+# These containers run once then exit on purpose (seeding, migrations),
+# without this Komodo flags them as unhealthy for exiting.
+ignore_services = [
+    "open-project-seeder",
+    "open-project-upgrade",
+]
+
 file_paths = [
     "host/iardo-vps-iardodev/komodo-dpl.yml",
 ]
+
 additional_env_files = [
     # HOST
     { track = true,  path = "host/iardo-vps-iardodev/.env" },
@@ -30,6 +39,7 @@ additional_env_files = [
     { track = true, path = "serv/open-project/.env" },
     { track = true, path = "serv/outline/.env" },
 ]
+
 pre_deploy.shell_mode = false
 pre_deploy.command = """
     # Actual
