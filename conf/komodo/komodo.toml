@@ -2,6 +2,12 @@
 name = "srv-kube"
 [resource_sync.config]
 files_on_host = true
-resource_path = ["/mnt/srv-kube-dev/host"]
+resource_path = [
+  "/mnt/srv-kube-dev/host/iardo-elitedesk",
+  "/mnt/srv-kube-dev/host/iardo-macbook",
+  "/mnt/srv-kube-dev/host/iardo-macmini",
+  "/mnt/srv-kube-dev/host/iardo-vps-iardodev",
+  "/mnt/srv-kube-dev/host/iardo-vps-icelemonade",
+]
 include_variables = true
 include_user_groups = true
