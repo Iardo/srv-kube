@@ -8,6 +8,12 @@ repo          = "iardo/srv-kube"
 clone_path    = "/etc/srv-kube"
 run_directory = "/etc/srv-kube"
 
+# NOTE:
+# Some services build their own image instead of downloading one,
+# without "--build" Komodo tries to download it anyway and fails,
+# "--build" tells it to build the image instead.
+extra_args = ["--build"]
+
 file_paths = []
 additional_env_files = [
     # HOST
