@@ -1,4 +1,1 @@
-include: [
-  '${SERV:?}/nginx-proxy-manager/${FILE:?}',
-  '${SERV:?}/open-project/${FILE:?}',
-]
+include: []

@@ -10,7 +10,9 @@ run_directory = "/etc/srv-kube"
 
 file_paths = []
 additional_env_files = [
-  { track = true, path = "host/host-sample/.env" },
+    # HOST
+    { track = true,  path = "host/host-sample/.env" },
+    { track = false, path = "host/host-sample/.env-secrets" },
 ]
 pre_deploy.shell_mode = false
 pre_deploy.command = """ """

@@ -27,8 +27,11 @@ def main():
     conf = Host.conf_read(host)
     file = os.path.join(host, 'docker-compose.yml')
 
+    env = os.environ.copy()
+    env.update(Host.secrets_read(host))
+
     try:
-        subprocess.call([*cmd, '-f', file, 'up', '-d', '--build'])
+        subprocess.call([*cmd, '-f', file, 'up', '-d', '--build'], env=env)
         Service.post(conf)
     except Exception as error:
         print(error)

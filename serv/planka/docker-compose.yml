@@ -31,7 +31,7 @@ services:
     env_file: .env
     environment:
       BASE_URL: http://localhost:${PLANKA_WEB_HTTP:-1337}
-      DATABASE_URL: postgresql://${POSTGRES_USER:?}:${POSTGRES_PASS:?}@planka-database:5432/${POSTGRES_NAME:?}
+      DATABASE_URL: postgresql://${PLANKA_POSTGRES_USER:?}:${PLANKA_POSTGRES_PASS:?}@planka-database:5432/${POSTGRES_NAME:?}
       TZ: ${TIMEZONE:-America/Panama}
 
   planka-database:
@@ -55,6 +55,6 @@ services:
     environment:
       PGPORT: 5432
       POSTGRES_DB: ${POSTGRES_NAME:?}
-      POSTGRES_PASSWORD: ${POSTGRES_PASS:?}
-      POSTGRES_USER: ${POSTGRES_USER:?}
+      POSTGRES_PASSWORD: ${PLANKA_POSTGRES_PASS:?}
+      POSTGRES_USER: ${PLANKA_POSTGRES_USER:?}
       # POSTGRES_HOST_AUTH_METHOD: trust

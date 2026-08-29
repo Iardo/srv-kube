@@ -112,8 +112,8 @@ services:
     environment:
       PGPORT: 5432
       POSTGRES_DB: ${POSTGRESQL_NAME:?}
-      POSTGRES_PASSWORD: ${POSTGRESQL_PASS:?}
-      POSTGRES_USER: ${POSTGRESQL_USER:?}
+      POSTGRES_PASSWORD: ${OPEN_PROJECT_POSTGRESQL_PASS:?}
+      POSTGRES_USER: ${OPEN_PROJECT_POSTGRESQL_USER:?}
 
   open-project-seeder:
     image: openproject/openproject:16-slim

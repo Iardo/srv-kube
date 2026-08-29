@@ -29,8 +29,8 @@ services:
     environment:
       DB_HOST: linkace-database
       DB_DATABASE: ${MYSQL_NAME:-linkace}
-      DB_USERNAME: ${MYSQL_USER:-linkace}
-      DB_PASSWORD: ${MYSQL_PASS:-linkace} # Dummy
+      DB_USERNAME: ${LINKACE_MYSQL_USER:-linkace}
+      DB_PASSWORD: ${LINKACE_MYSQL_PASS:-linkace} # Dummy
 
   linkace-database:
     image: docker.io/library/mariadb:11.5
@@ -46,9 +46,9 @@ services:
       - linkace-database:/var/lib/mysql
     environment:
       - MYSQL_DATABASE=${MYSQL_NAME:?}
-      - MYSQL_USER=${MYSQL_USER:?}
-      - MYSQL_PASSWORD=${MYSQL_PASS:?}
-      - MYSQL_ROOT_PASSWORD=${MYSQL_PASS:?}
+      - MYSQL_USER=${LINKACE_MYSQL_USER:?}
+      - MYSQL_PASSWORD=${LINKACE_MYSQL_PASS:?}
+      - MYSQL_ROOT_PASSWORD=${LINKACE_MYSQL_PASS:?}
 
   linkace-redis:
     image: redis:8.8.0
@@ -59,4 +59,4 @@ services:
     ports:
       - ${LINKACE_CACHE:?}:6379
     environment:
-      REDIS_PASSWORD: ${REDIS_PASS:?}
+      REDIS_PASSWORD: ${LINKACE_CACHE_PASS:?}

@@ -34,6 +34,38 @@ class Host:
         return user_conf
     
     '''
+    Reads the host's ".env-secrets" override file
+    '''
+    @staticmethod
+    def secrets_read(host: str):
+        secrets = {}
+        secrets_path = os.path.join(host, '.env-secrets')
+
+        if not os.path.exists(secrets_path):
+            return secrets
+
+        handle = open(secrets_path, 'r')
+        for line in handle.readlines():
+            line = line.strip()
+            if not line or line.startswith('#') or '=' not in line:
+                continue
+            key, value = line.split('=', 1)
+            value = value.strip()
+
+            # Quoted values are taken verbatim; unquoted values can carry
+            # an inline "# comment" (e.g. "# Dummy"), same as compose's
+            # own env file parsing.
+            if value[:1] in ('"', "'") and value.endswith(value[:1]) and len(value) > 1:
+                value = value[1:-1]
+            elif ' #' in value:
+                value = value.split(' #', 1)[0].strip()
+
+            secrets[key.strip()] = value
+        handle.close()
+
+        return secrets
+
+    '''
     Takes care of host selection and returns it
     '''
     @staticmethod

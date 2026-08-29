@@ -1,5 +1,3 @@
 include: [
-  '${SERV:?}/nginx-proxy-manager/${FILE:?}',
-  '${SERV:?}/scrutiny/${FILE:?}',
-  '${SERV:?}/speedtest-tracker/${FILE:?}',
+  '${SERV:?}/komodo/${FILE:?}',
 ]

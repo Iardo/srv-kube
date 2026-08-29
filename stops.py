@@ -25,8 +25,11 @@ def main():
     host = Host.select(args.host)
     file = os.path.join(host, 'docker-compose.yml')
 
+    env = os.environ.copy()
+    env.update(Host.secrets_read(host))
+
     try:
-        subprocess.call([*cmd, '-f', file, "down"])
+        subprocess.call([*cmd, '-f', file, "down"], env=env)
     except Exception as error:
         print(error)
 

@@ -1,10 +1,1 @@
-include: [
-  '${SERV:?}/actual/${FILE:?}',
-  '${SERV:?}/docmost/${FILE:?}',
-  '${SERV:?}/linkace/${FILE:?}',
-  '${SERV:?}/n8n/${FILE:?}',
-  '${SERV:?}/nginx-proxy-manager/${FILE:?}',
-  '${SERV:?}/ntfy/${FILE:?}',
-  '${SERV:?}/open-project/${FILE:?}',
-  '${SERV:?}/trilium-next/${FILE:?}',
-]
+include: []

@@ -19,7 +19,7 @@ services:
     environment:
       PORT: 4000
       GATEWAY_URL: http://localhost:4177
-      DATABASE_URL: postgresql://${POSTGRES_USER:?}:${POSTGRES_PASS:?}@localhost:5432/${POSTGRES_NAME:?}
+      DATABASE_URL: postgresql://${AZIMUTT_POSTGRES_USER:?}:${AZIMUTT_POSTGRES_PASS:?}@localhost:5432/${POSTGRES_NAME:?}
 
   azimutt-database:
     image: postgres:16-alpine
@@ -32,8 +32,8 @@ services:
     environment:
       PGPORT: 5432
       POSTGRES_DB: ${POSTGRES_NAME:?}
-      POSTGRES_PASSWORD: ${POSTGRES_PASS:?}
-      POSTGRES_USER: ${POSTGRES_USER:?}
+      POSTGRES_PASSWORD: ${AZIMUTT_POSTGRES_PASS:?}
+      POSTGRES_USER: ${AZIMUTT_POSTGRES_USER:?}
 
   azimutt-gateway:
     container_name: azimutt-gateway
