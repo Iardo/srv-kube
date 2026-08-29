@@ -17,16 +17,16 @@ extra_args = ["--build"]
 # NOTE:
 # "komodo" is deployed separately, not through this stack,
 # a stack redeploying its own core/periphery would cut itself off mid-deploy,
-# see host/host-sample/komodo-dpl.yml for the rest of the services.
+# see host/@host-sample/komodo-dpl.yml for the rest of the services.
 file_paths = [
-    "host/host-sample/komodo-dpl.yml",
+    "host/@host-sample/komodo-dpl.yml",
 ]
 
 additional_env_files = [
     # HOST
-    { track = true,  path = "host/host-sample/.env" },
-    { track = false, path = "host/host-sample/.env-secrets" },
-    { track = false, path = "host/host-sample/.env-secrets.local" },
+    { track = true,  path = "host/@host-sample/.env" },
+    { track = false, path = "host/@host-sample/.env-secrets" },
+    { track = false, path = "host/@host-sample/.env-secrets.local" },
     # SERV
     { track = true, path = "serv/actual/.env" },
     { track = true, path = "serv/aria2-pro/.env" },
@@ -49,7 +49,7 @@ additional_env_files = [
 
 pre_deploy.shell_mode = false
 pre_deploy.command = """
-    [ -f host/host-sample/.env-secrets.local ] || cp host/host-sample/.env-secrets host/host-sample/.env-secrets.local
+    [ -f host/@host-sample/.env-secrets.local ] || cp host/@host-sample/.env-secrets host/@host-sample/.env-secrets.local
 
     # Actual
     bash serv/actual/task/task-gen-directories.sh
