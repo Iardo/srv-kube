@@ -81,7 +81,6 @@ services:
       <<: *discovery
 
   open-project-proxy:
-    image: openproject/proxy
     container_name: open-project-proxy
     restart: unless-stopped
     depends_on:
