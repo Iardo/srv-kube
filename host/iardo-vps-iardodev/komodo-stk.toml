@@ -36,6 +36,10 @@ pre_deploy.command = """
     bash serv/actual/task/task-gen-directories.sh
     bash serv/actual/task/task-set-permissions.sh
 
+    # Authentik
+    bash serv/authentik/task/task-gen-directories.sh
+    bash serv/authentik/task/task-set-permissions.sh
+
     # Linkace
     bash serv/linkace/task/task-gen-directories.sh
     bash serv/linkace/task/task-set-permissions.sh

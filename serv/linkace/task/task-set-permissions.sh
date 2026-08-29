@@ -5,8 +5,8 @@ set -o pipefail
 fullpath=$(dirname "$0")
 rootpath=$(realpath "$fullpath/../")
 sys_name=$(uname -s)
-sys_user=$USER
-sys_group=$USER
+sys_user=${USER:-1000}
+sys_group=${USER:-1000}
 
 if command -v sudo >/dev/null 2>&1; then SUDO="sudo"; else SUDO=""; fi
 
