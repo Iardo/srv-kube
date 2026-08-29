@@ -8,7 +8,9 @@ repo          = "iardo/srv-kube"
 clone_path    = "/etc/srv-kube"
 run_directory = "/etc/srv-kube"
 
-file_paths = []
+file_paths = [
+    "host/iardo-elitedesk/docker-compose.yml",
+]
 
 additional_env_files = [
     # HOST
