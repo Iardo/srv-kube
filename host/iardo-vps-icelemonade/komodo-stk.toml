@@ -9,10 +9,15 @@ clone_path    = "/etc/srv-kube"
 run_directory = "/etc/srv-kube"
 
 file_paths = []
+
 additional_env_files = [
     # HOST
     { track = true,  path = "host/iardo-vps-icelemonade/.env" },
     { track = false, path = "host/iardo-vps-icelemonade/.env-secrets" },
+    { track = false, path = "host/iardo-vps-icelemonade/.env-secrets.local" },
 ]
+
 pre_deploy.shell_mode = false
-pre_deploy.command = """ """
+pre_deploy.command = """
+    [ -f host/iardo-vps-icelemonade/.env-secrets.local ] || cp host/iardo-vps-icelemonade/.env-secrets host/iardo-vps-icelemonade/.env-secrets.local
+"""

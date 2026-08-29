@@ -34,17 +34,18 @@ class Host:
         return user_conf
     
     '''
-    Reads the host's ".env-secrets" override file
+    Reads one env file into a dict,
+    a value can be quoted or have a trailing comment like "# Dummy",
+    same as how compose reads its own env files.
     '''
     @staticmethod
-    def secrets_read(host: str):
-        secrets = {}
-        secrets_path = os.path.join(host, '.env-secrets')
+    def read_env_file(path: str):
+        values = {}
 
-        if not os.path.exists(secrets_path):
-            return secrets
+        if not os.path.exists(path):
+            return values
 
-        handle = open(secrets_path, 'r')
+        handle = open(path, 'r')
         for line in handle.readlines():
             line = line.strip()
             if not line or line.startswith('#') or '=' not in line:
@@ -52,17 +53,25 @@ class Host:
             key, value = line.split('=', 1)
             value = value.strip()
 
-            # Quoted values are taken verbatim; unquoted values can carry
-            # an inline "# comment" (e.g. "# Dummy"), same as compose's
-            # own env file parsing.
             if value[:1] in ('"', "'") and value.endswith(value[:1]) and len(value) > 1:
                 value = value[1:-1]
             elif ' #' in value:
                 value = value.split(' #', 1)[0].strip()
 
-            secrets[key.strip()] = value
+            values[key.strip()] = value
         handle.close()
 
+        return values
+
+    '''
+    Reads the host's secret overrides, layering files:
+      - ".env-secrets"       : Tracked in git, ships with dummy example values so every variable name is documented and easy to find.
+      - ".env-secrets.local" : Gitignored, empty/absent by default. It need to be changed directly on a deployed host, survive future deploys.
+    '''
+    @staticmethod
+    def secrets_read(host: str):
+        secrets = Host.read_env_file(os.path.join(host, '.env-secrets'))
+        secrets.update(Host.read_env_file(os.path.join(host, '.env-secrets.local')))
         return secrets
 
     '''

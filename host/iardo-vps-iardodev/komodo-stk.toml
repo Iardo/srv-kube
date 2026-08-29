@@ -30,6 +30,7 @@ additional_env_files = [
     # HOST
     { track = true,  path = "host/iardo-vps-iardodev/.env" },
     { track = false, path = "host/iardo-vps-iardodev/.env-secrets" },
+    { track = false, path = "host/iardo-vps-iardodev/.env-secrets.local" },
     # SERV
     { track = true, path = "serv/actual/.env" },
     { track = true, path = "serv/authentik/.env" },
@@ -42,6 +43,8 @@ additional_env_files = [
 
 pre_deploy.shell_mode = false
 pre_deploy.command = """
+    [ -f host/iardo-vps-iardodev/.env-secrets.local ] || cp host/iardo-vps-iardodev/.env-secrets host/iardo-vps-iardodev/.env-secrets.local
+
     # Actual
     bash serv/actual/task/task-gen-directories.sh
     bash serv/actual/task/task-set-permissions.sh

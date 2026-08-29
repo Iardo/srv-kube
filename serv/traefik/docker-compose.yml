@@ -10,7 +10,10 @@ services:
     network_mode: host
     command:
       # - --log.level=DEBUG
-      - --api.insecure=true
+      # SECURITY: --api.insecure exposes the dashboard/API with no auth on
+      # every host interface. If you need it, put it behind auth middleware
+      # or bind it to localhost instead of re-enabling this as-is.
+      # - --api.insecure=true
       # - --providers.docker=true
       - --providers.docker.exposedbydefault=false
       - --entryPoints.web.address=:80

@@ -4,6 +4,10 @@
 # https://github.com/azimuttapp/azimutt/blob/main/INSTALL.md#pre-build-docker-image
 # https://github.com/azimuttapp/azimutt/blob/main/docker-compose.yml
 
+networks:
+  azimutt:
+    name: azimutt
+
 volumes:
   azimutt-database:
     name: azimutt-database
@@ -14,18 +18,24 @@ services:
     container_name: azimutt-web
     platform: linux/amd64
     restart: unless-stopped
-    network_mode: host
+    networks:
+      - azimutt
+    ports:
+      - ${AZIMUTT_WEB_HTTP:-4000}:4000
     env_file: .env
     environment:
       PORT: 4000
-      GATEWAY_URL: http://localhost:4177
-      DATABASE_URL: postgresql://${AZIMUTT_POSTGRES_USER:?}:${AZIMUTT_POSTGRES_PASS:?}@localhost:5432/${POSTGRES_NAME:?}
+      GATEWAY_URL: http://azimutt-gateway:4177
+      DATABASE_URL: postgresql://${AZIMUTT_POSTGRES_USER:?}:${AZIMUTT_POSTGRES_PASS:?}@azimutt-database:5432/${POSTGRES_NAME:?}
 
   azimutt-database:
     image: postgres:16-alpine
     container_name: azimutt-database
     restart: unless-stopped
-    network_mode: host
+    networks:
+      - azimutt
+    ports:
+      - ${AZIMUTT_DATABASE:-5432}:5432
     volumes:
       - azimutt-database:/var/lib/postgresql/data
     env_file: .env
@@ -40,10 +50,13 @@ services:
     build:
       context: ./code/gateway
       dockerfile: dockerfile
-    network_mode: host
+    networks:
+      - azimutt
+    ports:
+      - ${AZIMUTT_GATEWAY:-4177}:4177
     env_file: .env
     environment:
-      API_HOST: localhost
+      API_HOST: 0.0.0.0
       API_PORT: 4177
       CORS_ALLOW_ORIGIN: http://localhost:4000
       LOG_LEVEL: info

@@ -9,10 +9,15 @@ clone_path    = "/etc/srv-kube"
 run_directory = "/etc/srv-kube"
 
 file_paths = []
+
 additional_env_files = [
     # HOST
     { track = true,  path = "host/iardo-macmini/.env" },
     { track = false, path = "host/iardo-macmini/.env-secrets" },
+    { track = false, path = "host/iardo-macmini/.env-secrets.local" },
 ]
+
 pre_deploy.shell_mode = false
-pre_deploy.command = """ """
+pre_deploy.command = """
+    [ -f host/iardo-macmini/.env-secrets.local ] || cp host/iardo-macmini/.env-secrets host/iardo-macmini/.env-secrets.local
+"""

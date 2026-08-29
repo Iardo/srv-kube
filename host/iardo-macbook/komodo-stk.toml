@@ -9,12 +9,17 @@ clone_path    = "/etc/srv-kube"
 run_directory = "/etc/srv-kube"
 
 file_paths = []
+
 additional_env_files = [
     # HOST
     { track = true,  path = "host/iardo-macbook/.env" },
     { track = false, path = "host/iardo-macbook/.env-secrets" },
+    { track = false, path = "host/iardo-macbook/.env-secrets.local" },
     # SERV
     { track = true, path = "serv/komodo/.env" },
 ]
+
 pre_deploy.shell_mode = false
-pre_deploy.command = """ """
+pre_deploy.command = """
+    [ -f host/iardo-macbook/.env-secrets.local ] || cp host/iardo-macbook/.env-secrets host/iardo-macbook/.env-secrets.local
+"""

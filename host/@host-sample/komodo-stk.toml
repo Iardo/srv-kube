@@ -15,10 +15,15 @@ run_directory = "/etc/srv-kube"
 extra_args = ["--build"]
 
 file_paths = []
+
 additional_env_files = [
     # HOST
     { track = true,  path = "host/host-sample/.env" },
     { track = false, path = "host/host-sample/.env-secrets" },
+    { track = false, path = "host/host-sample/.env-secrets.local" },
 ]
+
 pre_deploy.shell_mode = false
-pre_deploy.command = """ """
+pre_deploy.command = """
+    [ -f host/host-sample/.env-secrets.local ] || cp host/host-sample/.env-secrets host/host-sample/.env-secrets.local
+"""

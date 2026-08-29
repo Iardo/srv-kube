@@ -8,6 +8,10 @@
 # --------------------
 # user: admin
 # pass: admin
+#
+# SECURITY: change this password immediately after first login.
+# Cronicle lets logged-in users schedule arbitrary shell-command jobs,
+# so leaving the default admin/admin is equivalent to no auth at all.
 
 
 # NOTE:
