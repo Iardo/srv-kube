@@ -4,7 +4,7 @@ import argparse
 import os
 import sys
 
-from source.backup import Backup
+from source.struct.backup import Backup
 
 # Main
 # ----------------------

@@ -20,6 +20,7 @@ services:
   outline-web:
     container_name: outline-web
     image: docker.getoutline.com/outlinewiki/outline@sha256:32d76719c378931dd65d93945930ca380d8376a0337d98a991fcc12b266f33cf # 1.9.2
+    restart: unless-stopped
     depends_on:
       - outline-database
       - outline-cache
@@ -37,6 +38,7 @@ services:
   outline-database:
     container_name: outline-database
     image: postgres@sha256:3a82e1f56c8f0f5616a11103ac3d47e632c3938698946a7ad26da0df1334744a # 18.4
+    restart: unless-stopped
     networks:
       - outline
     ports:
@@ -83,6 +85,7 @@ services:
   outline-cache:
     container_name: outline-cache
     image: redis@sha256:e7723ff73d963f5cc6d9c4643ea3d989527a402a319239054e9472a7fb9219a2 # 7.4.10-alpine
+    restart: unless-stopped
     networks:
       - outline
     ports:

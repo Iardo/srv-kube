@@ -4,8 +4,8 @@ import os
 import subprocess
 
 
-serv_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'serv'))
-link_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'data', 'backup'))
+serv_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'serv'))
+link_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'data', 'backup'))
 
 class Backup:
     '''
@@ -93,6 +93,10 @@ class Backup:
     Finds the newest backup file for a service.
     Restore logs (files ending in "-restore.txt") are skipped,
     they live in the same folder but aren't backups.
+    Some services (open-project) write more than one file per run,
+    like a database dump plus separate raw-data tarballs,
+    only the "-database.sql" one is what data-restore.sh actually reads,
+    so that one is preferred whenever it's there.
     Returns None if the service has no backup file yet.
     '''
     @staticmethod
@@ -111,5 +115,9 @@ class Backup:
 
         if not files:
             return None
+
+        database_files = [path for path in files if path.endswith('-database.sql')]
+        if database_files:
+            files = database_files
 
         return max(files, key=os.path.getmtime)
