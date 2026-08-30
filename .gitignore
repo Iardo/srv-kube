@@ -3,6 +3,7 @@
 
 # ignored folders:
 __pycache__
+/data/backup/*
 /logs/*
 /serv/**/backups/*
 /serv/**/cert/*

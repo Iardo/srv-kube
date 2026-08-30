@@ -3,11 +3,11 @@ set -e
 set -o pipefail
 
 # Globals
-CONTAINER="n8n-database"
-SQLIMPORT=$1
+container_database="n8n-database"
+sql_import=$1
 
 # Commands
-printf "%s"   "$SQLIMPORT | n8n | "
-# docker exec -i $CONTAINER_DATABASE psql -U n8n -f /backup/$SQLIMPORT -q > /logs/${SQLIMPORT}.txt # TODO: needs testing
+printf "%s"   "$sql_import | n8n | "
+docker exec -i $container_database psql -U n8n -q < $sql_import
 
 printf "%s\n" "Restored"

@@ -10,7 +10,7 @@ file_pgdata="${timestamp}-pgdata.tar.gz"
 file_opdata="${timestamp}-opdata.tar.gz"
 
 echo "Generating: ${file_sql} ..."
-PGPASSWORD=$POSTGRESQL_PASS pg_dump -h open-project-database -U $POSTGRESQL_USER -d $POSTGRESQL_NAME >> "/backups/$file_sql"
+PGPASSWORD=$OPEN_PROJECT_POSTGRESQL_PASS pg_dump -h open-project-database -U $OPEN_PROJECT_POSTGRESQL_USER -d $OPEN_PROJECT_POSTGRESQL_NAME >> "/backups/$file_sql"
 echo "Generating: ${file_pgdata} ..."
 cd var/lib/postgresql/data; tar --create --gzip --file "/backups/${file_pgdata}" $(ls -A)
 echo "Generating: ${file_opdata} ..."

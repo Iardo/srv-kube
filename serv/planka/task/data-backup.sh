@@ -3,32 +3,33 @@ set -e
 set -o pipefail
 
 # Globals
-CONTAINER_WEB="planka-web"
-CONTAINER_DATABASE="planka-database"
-FOLDER_BACKUPS="./backups"
-TIMESTAMP=$(date +"%Y.%m.%d-%H.%M.%S")
+container_web="planka-web"
+container_database="planka-database"
+fullpath=$(cd "$(dirname "$0")" && pwd)
+folder_backups="$fullpath/../data/backup"
+timestamp=$(date +"%Y.%m.%d-%H.%M.%S")
+folder_temp="$folder_backups/$timestamp-backup"
 
 # Folders
-mkdir -p $FOLDER_BACKUPS
-mkdir -p $TIMESTAMP-backup
+mkdir -p $folder_backups
+mkdir -p $folder_temp
 
 # Dump
-echo "File: $BACKUP_ARCHIVE"
 echo "Exporting ..."
-docker exec -t $CONTAINER_DATABASE pg_dumpall -c -U postgres \
-  > $TIMESTAMP-backup/postgres.sql
-docker run --rm --volumes-from $CONTAINER_WEB \
-  -v $(pwd)/$TIMESTAMP-backup:/backup ubuntu cp -r /app/public/user-avatars /backup/user-avatars
-docker run --rm --volumes-from $CONTAINER_WEB \
-  -v $(pwd)/$TIMESTAMP-backup:/backup ubuntu cp -r /app/public/project-background-images /backup/project-background-images
-docker run --rm --volumes-from $CONTAINER_WEB \
-  -v $(pwd)/$TIMESTAMP-backup:/backup ubuntu cp -r /app/private/attachments /backup/attachments
+docker exec -t $container_database pg_dumpall -c -U postgres \
+  > $folder_temp/postgres.sql
+docker run --rm --volumes-from $container_web \
+  -v $folder_temp:/backup ubuntu cp -r /app/public/user-avatars /backup/user-avatars
+docker run --rm --volumes-from $container_web \
+  -v $folder_temp:/backup ubuntu cp -r /app/public/project-background-images /backup/project-background-images
+docker run --rm --volumes-from $container_web \
+  -v $folder_temp:/backup ubuntu cp -r /app/private/attachments /backup/attachments
 
 echo "Generating ..."
-tar -czf $FOLDER_BACKUPS/$TIMESTAMP-backup.tgz \
-  $TIMESTAMP-backup/postgres.sql
+tar -czf $folder_backups/$timestamp-backup.tgz \
+  -C $folder_backups $timestamp-backup
 
 echo "Cleaning up temporary files ..."
-rm -rf $TIMESTAMP-backup
+rm -rf $folder_temp
 
 echo -e "\nBackup Complete!\n"

@@ -3,26 +3,26 @@ set -e
 set -o pipefail
 
 # Globals
-CONTAINER_WEB="linkwarden-web"
-CONTAINER_DATABASE="linkwarden-database"
-FOLDER_BACKUPS="./backups"
-TIMESTAMP=$(date +"%Y.%m.%d-%H.%M.%S")
+container_web="linkwarden-web"
+container_database="linkwarden-database"
+folder_backups="./backups"
+timestamp=$(date +"%Y.%m.%d-%H.%M.%S")
 
 # Folders
-mkdir -p $FOLDER_BACKUPS
-mkdir -p $TIMESTAMP-backup
+mkdir -p $folder_backups
+mkdir -p $timestamp-backup
 
 # Dump
-echo "File: $BACKUP_ARCHIVE"
+echo "File: $backup_archive"
 echo "Exporting ..."
-docker exec -t $CONTAINER_DATABASE pg_dumpall -c -U postgres \
-  > $TIMESTAMP-backup/postgres.sql
+docker exec -t $container_database pg_dumpall -c -U postgres \
+  > $timestamp-backup/postgres.sql
 
 echo "Generating ..."
-tar -czf $FOLDER_BACKUPS/$TIMESTAMP-backup.tgz \
-  $TIMESTAMP-backup/postgres.sql
+tar -czf $folder_backups/$timestamp-backup.tgz \
+  $timestamp-backup/postgres.sql
 
 echo "Cleaning up temporary files ..."
-rm -rf $TIMESTAMP-backup
+rm -rf $timestamp-backup
 
 echo -e "\nBackup Complete!\n"

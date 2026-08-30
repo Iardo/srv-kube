@@ -24,4 +24,4 @@ ALTER SEQUENCE attachments_id_seq RESTART WITH 1;\
 ALTER SEQUENCE work_packages_id_seq RESTART WITH 1;\
 \""
 echo "Removing: Attachments ..."
-quiet docker exec -it open-project-database sh -c "PGPASSWORD=$POSTGRESQL_PASS psql -h localhost -U $POSTGRESQL_USER -d $POSTGRESQL_NAME -c $cmd_del_entries"
+quiet docker exec -it open-project-database sh -c "PGPASSWORD=$OPEN_PROJECT_POSTGRESQL_PASS psql -h localhost -U $OPEN_PROJECT_POSTGRESQL_USER -d $OPEN_PROJECT_POSTGRESQL_NAME -c $cmd_del_entries"

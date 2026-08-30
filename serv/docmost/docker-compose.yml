@@ -34,7 +34,7 @@ services:
       PORT: 3000
       APP_URL: 'http://localhost:3000'
       APP_SECRET: ${DOCMOST_APP_SECRET:?}
-      DATABASE_URL: 'postgresql://${DOCMOST_POSTGRESQL_USER:?}:${DOCMOST_POSTGRESQL_PASS:?}@docmost-database:5432/${POSTGRESQL_NAME:?}?schema=public'
+      DATABASE_URL: 'postgresql://${DOCMOST_POSTGRESQL_USER:?}:${DOCMOST_POSTGRESQL_PASS:?}@docmost-database:5432/${DOCMOST_POSTGRESQL_NAME:?}?schema=public'
       REDIS_URL: 'redis://docmost-redis:6379'
 
   docmost-database:
@@ -50,7 +50,7 @@ services:
     env_file: .env
     environment:
       PGPORT: 5432
-      POSTGRES_DB: ${POSTGRESQL_NAME:?}
+      POSTGRES_DB: ${DOCMOST_POSTGRESQL_NAME:?}
       POSTGRES_PASSWORD: ${DOCMOST_POSTGRESQL_PASS:?}
       POSTGRES_USER: ${DOCMOST_POSTGRESQL_USER:?}
 

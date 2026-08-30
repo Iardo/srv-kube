@@ -3,26 +3,26 @@ set -e
 set -o pipefail
 
 # Globals
-CONTAINER_WEB="azimutt-web"
-CONTAINER_DATABASE="azimutt-database"
-BACKUP_ARCHIVE=$1
-BACKUP_BASENAME=$(basename $BACKUP_ARCHIVE .tgz)
+container_web="azimutt-web"
+container_database="azimutt-database"
+backup_archive=$1
+backup_basename=$(basename $backup_archive .tgz)
 
 # Logs
-LOG_FOLDER="./logs"
-LOG_FILE=$LOG_FOLDER/${BACKUP_BASENAME}-restore.txt
-mkdir -p $LOG_FOLDER
+log_folder="./logs"
+log_file=$log_folder/${backup_basename}-restore.txt
+mkdir -p $log_folder
 
 # Restore
-echo "File: $BACKUP_ARCHIVE"
+echo "File: $backup_archive"
 echo "Extracting ..."
-tar -xzf $BACKUP_ARCHIVE
+tar -xzf $backup_archive
 
 echo "Importing ..."
-cat $BACKUP_BASENAME/postgres.sql | \
-  docker exec -i $CONTAINER_DATABASE psql -U postgres -q > $LOG_FILE
+cat $backup_basename/postgres.sql | \
+  docker exec -i $container_database psql -U postgres -q > $log_file
 
 echo "Cleaning up temporary files ..."
-rm -r $BACKUP_BASENAME
+rm -r $backup_basename
 
 echo -e "\nRestore complete!\n"
