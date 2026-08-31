@@ -35,6 +35,7 @@ additional_env_files = [
     { track = true, path = "serv/actual/.env" },
     { track = true, path = "serv/authentik/.env" },
     { track = true, path = "serv/linkace/.env" },
+    { track = true, path = "serv/n8n/.env" },
     { track = true, path = "serv/open-project/.env" },
     { track = true, path = "serv/outline/.env" },
 ]
@@ -55,11 +56,22 @@ pre_deploy.command = """
     bash serv/linkace/task/task-gen-directories.sh
     bash serv/linkace/task/task-set-permissions.sh
 
+    # n8n
+    bash serv/n8n/task/task-gen-directories.sh
+    bash serv/n8n/task/task-set-permissions.sh
+
     # Nginx Proxy Manager
     bash serv/nginx-proxy-manager/task/task-gen-directories.sh
     bash serv/nginx-proxy-manager/task/task-set-permissions.sh
 
+    # Ntfy
+    bash serv/ntfy/task/task-set-initial-files.sh
+
     # Open Project
     bash serv/open-project/task/task-gen-directories.sh
     bash serv/open-project/task/task-set-permissions.sh
+
+    # Trilium Next
+    bash serv/trilium-next/task/task-gen-directories.sh
+    bash serv/trilium-next/task/task-set-permissions.sh
 """

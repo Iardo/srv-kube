@@ -1,0 +1,9 @@
+# NOTE:
+# Used only by Komodo's own stack deploy (see komodo-stk.toml).
+include: [
+  '${SERV:?}/actual/${FILE:?}',
+  '${SERV:?}/linkace/${FILE:?}',
+  '${SERV:?}/ntfy/${FILE:?}',
+  # caddy
+  # silverbullet
+]

@@ -6,3 +6,15 @@ services:
     # https://www.reddit.com/r/homelab/comments/kugur2/kubernetes_or_docker_homelab/
     # https://github.com/kubernetes-sigs/external-dns
     # https://kubernetes-sigs.github.io/external-dns/latest/
+
+    # https://github.com/windmill-labs/windmill
+    # https://github.com/temporalio/temporal
+    # https://github.com/hatchet-dev/hatchet
+    # https://github.com/caddyserver/caddy
+    # https://github.com/silverbulletmd/silverbullet
+    # https://silverbullet.md/Install
+    # https://github.com/axllent/mailpit
+    # https://github.com/bugsink/bugsink
+    # https://github.com/woodpecker-ci/woodpecker
+    # https://github.com/dagger/dagger
+    
