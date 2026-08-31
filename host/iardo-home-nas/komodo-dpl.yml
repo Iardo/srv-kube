@@ -1,3 +1,27 @@
 # NOTE:
 # Used only by Komodo's own stack deploy (see komodo-stk.toml).
-include: []
+include: [
+  # adguard-home
+  # aria2pro
+  # bazarr
+  # caddy
+  # docuseal
+  # flood
+  # homepage
+  # immich
+  # jackett
+  # jellyfin
+  # kavitareader
+  # mealie
+  # netbootxyz
+  # paperless-ngx
+  # radarr
+  # romm
+  # sonarr
+  # speedtest-tracker
+  # stumpapp
+  # transmission
+  # wger
+  # wireguard
+  # wireguard-easy
+]

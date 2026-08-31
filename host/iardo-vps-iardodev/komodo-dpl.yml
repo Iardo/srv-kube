@@ -7,11 +7,14 @@ include: [
   # beszel
   # bugsink
   # caddy
+  # coolify
   # dagger
   # gatus
+  # grafana
+  # infisical (optional)
   # mailpit
   # passbolt
-  # signoz
   # umami
+  # webcheck
   # woodpecker
 ]

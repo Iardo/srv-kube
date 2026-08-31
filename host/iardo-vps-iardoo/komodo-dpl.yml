@@ -4,6 +4,7 @@ include: [
   '${SERV:?}/actual/${FILE:?}',
   '${SERV:?}/linkace/${FILE:?}',
   '${SERV:?}/ntfy/${FILE:?}',
+  # astralapp
   # caddy
   # silverbullet
 ]
