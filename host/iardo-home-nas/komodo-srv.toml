@@ -1,0 +1,6 @@
+[[server]]
+name = "iardo-home-nas"
+
+[server.config]
+enabled = false
+address = "http://home.iardo-nas:9120"

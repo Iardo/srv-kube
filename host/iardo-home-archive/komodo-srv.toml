@@ -1,0 +1,6 @@
+[[server]]
+name = "iardo-home-archive"
+
+[server.config]
+enabled = false
+address = "http://home.iardo-archive:9120"

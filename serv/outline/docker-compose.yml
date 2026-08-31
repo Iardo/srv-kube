@@ -34,6 +34,16 @@ services:
     environment:
       URL: '${OUTLINE_URL:-https://localhost}:${OUTLINE_WEB_HTTPS:-3000}'
       PORT: '3000'
+      # Generic OIDC, set per-host in that host's .env-secrets (prefixed
+      # OUTLINE_ there to avoid name clashes) - see serv/outline/.env for
+      # what each of these means.
+      OIDC_CLIENT_ID: ${OUTLINE_OIDC_CLIENT_ID:-}
+      OIDC_CLIENT_SECRET: ${OUTLINE_OIDC_CLIENT_SECRET:-}
+      OIDC_AUTH_URI: ${OUTLINE_OIDC_AUTH_URI:-}
+      OIDC_TOKEN_URI: ${OUTLINE_OIDC_TOKEN_URI:-}
+      OIDC_USERINFO_URI: ${OUTLINE_OIDC_USERINFO_URI:-}
+      OIDC_LOGOUT_URI: ${OUTLINE_OIDC_LOGOUT_URI:-}
+      OIDC_DISPLAY_NAME: ${OUTLINE_OIDC_DISPLAY_NAME:-OpenID Connect}
 
   outline-database:
     container_name: outline-database

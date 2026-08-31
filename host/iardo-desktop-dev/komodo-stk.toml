@@ -1,0 +1,25 @@
+[[stack]]
+name = "iardo-desktop-dev"
+
+[stack.config]
+server        = "iardo-desktop-dev"
+branch        = "kubernetes"
+repo          = "iardo/srv-kube"
+clone_path    = "/etc/srv-kube"
+run_directory = "/etc/srv-kube"
+
+file_paths = [
+    "host/iardo-desktop-dev/docker-compose.yml",
+]
+
+additional_env_files = [
+    # HOST
+    { track = true,  path = "host/iardo-desktop-dev/.env" },
+    { track = false, path = "host/iardo-desktop-dev/.env-secrets" },
+    { track = false, path = "host/iardo-desktop-dev/.env-secrets.local" },
+]
+
+pre_deploy.shell_mode = false
+pre_deploy.command = """
+    [ -f host/iardo-desktop-dev/.env-secrets.local ] || cp host/iardo-desktop-dev/.env-secrets host/iardo-desktop-dev/.env-secrets.local
+"""
