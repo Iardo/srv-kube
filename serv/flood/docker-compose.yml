@@ -1,0 +1,33 @@
+# References
+# --------------------
+# https://github.com/jesec/flood
+# https://github.com/jesec/flood/blob/master/docs/Configuration.md
+
+# NOTE:
+# Talks to transmission's RPC over its own docker network,
+# see serv/transmission/docker-compose.yml.
+
+networks:
+  transmission:
+    name: transmission
+
+services:
+  flood-web:
+    image: jesec/flood
+    container_name: flood-web
+    restart: unless-stopped
+    command:
+      - --port
+      - '3000'
+      - --auth
+      - none
+      - --trpcuri
+      - http://transmission-web:9091/transmission/rpc
+    networks:
+      - transmission
+    ports:
+      - ${FLOOD_WEB_HTTP:-3000}:3000
+    volumes:
+      - ./conf:/config
+    environment:
+      TZ: ${TIMEZONE:-America/Panama}

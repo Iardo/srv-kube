@@ -1,0 +1,27 @@
+# References
+# --------------------
+# https://hub.docker.com/r/linuxserver/transmission
+
+networks:
+  transmission:
+    name: transmission
+
+services:
+  transmission-web:
+    image: lscr.io/linuxserver/transmission:latest
+    container_name: transmission-web
+    restart: unless-stopped
+    networks:
+      - transmission
+    ports:
+      - ${TRANSMISSION_WEB_HTTP:-9091}:9091
+      - ${TRANSMISSION_PEER_TCP:-51413}:51413
+      - ${TRANSMISSION_PEER_UDP:-51413}:51413/udp
+    volumes:
+      - ./conf:/config
+      - ./data/downloads:/downloads
+      - ./data/watch:/watch
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: ${TIMEZONE:-America/Panama}

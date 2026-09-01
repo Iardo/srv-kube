@@ -1,0 +1,70 @@
+# References
+# --------------------
+# https://immich.app/docs/install/docker-compose
+# https://github.com/immich-app/immich/releases/latest/download/docker-compose.yml
+
+networks:
+  immich:
+    name: immich
+
+volumes:
+  immich-database:
+    name: immich-database
+  immich-model-cache:
+    name: immich-model-cache
+
+services:
+  immich-web:
+    image: ghcr.io/immich-app/immich-server:release
+    container_name: immich-web
+    restart: unless-stopped
+    depends_on:
+      - immich-database
+      - immich-cache
+    networks:
+      - immich
+    ports:
+      - ${IMMICH_WEB_HTTP:-2283}:2283
+    volumes:
+      - ./data/upload:/usr/src/app/upload
+      - /etc/localtime:/etc/localtime:ro
+    env_file: .env
+    environment:
+      DB_HOSTNAME: immich-database
+      DB_USERNAME: ${IMMICH_POSTGRESQL_USER:?}
+      DB_PASSWORD: ${IMMICH_POSTGRESQL_PASS:?}
+      DB_DATABASE_NAME: immich
+      REDIS_HOSTNAME: immich-cache
+
+  immich-machine-learning:
+    image: ghcr.io/immich-app/immich-machine-learning:release
+    container_name: immich-machine-learning
+    restart: unless-stopped
+    networks:
+      - immich
+    volumes:
+      - immich-model-cache:/cache
+    env_file: .env
+
+  immich-cache:
+    image: docker.io/valkey/valkey:8-bookworm
+    container_name: immich-cache
+    restart: unless-stopped
+    networks:
+      - immich
+
+  immich-database:
+    # NOTE: Must stay on this image, it ships the vector extension
+    # Immich's database migrations depend on.
+    image: ghcr.io/immich-app/postgres:14-vectorchord0.4.3-pgvector0.8
+    container_name: immich-database
+    restart: unless-stopped
+    networks:
+      - immich
+    volumes:
+      - immich-database:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: ${IMMICH_POSTGRESQL_USER:?}
+      POSTGRES_PASSWORD: ${IMMICH_POSTGRESQL_PASS:?}
+      POSTGRES_DB: immich
+      POSTGRES_INITDB_ARGS: '--data-checksums'

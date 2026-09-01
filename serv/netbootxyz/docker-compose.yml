@@ -1,0 +1,29 @@
+# References
+# --------------------
+# https://github.com/netbootxyz/docker-netbootxyz
+# https://netboot.xyz/docs/
+
+networks:
+  netbootxyz:
+    name: netbootxyz
+
+services:
+  netbootxyz-web:
+    image: ghcr.io/netbootxyz/netbootxyz:latest
+    container_name: netbootxyz-web
+    restart: unless-stopped
+    networks:
+      - netbootxyz
+    ports:
+      - ${NETBOOTXYZ_WEB_HTTP:-3000}:3000
+      - ${NETBOOTXYZ_ASSETS_HTTP:-8080}:80
+      # NOTE: netboot.xyz's TFTP server, actually needed for PXE clients to
+      # boot at all, the ports above are just the web UI/asset server.
+      - ${NETBOOTXYZ_TFTP:-69}:69/udp
+    volumes:
+      - ./conf:/config
+      - ./data/assets:/assets
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: ${TIMEZONE:-America/Panama}

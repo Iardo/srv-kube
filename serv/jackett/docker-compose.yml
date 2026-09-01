@@ -1,0 +1,24 @@
+# References
+# --------------------
+# https://github.com/linuxserver/docker-jackett
+
+networks:
+  jackett:
+    name: jackett
+
+services:
+  jackett-web:
+    image: lscr.io/linuxserver/jackett:latest
+    container_name: jackett-web
+    restart: unless-stopped
+    networks:
+      - jackett
+    ports:
+      - ${JACKETT_WEB_HTTP:-9117}:9117
+    volumes:
+      - ./conf:/config
+      - ./data/downloads:/downloads
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: ${TIMEZONE:-America/Panama}

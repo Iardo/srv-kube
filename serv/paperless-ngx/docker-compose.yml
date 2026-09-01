@@ -1,0 +1,92 @@
+# References
+# --------------------
+# https://github.com/paperless-ngx/paperless-ngx/blob/dev/docker/compose/docker-compose.postgres-tika.yml
+# https://docs.paperless-ngx.com/setup/#docker_build
+
+networks:
+  paperless-ngx:
+    name: paperless-ngx
+
+volumes:
+  paperless-ngx-data:
+    name: paperless-ngx-data
+  paperless-ngx-database:
+    name: paperless-ngx-database
+  paperless-ngx-media:
+    name: paperless-ngx-media
+  paperless-ngx-cache:
+    name: paperless-ngx-cache
+
+services:
+  paperless-ngx-web:
+    image: ghcr.io/paperless-ngx/paperless-ngx:2.9
+    container_name: paperless-ngx-web
+    restart: unless-stopped
+    depends_on:
+      - paperless-ngx-cache
+      - paperless-ngx-database
+      - paperless-ngx-gotenberg
+      - paperless-ngx-tika
+    networks:
+      - paperless-ngx
+    ports:
+      - ${PAPERLESS_NGX_WEB_HTTP:-8000}:8000
+    volumes:
+      - ./data/consume:/usr/src/paperless/consume
+      - ./data/export:/usr/src/paperless/export
+      - paperless-ngx-data:/usr/src/paperless/data
+      - paperless-ngx-media:/usr/src/paperless/media
+    env_file: .env
+    environment:
+      USERMAP_UID: 1000
+      USERMAP_GID: 1000
+      PAPERLESS_DBHOST: paperless-ngx-database
+      PAPERLESS_DBUSER: ${PAPERLESS_NGX_POSTGRESQL_USER:?}
+      PAPERLESS_DBPASS: ${PAPERLESS_NGX_POSTGRESQL_PASS:?}
+      PAPERLESS_REDIS: redis://paperless-ngx-cache:6379
+      PAPERLESS_SECRET_KEY: ${PAPERLESS_NGX_SECRET_KEY:?}
+      PAPERLESS_TIKA_ENABLED: 1
+      PAPERLESS_TIKA_ENDPOINT: http://paperless-ngx-tika:9998
+      PAPERLESS_TIKA_GOTENBERG_ENDPOINT: http://paperless-ngx-gotenberg:3000
+
+  paperless-ngx-database:
+    image: docker.io/library/postgres:16
+    container_name: paperless-ngx-database
+    restart: unless-stopped
+    networks:
+      - paperless-ngx
+    volumes:
+      - paperless-ngx-database:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: paperless
+      POSTGRES_USER: ${PAPERLESS_NGX_POSTGRESQL_USER:?}
+      POSTGRES_PASSWORD: ${PAPERLESS_NGX_POSTGRESQL_PASS:?}
+
+  paperless-ngx-cache:
+    image: docker.io/library/redis:7
+    container_name: paperless-ngx-cache
+    restart: unless-stopped
+    networks:
+      - paperless-ngx
+    volumes:
+      - paperless-ngx-cache:/data
+
+  paperless-ngx-gotenberg:
+    image: docker.io/gotenberg/gotenberg:7.10
+    container_name: paperless-ngx-gotenberg
+    restart: unless-stopped
+    # The gotenberg chromium route is used to convert .eml files. We do not
+    # want to allow external content like tracking pixels or even javascript.
+    command:
+      - gotenberg
+      - --chromium-disable-javascript=true
+      - --chromium-allow-list=file:///tmp/.*
+    networks:
+      - paperless-ngx
+
+  paperless-ngx-tika:
+    image: docker.io/apache/tika:latest
+    container_name: paperless-ngx-tika
+    restart: unless-stopped
+    networks:
+      - paperless-ngx

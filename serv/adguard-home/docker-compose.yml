@@ -1,0 +1,24 @@
+# References
+# --------------------
+# https://github.com/AdguardTeam/AdGuardHome
+# https://hub.docker.com/r/adguard/adguardhome
+
+networks:
+  adguard-home:
+    name: adguard-home
+
+services:
+  adguard-home-web:
+    image: adguard/adguardhome:latest
+    container_name: adguard-home-web
+    restart: unless-stopped
+    networks:
+      - adguard-home
+    ports:
+      - ${ADGUARD_HOME_WEB_HTTP:-3000}:3000 # First-run setup wizard
+      - ${ADGUARD_HOME_PANEL:-80}:80        # Web UI after setup
+      - ${ADGUARD_HOME_DNS_TCP:-53}:53
+      - ${ADGUARD_HOME_DNS_UDP:-53}:53/udp
+    volumes:
+      - ./conf:/opt/adguardhome/conf
+      - ./data:/opt/adguardhome/work

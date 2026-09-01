@@ -1,0 +1,57 @@
+# References
+# --------------------
+# https://github.com/wger-project/docker
+# https://hub.docker.com/r/wger/server
+
+networks:
+  wger:
+    name: wger
+
+volumes:
+  wger-database:
+    name: wger-database
+
+services:
+  wger-web:
+    image: wger/server:latest
+    container_name: wger-web
+    restart: unless-stopped
+    depends_on:
+      - wger-database
+      - wger-cache
+    networks:
+      - wger
+    ports:
+      - ${WGER_WEB_HTTP:-80}:80
+    volumes:
+      - ./data/media:/home/wger/media
+      - ./data/static:/home/wger/static
+    env_file: .env
+    environment:
+      DJANGO_DB_ENGINE: django.db.backends.postgresql
+      DJANGO_DB_HOST: wger-database
+      DJANGO_DB_NAME: wger
+      DJANGO_DB_USER: ${WGER_POSTGRESQL_USER:?}
+      DJANGO_DB_PASSWORD: ${WGER_POSTGRESQL_PASS:?}
+      DJANGO_CACHE_HOST: wger-cache
+      DJANGO_SECRET_KEY: ${WGER_SECRET_KEY:?}
+
+  wger-cache:
+    image: redis:7
+    container_name: wger-cache
+    restart: unless-stopped
+    networks:
+      - wger
+
+  wger-database:
+    image: postgres:15
+    container_name: wger-database
+    restart: unless-stopped
+    networks:
+      - wger
+    volumes:
+      - wger-database:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: wger
+      POSTGRES_USER: ${WGER_POSTGRESQL_USER:?}
+      POSTGRES_PASSWORD: ${WGER_POSTGRESQL_PASS:?}
