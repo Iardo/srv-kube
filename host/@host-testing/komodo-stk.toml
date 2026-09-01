@@ -33,4 +33,8 @@ pre_deploy.command = """
     # Paperless-ngx
     bash serv/paperless-ngx/task/task-gen-directories.sh
     bash serv/paperless-ngx/task/task-set-permissions.sh
+
+    # Wger
+    bash serv/wger/task/task-gen-directories.sh
+    bash serv/wger/task/task-set-permissions.sh
 """
