@@ -1,11 +1,14 @@
 # References
 # --------------------
 # https://github.com/jesec/flood
-# https://github.com/jesec/flood/blob/master/docs/Configuration.md
 
 # NOTE:
-# Talks to transmission's RPC over its own docker network,
-# see serv/transmission/docker-compose.yml.
+# Flood's own builtin login creates the admin account on first visit to
+# the web UI, the Transmission connection (see
+# serv/transmission/docker-compose.yml, reachable as
+# "transmission-web:9091" over this shared network) then gets configured
+# from inside Flood itself afterward, Settings > Torrent Clients. There's
+# no way to pre-configure that connection via a startup flag.
 
 networks:
   transmission:
@@ -19,10 +22,6 @@ services:
     command:
       - --port
       - '3000'
-      - --auth
-      - none
-      - --trpcuri
-      - http://transmission-web:9091/transmission/rpc
     networks:
       - transmission
     ports:
