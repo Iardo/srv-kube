@@ -1,0 +1,9 @@
+# Reverse Proxy
+# --------------------
+# https://caddyserver.com/docs/caddyfile
+
+# localhost {
+#     # Services
+#     # --------------------
+#     reverse_proxy other-container:8080
+# }

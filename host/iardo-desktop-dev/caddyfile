@@ -1,0 +1,16 @@
+# Reverse Proxy
+# --------------------
+# https://caddyserver.com/docs/caddyfile
+
+localhost {
+    # Services
+    # --------------------
+    handle_path /changedetection/* {
+        reverse_proxy host.docker.internal:7002
+    }
+
+    handle_path /dozzle/* {
+        reverse_proxy host.docker.internal:8000
+    }
+
+}

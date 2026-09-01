@@ -3,6 +3,7 @@
 import os
 import sys
 
+from source.caddy import Caddy
 from source.environment import Env
 from source.globals.error import Error
 from source.globals.strings import Strings
@@ -30,6 +31,8 @@ def main():
     Env.build(host, conf)
     Secret.clean(host)
     Secret.build(host, conf)
+    Caddy.clean(host, conf)
+    Caddy.build(host, conf)
     Service.init(conf)
 
 main()
