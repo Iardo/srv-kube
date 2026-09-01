@@ -13,15 +13,11 @@
 
 # Services
 # --------------------
-http://*.host-testing:7000 {
-    @changedetection host changedetection.host-testing
-    handle @changedetection {
-        reverse_proxy host.docker.internal:7004
-    }
-
-    @dozzle host dozzle.host-testing
-    handle @dozzle {
-        reverse_proxy host.docker.internal:8001
-    }
-
+http://changedetection.host-testing:7000 {
+    reverse_proxy host.docker.internal:7004
 }
+
+http://dozzle.host-testing:7000 {
+    reverse_proxy host.docker.internal:8001
+}
+

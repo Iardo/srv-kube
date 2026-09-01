@@ -67,10 +67,9 @@ class Caddy:
             print(err)
 
     '''
-    Generates one wildcard site block for the host,
-    with one subdomain route inside it per included service
+    Generates one site block per included service
     that has a "web-http"/"web-https" port.
-    
+
     Only applies to hosts that include "caddy".
     '''
     @staticmethod
@@ -86,7 +85,7 @@ class Caddy:
             # below has to say the port out loud.
             # Skip it and Caddy just assumes port 80, which breaks things.
             #
-            # NOTE: 
+            # NOTE:
             # This still won't fix caddy-ui's own route links though.
             # Its API only exposes "match.host", never the listener's port,
             # so its links always default to :80 regardless of what's set here.
@@ -118,21 +117,17 @@ class Caddy:
             # Explicit "http://" scheme and this host's real port so Caddy
             # doesn't assume standard ports 80/443 and try to auto-upgrade
             # to HTTPS.
-            caddy_file.write(f'http://*.{domain}:{caddy_web_http} {{\n')
             for name, upstream, is_https in routes:
-                matcher = name.replace('-', '_')
-                caddy_file.write(f'    @{matcher} host {name}.{domain}\n')
-                caddy_file.write(f'    handle @{matcher} {{\n')
+                caddy_file.write(f'http://{name}.{domain}:{caddy_web_http} {{\n')
                 if is_https:
-                    caddy_file.write(f'        reverse_proxy {upstream} {{\n')
-                    caddy_file.write(f'            transport http {{\n')
-                    caddy_file.write(f'                tls_insecure_skip_verify\n')
-                    caddy_file.write(f'            }}\n')
+                    caddy_file.write(f'    reverse_proxy {upstream} {{\n')
+                    caddy_file.write(f'        transport http {{\n')
+                    caddy_file.write(f'            tls_insecure_skip_verify\n')
                     caddy_file.write(f'        }}\n')
+                    caddy_file.write(f'    }}\n')
                 else:
-                    caddy_file.write(f'        reverse_proxy {upstream}\n')
-                caddy_file.write(f'    }}\n\n')
-            caddy_file.write('}\n')
+                    caddy_file.write(f'    reverse_proxy {upstream}\n')
+                caddy_file.write('}\n\n')
             caddy_file.close()
         except Exception as err:
             print(err)
