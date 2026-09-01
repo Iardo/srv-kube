@@ -3,12 +3,20 @@
 import os
 import subprocess
 
+'''
+Generates a random 32-byte hex secret.
+'''
+def random_hex():
+    result = subprocess.run(['openssl', 'rand', '-hex', '32'], capture_output=True, text=True, check=True)
+    return result.stdout.strip()
+
 class Service:
     serv_list: dict = {
         'actual': ['web-http'],
         'aria2-pro': ['web-http', 'rpc', 'muse-tcp', 'muse-udp'],
         'authentik': ['web-http', 'web-https', 'database', 'cache'],
         'azimutt': ['web-http', 'database', 'gateway'],
+        'caddy': ['web-http', 'web-https'],
         'changedetection': ['web-http'],
         'cloudbeaver': ['web-http'],
         'crafty': ['web-http', 'web-https', 'dynmap', 'bedrock'],
@@ -16,6 +24,7 @@ class Service:
         'cronjob-org': ['web-http', 'database-master', 'database-node'],
         'dockermon': ['web-http', 'api', 'websocket'],
         'docmost': ['web-http', 'database', 'cache'],
+        'dozzle': ['web-http'],
         'drawdb': ['web-http'],
         'epicstore-claimer': ['server'],
         'excalidraw': ['web-http'],
@@ -65,6 +74,76 @@ class Service:
         'uptime-kuma': ['web-http'],
         'webcheck': ['web-http'],
         'wikijs': ['web-http', 'web-https', 'database'],
+    }
+
+    '''
+    Secret variables each service needs, with dummy values.
+    '''
+    envs_list: dict = {
+        'authentik': [
+            ('AUTHENTIK_POSTGRESQL__USER', 'authentik # Dummy'),
+            ('AUTHENTIK_POSTGRESQL__PASSWORD', 'authentik # Dummy'),
+        ],
+        'azimutt': [
+            ('AZIMUTT_POSTGRES_USER', 'azimutt # Dummy'),
+            ('AZIMUTT_POSTGRES_PASS', 'azimutt # Dummy'),
+        ],
+        'cronjob-org': [
+            ('CRONJOB_ORG_MYSQL_USER_MASTER', 'cronjoborg # Dummy'),
+            ('CRONJOB_ORG_MYSQL_PASS_MASTER', 'cronjoborg # Dummy'),
+            ('CRONJOB_ORG_MYSQL_USER_NODE', 'cronjoborg # Dummy'),
+            ('CRONJOB_ORG_MYSQL_PASS_NODE', 'cronjoborg # Dummy'),
+            ('CRONJOB_ORG_SESSION_TOKEN_SECRET', random_hex),
+            ('CRONJOB_ORG_EMAIL_VERIFICATION_TOKEN_SECRET', random_hex),
+            ('CRONJOB_ORG_LOST_PASSWORD_TOKEN_SECRET', random_hex),
+            ('CRONJOB_ORG_ACCOUNT_CONFIRMATION_TOKEN_SECRET', random_hex),
+            ('CRONJOB_ORG_VERP_SECRET', random_hex),
+            ('CRONJOB_ORG_STATUS_BADGE_TOKEN_SECRET', random_hex),
+        ],
+        'docmost': [
+            ('DOCMOST_APP_SECRET', random_hex),
+            ('DOCMOST_POSTGRESQL_USER', 'docmost # Dummy'),
+            ('DOCMOST_POSTGRESQL_PASS', 'docmost # Dummy'),
+        ],
+        'komodo': [
+            ('KOMODO_DATABASE_USERNAME', 'admin # Dummy'),
+            ('KOMODO_DATABASE_PASSWORD', 'admin # Dummy'),
+        ],
+        'linkace': [
+            ('LINKACE_MYSQL_USER', 'linkace # Dummy'),
+            ('LINKACE_MYSQL_PASS', 'linkace # Dummy'),
+            ('LINKACE_CACHE_PASS', 'linkace # Dummy'),
+        ],
+        'linkwarden': [
+            ('LINKWARDEN_POSTGRES_USER', 'linkwarden # Dummy'),
+            ('LINKWARDEN_POSTGRES_PASS', 'linkwarden # Dummy'),
+        ],
+        'n8n': [
+            ('N8N_POSTGRESQL_USER', 'n8n # Dummy'),
+            ('N8N_POSTGRESQL_PASS', 'n8n # Dummy'),
+            ('N8N_POSTGRESQL_USER_NON_ROOT', 'n8n # Dummy'),
+            ('N8N_POSTGRESQL_PASS_NON_ROOT', 'n8n # Dummy'),
+        ],
+        'notesnook': [
+            ('NOTESNOOK_MINIO_ROOT_USER', 'notesnook # Dummy'),
+            ('NOTESNOOK_MINIO_ROOT_PASSWORD', 'notesnook # Dummy'),
+        ],
+        'open-project': [
+            ('OPEN_PROJECT_POSTGRESQL_USER', 'openproject # Dummy'),
+            ('OPEN_PROJECT_POSTGRESQL_PASS', 'openproject # Dummy'),
+            ('OPEN_PROJECT_SECRET_KEY_BASE', random_hex),
+        ],
+        'planka': [
+            ('PLANKA_POSTGRES_USER', 'planka # Dummy'),
+            ('PLANKA_POSTGRES_PASS', 'planka # Dummy'),
+        ],
+        'timetagger': [
+            ('TIMETAGGER_CREDENTIALS', 'timetagger:$$2a$$08$$oFD7M9lLEcvtXWw4ePpVe.k7/vOYUrxrozNlwJnBCgKGXwiIVXdWS # Dummy'),
+        ],
+        'wikijs': [
+            ('WIKIJS_POSTGRES_USER', 'wikijs # Dummy'),
+            ('WIKIJS_POSTGRES_PASS', 'wikijs # Dummy'),
+        ],
     }
 
     '''

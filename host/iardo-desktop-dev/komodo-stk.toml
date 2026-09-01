@@ -9,7 +9,7 @@ clone_path    = "/etc/srv-kube"
 run_directory = "/etc/srv-kube"
 
 file_paths = [
-    "host/iardo-desktop-dev/docker-compose.yml",
+    "host/iardo-desktop-dev/komodo-dpl.yml",
 ]
 
 additional_env_files = [
@@ -17,6 +17,8 @@ additional_env_files = [
     { track = true,  path = "host/iardo-desktop-dev/.env" },
     { track = false, path = "host/iardo-desktop-dev/.env-secrets" },
     { track = false, path = "host/iardo-desktop-dev/.env-secrets.local" },
+    # SERV
+    { track = true, path = "serv/changedetection/.env" },
 ]
 
 pre_deploy.shell_mode = false

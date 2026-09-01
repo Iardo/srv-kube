@@ -1,77 +1,39 @@
 [[stack]]
-name = "iardo-vps-iardodev"
+name = "iardo-vps-iardoo"
 
 [stack.config]
-server        = "iardo-vps-iardodev"
+server        = "iardo-vps-iardoo"
 branch        = "kubernetes"
 repo          = "iardo/srv-kube"
 clone_path    = "/etc/srv-kube"
 run_directory = "/etc/srv-kube"
 
-# NOTE:
-# Some services build their own image instead of downloading one,
-# without "--build" Komodo tries to download it anyway and fails,
-# "--build" tells it to build the image instead.
-extra_args = ["--build"]
-
-# NOTE:
-# These containers run once then exit on purpose (seeding, migrations),
-# without this Komodo flags them as unhealthy for exiting.
-ignore_services = [
-    "open-project-seeder",
-    "open-project-upgrade",
-]
-
 file_paths = [
-    "host/iardo-vps-iardodev/komodo-dpl.yml",
+    "host/iardo-vps-iardoo/komodo-dpl.yml",
 ]
 
 additional_env_files = [
     # HOST
-    { track = true,  path = "host/iardo-vps-iardodev/.env" },
-    { track = false, path = "host/iardo-vps-iardodev/.env-secrets" },
-    { track = false, path = "host/iardo-vps-iardodev/.env-secrets.local" },
+    { track = true,  path = "host/iardo-vps-iardoo/.env" },
+    { track = false, path = "host/iardo-vps-iardoo/.env-secrets" },
+    { track = false, path = "host/iardo-vps-iardoo/.env-secrets.local" },
     # SERV
     { track = true, path = "serv/actual/.env" },
-    { track = true, path = "serv/authentik/.env" },
     { track = true, path = "serv/linkace/.env" },
-    { track = true, path = "serv/n8n/.env" },
-    { track = true, path = "serv/open-project/.env" },
-    { track = true, path = "serv/outline/.env" },
 ]
 
 pre_deploy.shell_mode = false
 pre_deploy.command = """
-    [ -f host/iardo-vps-iardodev/.env-secrets.local ] || cp host/iardo-vps-iardodev/.env-secrets host/iardo-vps-iardodev/.env-secrets.local
+    [ -f host/iardo-vps-iardoo/.env-secrets.local ] || cp host/iardo-vps-iardoo/.env-secrets host/iardo-vps-iardoo/.env-secrets.local
 
     # Actual
     bash serv/actual/task/task-gen-directories.sh
     bash serv/actual/task/task-set-permissions.sh
 
-    # Authentik
-    bash serv/authentik/task/task-gen-directories.sh
-    bash serv/authentik/task/task-set-permissions.sh
-
     # Linkace
     bash serv/linkace/task/task-gen-directories.sh
     bash serv/linkace/task/task-set-permissions.sh
 
-    # n8n
-    bash serv/n8n/task/task-gen-directories.sh
-    bash serv/n8n/task/task-set-permissions.sh
-
-    # Nginx Proxy Manager
-    bash serv/nginx-proxy-manager/task/task-gen-directories.sh
-    bash serv/nginx-proxy-manager/task/task-set-permissions.sh
-
     # Ntfy
     bash serv/ntfy/task/task-set-initial-files.sh
-
-    # Open Project
-    bash serv/open-project/task/task-gen-directories.sh
-    bash serv/open-project/task/task-set-permissions.sh
-
-    # Trilium Next
-    bash serv/trilium-next/task/task-gen-directories.sh
-    bash serv/trilium-next/task/task-set-permissions.sh
 """

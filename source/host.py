@@ -15,23 +15,31 @@ host_dir = os.path.join(host_dir, '..', 'host')
 
 class Host:
     '''
-    Reads user configuration and returns its list of services
+    Reads host configuration and returns its list of services.
+    Reads host "docker-compose.yml" and "komodo-dpl.yml".
     '''
     @staticmethod
-    def conf_read(host: str):
-        user_file = os.path.join(host_dir, host, 'docker-compose.yml')
-        handle = open(user_file, 'r')
-        user_conf = ymlload(handle, Loader=FullLoader)
-        handle.close()
-        user_conf = user_conf['include'] or []
+    def conf_read(host: str, file_names: tuple = ('docker-compose.yml',)):
+        services = []
 
-        for index, conf in enumerate(user_conf):
-            conf = conf.replace('${SERV:?}', '')
-            conf = conf.replace('${FILE:?}', '')
-            conf = conf.replace('/', '')
-            user_conf[index] = conf
-        
-        return user_conf
+        for file_name in file_names:
+            user_file = os.path.join(host_dir, host, file_name)
+            if not os.path.exists(user_file):
+                continue
+
+            handle = open(user_file, 'r')
+            user_conf = ymlload(handle, Loader=FullLoader)
+            handle.close()
+            user_conf = user_conf['include'] or []
+
+            for conf in user_conf:
+                conf = conf.replace('${SERV:?}', '')
+                conf = conf.replace('${FILE:?}', '')
+                conf = conf.replace('/', '')
+                if conf not in services:
+                    services.append(conf)
+
+        return services
     
     '''
     Reads one env file into a dict,

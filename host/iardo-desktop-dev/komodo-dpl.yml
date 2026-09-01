@@ -1,7 +1,7 @@
 # NOTE:
 # Used only by Komodo's own stack deploy (see komodo-stk.toml).
 include: [
-  # caddy
-  # changedetection
-  # dozzle
+  '${SERV:?}/caddy/${FILE:?}',
+  '${SERV:?}/changedetection/${FILE:?}',
+  '${SERV:?}/dozzle/${FILE:?}',
 ]

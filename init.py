@@ -7,6 +7,7 @@ from source.environment import Env
 from source.globals.error import Error
 from source.globals.strings import Strings
 from source.host import Host
+from source.secret import Secret
 from source.service import Service
 from source.struct.args import Args
 
@@ -23,10 +24,12 @@ def main():
 
     args = Args.read()
     host = Host.select(args.host)
-    conf = Host.conf_read(host)
+    conf = Host.conf_read(host, ('docker-compose.yml', 'komodo-dpl.yml'))
 
     Env.clean(host)
     Env.build(host, conf)
+    Secret.clean(host)
+    Secret.build(host, conf)
     Service.init(conf)
 
 main()

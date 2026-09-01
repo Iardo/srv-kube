@@ -1,0 +1,30 @@
+# References
+# --------------------
+# https://hub.docker.com/_/caddy
+# https://caddyserver.com/docs/quick-starts/docker
+
+networks:
+  caddy:
+    name: caddy
+
+volumes:
+  caddy-data:
+    name: caddy-data
+  caddy-config:
+    name: caddy-config
+
+services:
+  caddy-web:
+    image: caddy:2.10.2
+    container_name: caddy-web
+    restart: unless-stopped
+    networks:
+      - caddy
+    ports:
+      - ${CADDY_WEB_HTTP:-80}:80
+      - ${CADDY_WEB_HTTPS:-443}:443
+    volumes:
+      - caddy-data:/data
+      - caddy-config:/config
+      - ./conf/Caddyfile:/etc/caddy/Caddyfile
+      

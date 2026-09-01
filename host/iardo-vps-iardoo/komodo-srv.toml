@@ -1,5 +1,5 @@
 [[server]]
-name = "iardo-vps-iardodev"
+name = "iardo-vps-iardoo"
 
 [server.config]
 enabled = true
