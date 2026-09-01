@@ -1,0 +1,55 @@
+# Reverse Proxy
+# --------------------
+# https://caddyserver.com/docs/caddyfile
+
+# Not published to the host,
+# only reachable by other containers on the "caddy" network (e.g. caddy-ui-backend).
+{
+    admin 0.0.0.0:2019
+    log {
+        output file /var/log/caddy/access.log
+    }
+}
+
+# Services
+# --------------------
+http://authentik.iardo-vps-iardodev:7000 {
+    reverse_proxy host.docker.internal:5000
+}
+
+http://authentik-https.iardo-vps-iardodev:7000 {
+    reverse_proxy https://host.docker.internal:5001 {
+        transport http {
+            tls_insecure_skip_verify
+        }
+    }
+}
+
+http://komodo.iardo-vps-iardodev:7000 {
+    reverse_proxy host.docker.internal:31000
+}
+
+http://komodo-https.iardo-vps-iardodev:7000 {
+    reverse_proxy https://host.docker.internal:31001 {
+        transport http {
+            tls_insecure_skip_verify
+        }
+    }
+}
+
+http://open-project.iardo-vps-iardodev:7000 {
+    reverse_proxy host.docker.internal:19000
+}
+
+http://outline.iardo-vps-iardodev:7000 {
+    reverse_proxy host.docker.internal:19002
+}
+
+http://outline-https.iardo-vps-iardodev:7000 {
+    reverse_proxy https://host.docker.internal:19003 {
+        transport http {
+            tls_insecure_skip_verify
+        }
+    }
+}
+

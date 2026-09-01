@@ -50,6 +50,10 @@ class Env:
     port_list = Enum('group', [ 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'])
     port_start_at = 4000
 
+    # Komodo doesn't get a letter-group slot like everything else,
+    # it gets this fixed, reserved block instead.
+    komodo_port_base = 31000
+
     '''
     Cleans-up all the ports from the environment file
     '''
@@ -86,9 +90,22 @@ class Env:
         try:
             env_path = os.path.join(host, '.env')
             env_file = open(env_path, 'a')
+
+            if 'komodo' in user_conf:
+                env_file.write('# komodo (reserved, always this range)\n')
+                env_file.write('# ----\n')
+                count = Env.komodo_port_base
+                for serv_container in Service.serv_list['komodo']:
+                    postfix = serv_container.replace('-', '_').upper()
+                    env_file.write(f'KOMODO_{postfix}={count}\n')
+                    count = count + 1
+                env_file.write('\n')
+
             for index, (serv_name, serv_containers) in enumerate(Service.serv_list.items()):
                 passes = passes + 1
 
+                if serv_name == 'komodo':
+                    continue
                 if not serv_name in user_conf:
                     continue
                 if group != serv_name[0]:
