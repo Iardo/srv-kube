@@ -1,0 +1,27 @@
+[[stack]]
+name = "host-testing"
+
+[stack.config]
+server        = "host-testing"
+branch        = "kubernetes"
+repo          = "iardo/srv-kube"
+clone_path    = "/etc/srv-kube"
+run_directory = "/etc/srv-kube"
+
+file_paths = [
+    "host/@host-testing/komodo-dpl.yml",
+]
+
+additional_env_files = [
+    # HOST
+    { track = true,  path = "host/@host-testing/.env" },
+    { track = false, path = "host/@host-testing/.env-secrets" },
+    { track = false, path = "host/@host-testing/.env-secrets.local" },
+    # SERV
+    { track = true, path = "serv/changedetection/.env" },
+]
+
+pre_deploy.shell_mode = false
+pre_deploy.command = """
+    [ -f host/@host-testing/.env-secrets.local ] || cp host/@host-testing/.env-secrets host/@host-testing/.env-secrets.local
+"""
