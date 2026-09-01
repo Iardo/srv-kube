@@ -80,6 +80,11 @@ class Caddy:
         try:
             domain = os.path.basename(os.path.normpath(host)).lstrip('@')
             env = Host.read_env_file(os.path.join(host, '.env'))
+            # NOTE:
+            # Caddy itself is published without port remapping
+            # so its own real, externally reachable port has to be spelled out in each site address
+            # otherwise it defaults to assuming 80.
+            caddy_web_http = env.get('CADDY_WEB_HTTP', '80')
             caddy_path = os.path.join(host, 'caddyfile')
             caddy_file = open(caddy_path, 'a')
             for serv_name, serv_containers in Service.serv_list.items():
@@ -88,20 +93,19 @@ class Caddy:
 
                 prefix = serv_name.replace('-', '_').upper()
 
-                # Explicit "http://" scheme so Caddy doesn't assume standard
-                # ports 80/443 and try to auto-upgrade to HTTPS - these are
-                # arbitrary, per-host published ports (see host's .env).
+                # Explicit "http://" scheme and this host's real port
+                # so Caddy doesn't assume standard ports 80/443 and try to auto-upgrade to HTTPS.
                 if 'web-http' in serv_containers:
                     port = env.get(f'{prefix}_WEB_HTTP')
                     if port:
-                        caddy_file.write(f'http://{serv_name}.{domain} {{\n')
+                        caddy_file.write(f'http://{serv_name}.{domain}:{caddy_web_http} {{\n')
                         caddy_file.write(f'    reverse_proxy host.docker.internal:{port}\n')
                         caddy_file.write(f'}}\n\n')
 
                 if 'web-https' in serv_containers:
                     port = env.get(f'{prefix}_WEB_HTTPS')
                     if port:
-                        caddy_file.write(f'http://{serv_name}-https.{domain} {{\n')
+                        caddy_file.write(f'http://{serv_name}-https.{domain}:{caddy_web_http} {{\n')
                         caddy_file.write(f'    reverse_proxy https://host.docker.internal:{port} {{\n')
                         caddy_file.write(f'        transport http {{\n')
                         caddy_file.write(f'            tls_insecure_skip_verify\n')

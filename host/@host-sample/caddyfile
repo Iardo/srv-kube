@@ -2,8 +2,17 @@
 # --------------------
 # https://caddyserver.com/docs/caddyfile
 
-# localhost {
-#     # Services
-#     # --------------------
-#     reverse_proxy other-container:8080
+# Not published to the host,
+# only reachable by other containers on the "caddy" network (e.g. caddy-ui-backend).
+{
+    admin 0.0.0.0:2019
+    log {
+        output file /var/log/caddy/access.log
+    }
+}
+
+# Services
+# --------------------
+# http://service.host-sample {
+#     reverse_proxy host.docker.internal:80
 # }

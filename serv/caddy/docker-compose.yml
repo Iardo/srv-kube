@@ -24,8 +24,8 @@ services:
     networks:
       - caddy
     ports:
-      - ${CADDY_WEB_HTTP:-80}:80
-      - ${CADDY_WEB_HTTPS:-443}:443
+      - ${CADDY_WEB_HTTP:-80}:${CADDY_WEB_HTTP:-80}
+      - ${CADDY_WEB_HTTPS:-443}:${CADDY_WEB_HTTPS:-443}
     # Other services each sit on their own isolated network, not caddy's,
     # so a per-host Caddyfile reaches them via their published host port
     # through host.docker.internal instead of by container name.

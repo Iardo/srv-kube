@@ -13,11 +13,11 @@
 
 # Services
 # --------------------
-http://changedetection.host-testing {
+http://changedetection.host-testing:7000 {
     reverse_proxy host.docker.internal:7004
 }
 
-http://dozzle.host-testing {
+http://dozzle.host-testing:7000 {
     reverse_proxy host.docker.internal:8000
 }
 
