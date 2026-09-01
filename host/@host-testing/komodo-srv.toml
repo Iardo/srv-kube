@@ -2,5 +2,5 @@
 name = "host-testing"
 
 [server.config]
-enabled = false
+enabled = true
 # address = "http://host-testing:9120"
