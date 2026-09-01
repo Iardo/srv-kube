@@ -2,7 +2,7 @@
 
 import subprocess
 
-class Compose:
+class DockerUtil:
     '''
     Gets correct "docker-compose" command based on installed version
     '''

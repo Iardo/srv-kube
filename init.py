@@ -5,12 +5,12 @@ import sys
 
 from source.caddy import Caddy
 from source.dnsmasq import Dnsmasq
-from source.environment import Env
+from source.envs import Env
 from source.globals.error import Error
 from source.globals.strings import Strings
 from source.host import Host
 from source.secret import Secret
-from source.service import Service
+from source.serv import Service
 from source.struct.args import Args
 
 
@@ -36,6 +36,7 @@ def main():
     Caddy.build(host, conf)
     Dnsmasq.clean(host, conf)
     Dnsmasq.build(host, conf)
+    Dnsmasq.build_script(host, conf)
     Service.init(conf)
 
 main()

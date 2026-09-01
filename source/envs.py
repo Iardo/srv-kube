@@ -40,7 +40,7 @@ Z = 30000→30999
 import os
 
 from enum import Enum
-from source.service import Service
+from source.serv import Service
 
 class Env:
     env_line_target = "# Generated"

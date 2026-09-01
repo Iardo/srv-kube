@@ -8,7 +8,7 @@
 
 import os
 
-from source.service import Service
+from source.serv import Service
 
 class Secret:
     secret_line_target = "# Services"

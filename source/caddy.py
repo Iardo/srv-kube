@@ -3,7 +3,7 @@
 import os
 
 from source.host import Host
-from source.service import Service
+from source.serv import Service
 
 class Caddy:
     caddy_line_target = "# Services"
