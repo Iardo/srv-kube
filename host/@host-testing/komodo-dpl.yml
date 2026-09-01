@@ -3,5 +3,6 @@
 include: [
   '${SERV:?}/caddy/${FILE:?}',
   '${SERV:?}/changedetection/${FILE:?}',
+  '${SERV:?}/dnsmasq/${FILE:?}',
   '${SERV:?}/dozzle/${FILE:?}',
 ]

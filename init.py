@@ -4,6 +4,7 @@ import os
 import sys
 
 from source.caddy import Caddy
+from source.dnsmasq import Dnsmasq
 from source.environment import Env
 from source.globals.error import Error
 from source.globals.strings import Strings
@@ -33,6 +34,8 @@ def main():
     Secret.build(host, conf)
     Caddy.clean(host, conf)
     Caddy.build(host, conf)
+    Dnsmasq.clean(host, conf)
+    Dnsmasq.build(host, conf)
     Service.init(conf)
 
 main()

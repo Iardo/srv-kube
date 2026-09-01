@@ -67,10 +67,11 @@ class Caddy:
             print(err)
 
     '''
-    Generates a reverse-proxy site block for every included service that has
-    a "web-http"/"web-https" port, addressed as "<service>.<host-name>"
-    (the host directory's own name, "@" stripped). Only applies to hosts
-    that include "caddy".
+    Generates one wildcard site block for the host,
+    with one subdomain route inside it per included service
+    that has a "web-http"/"web-https" port.
+    
+    Only applies to hosts that include "caddy".
     '''
     @staticmethod
     def build(host: str, user_conf: list):
@@ -90,33 +91,48 @@ class Caddy:
             # Its API only exposes "match.host", never the listener's port,
             # so its links always default to :80 regardless of what's set here.
             caddy_web_http = env.get('CADDY_WEB_HTTP', '80')
-            caddy_path = os.path.join(host, 'caddyfile')
-            caddy_file = open(caddy_path, 'a')
+
+            routes = []
             for serv_name, serv_containers in Service.serv_list.items():
                 if serv_name == 'caddy' or serv_name not in user_conf:
                     continue
 
                 prefix = serv_name.replace('-', '_').upper()
 
-                # Explicit "http://" scheme and this host's real port
-                # so Caddy doesn't assume standard ports 80/443 and try to auto-upgrade to HTTPS.
                 if 'web-http' in serv_containers:
                     port = env.get(f'{prefix}_WEB_HTTP')
                     if port:
-                        caddy_file.write(f'http://{serv_name}.{domain}:{caddy_web_http} {{\n')
-                        caddy_file.write(f'    reverse_proxy host.docker.internal:{port}\n')
-                        caddy_file.write(f'}}\n\n')
+                        routes.append((serv_name, f'host.docker.internal:{port}', False))
 
                 if 'web-https' in serv_containers:
                     port = env.get(f'{prefix}_WEB_HTTPS')
                     if port:
-                        caddy_file.write(f'http://{serv_name}-https.{domain}:{caddy_web_http} {{\n')
-                        caddy_file.write(f'    reverse_proxy https://host.docker.internal:{port} {{\n')
-                        caddy_file.write(f'        transport http {{\n')
-                        caddy_file.write(f'            tls_insecure_skip_verify\n')
-                        caddy_file.write(f'        }}\n')
-                        caddy_file.write(f'    }}\n')
-                        caddy_file.write(f'}}\n\n')
+                        routes.append((f'{serv_name}-https', f'https://host.docker.internal:{port}', True))
+
+            if not routes:
+                return
+
+            caddy_path = os.path.join(host, 'caddyfile')
+            caddy_file = open(caddy_path, 'a')
+
+            # Explicit "http://" scheme and this host's real port so Caddy
+            # doesn't assume standard ports 80/443 and try to auto-upgrade
+            # to HTTPS.
+            caddy_file.write(f'http://*.{domain}:{caddy_web_http} {{\n')
+            for name, upstream, is_https in routes:
+                matcher = name.replace('-', '_')
+                caddy_file.write(f'    @{matcher} host {name}.{domain}\n')
+                caddy_file.write(f'    handle @{matcher} {{\n')
+                if is_https:
+                    caddy_file.write(f'        reverse_proxy {upstream} {{\n')
+                    caddy_file.write(f'            transport http {{\n')
+                    caddy_file.write(f'                tls_insecure_skip_verify\n')
+                    caddy_file.write(f'            }}\n')
+                    caddy_file.write(f'        }}\n')
+                else:
+                    caddy_file.write(f'        reverse_proxy {upstream}\n')
+                caddy_file.write(f'    }}\n\n')
+            caddy_file.write('}\n')
             caddy_file.close()
         except Exception as err:
             print(err)

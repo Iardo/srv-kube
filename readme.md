@@ -60,6 +60,28 @@ Commit and push before every deploy, Komodo only ever sees what's on `origin`.
 
 ---
 
+## Wildcard Domains (Caddy)
+
+If a host includes `caddy`, `./init.py` writes it a `caddyfile` at `host/<host-name>/caddyfile`.\
+If it also includes `dnsmasq`, `./init.py` writes it a `dnsmasq.conf` the same way,
+with a wildcard rule so `*.<host-name>` resolves to `127.0.0.1`.
+
+Which file actually gets mounted can be overridden per-host,
+set `CADDY_CADDYFILE` / `DNSMASQ_CONF` in that host's `.env` to a path
+relative to `serv/caddy` / `serv/dnsmasq`.\
+Point it somewhere other than
+that host's own auto-generated file to stop `./init.py` from touching it.
+
+For those domains to actually resolve on your machine, point it at dnsmasq once:
+```
+sudo mkdir -p /etc/systemd/resolved.conf.d
+printf '[Resolve]\nDNS=127.0.0.1:<DNSMASQ_DNS>\nDomains=~<host-name> ~<host-name>\n' | sudo tee /etc/systemd/resolved.conf.d/dnsmasq-wildcards.conf
+sudo systemctl restart systemd-resolved
+```
+This file isn't auto-updated, re-run it if you add a host or the port changes.
+
+---
+
 ## Clean-up
 
 Stopping services doesn't delete their data or config.

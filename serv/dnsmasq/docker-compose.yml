@@ -1,0 +1,21 @@
+# References
+# --------------------
+# https://hub.docker.com/r/4km3/dnsmasq
+
+services:
+  dnsmasq:
+    image: 4km3/dnsmasq:2.90-r3
+    container_name: dnsmasq
+    restart: unless-stopped
+    cap_add:
+      - NET_ADMIN
+    # Bound to loopback only - this resolves wildcard *.<host-name> domains
+    # for services on THIS machine, it's not a general-purpose DNS server.
+    ports:
+      - 127.0.0.1:${DNSMASQ_DNS:-5353}:53/tcp
+      - 127.0.0.1:${DNSMASQ_DNS:-5353}:53/udp
+    volumes:
+      # Per-host override: Set DNSMASQ_CONF in that host's .env
+      # to a path relative to this file (e.g. ../../host/<host>/dnsmasq.conf),
+      # otherwise falls back to this generic example.
+      - ${DNSMASQ_CONF:-./conf/dnsmasq.conf}:/etc/dnsmasq.conf

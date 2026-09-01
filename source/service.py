@@ -22,6 +22,7 @@ class Service:
         'crafty': ['web-http', 'web-https', 'dynmap', 'bedrock'],
         'cronicle': ['web-http'],
         'cronjob-org': ['web-http', 'database-master', 'database-node'],
+        'dnsmasq': ['dns'],
         'dockermon': ['web-http', 'api', 'websocket'],
         'docmost': ['web-http', 'database', 'cache'],
         'dozzle': ['web-http'],
