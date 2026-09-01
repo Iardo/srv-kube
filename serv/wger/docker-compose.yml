@@ -3,6 +3,11 @@
 # https://github.com/wger-project/docker
 # https://hub.docker.com/r/wger/server
 
+# NOTE:
+# Minimal setup (just web + database).
+# Ignoring redis (cache/celery), celery_worker, celery_beat and nginx,
+# all optional per wger's own settings/main.py
+
 networks:
   wger:
     name: wger
@@ -18,30 +23,21 @@ services:
     restart: unless-stopped
     depends_on:
       - wger-database
-      - wger-cache
     networks:
       - wger
     ports:
-      - ${WGER_WEB_HTTP:-80}:80
+      - ${WGER_WEB_HTTP:-8000}:8000
     volumes:
       - ./data/media:/home/wger/media
       - ./data/static:/home/wger/static
     env_file: .env
     environment:
-      DJANGO_DB_ENGINE: django.db.backends.postgresql
-      DJANGO_DB_HOST: wger-database
-      DJANGO_DB_NAME: wger
-      DJANGO_DB_USER: ${WGER_POSTGRESQL_USER:?}
-      DJANGO_DB_PASSWORD: ${WGER_POSTGRESQL_PASS:?}
-      DJANGO_CACHE_HOST: wger-cache
-      DJANGO_SECRET_KEY: ${WGER_SECRET_KEY:?}
+      # A single connection string takes priority over DJANGO_DB_* entirely,
+      # see wger's own settings/main.py.
+      PS_DATABASE_URI: postgres://${WGER_POSTGRESQL_USER:?}:${WGER_POSTGRESQL_PASS:?}@wger-database:5432/wger
+      SECRET_KEY: ${WGER_SECRET_KEY:?}
+      DJANGO_DEBUG: 'False'
 
-  wger-cache:
-    image: redis:7
-    container_name: wger-cache
-    restart: unless-stopped
-    networks:
-      - wger
 
   wger-database:
     image: postgres:15
