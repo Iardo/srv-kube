@@ -13,6 +13,315 @@
 
 # Services
 # --------------------
-# http://service.host-sample {
-#     reverse_proxy host.docker.internal:80
-# }
+http://actual.host-sample:7000 {
+    reverse_proxy host.docker.internal:5000
+}
+
+http://aria2-pro.host-sample:7000 {
+    reverse_proxy host.docker.internal:5001
+}
+
+http://authentik.host-sample:7000 {
+    reverse_proxy host.docker.internal:5005
+}
+
+http://authentik-https.host-sample:7000 {
+    reverse_proxy https://host.docker.internal:5006 {
+        transport http {
+            tls_insecure_skip_verify
+        }
+    }
+}
+
+http://azimutt.host-sample:7000 {
+    reverse_proxy host.docker.internal:5009
+}
+
+http://changedetection.host-sample:7000 {
+    reverse_proxy host.docker.internal:7004
+}
+
+http://cloudbeaver.host-sample:7000 {
+    reverse_proxy host.docker.internal:7005
+}
+
+http://crafty.host-sample:7000 {
+    reverse_proxy host.docker.internal:7006
+}
+
+http://crafty-https.host-sample:7000 {
+    reverse_proxy https://host.docker.internal:7007 {
+        transport http {
+            tls_insecure_skip_verify
+        }
+    }
+}
+
+http://cronicle.host-sample:7000 {
+    reverse_proxy host.docker.internal:7010
+}
+
+http://cronjob-org.host-sample:7000 {
+    reverse_proxy host.docker.internal:7011
+}
+
+http://dockermon.host-sample:7000 {
+    reverse_proxy host.docker.internal:8001
+}
+
+http://docmost.host-sample:7000 {
+    reverse_proxy host.docker.internal:8004
+}
+
+http://drawdb.host-sample:7000 {
+    reverse_proxy host.docker.internal:8007
+}
+
+http://excalidraw.host-sample:7000 {
+    reverse_proxy host.docker.internal:9001
+}
+
+http://firefly3.host-sample:7000 {
+    reverse_proxy host.docker.internal:10000
+}
+
+http://gatus.host-sample:7000 {
+    reverse_proxy host.docker.internal:11000
+}
+
+http://grimoire.host-sample:7000 {
+    reverse_proxy host.docker.internal:11001
+}
+
+http://grist.host-sample:7000 {
+    reverse_proxy host.docker.internal:11003
+}
+
+http://guacamole.host-sample:7000 {
+    reverse_proxy host.docker.internal:11006
+}
+
+http://highlight.host-sample:7000 {
+    reverse_proxy host.docker.internal:12000
+}
+
+http://home-assistant.host-sample:7000 {
+    reverse_proxy host.docker.internal:12001
+}
+
+http://homepage.host-sample:7000 {
+    reverse_proxy host.docker.internal:12002
+}
+
+http://huly.host-sample:7000 {
+    reverse_proxy host.docker.internal:12003
+}
+
+http://infisical.host-sample:7000 {
+    reverse_proxy host.docker.internal:13000
+}
+
+http://jellyfin.host-sample:7000 {
+    reverse_proxy host.docker.internal:14000
+}
+
+http://jellyfin-https.host-sample:7000 {
+    reverse_proxy https://host.docker.internal:14001 {
+        transport http {
+            tls_insecure_skip_verify
+        }
+    }
+}
+
+http://komodo.host-sample:7000 {
+    reverse_proxy host.docker.internal:15000
+}
+
+http://komodo-https.host-sample:7000 {
+    reverse_proxy https://host.docker.internal:15001 {
+        transport http {
+            tls_insecure_skip_verify
+        }
+    }
+}
+
+http://linkace.host-sample:7000 {
+    reverse_proxy host.docker.internal:16000
+}
+
+http://linkace-https.host-sample:7000 {
+    reverse_proxy https://host.docker.internal:16001 {
+        transport http {
+            tls_insecure_skip_verify
+        }
+    }
+}
+
+http://linkwarden.host-sample:7000 {
+    reverse_proxy host.docker.internal:16004
+}
+
+http://mirotalksfu.host-sample:7000 {
+    reverse_proxy host.docker.internal:17000
+}
+
+http://monica.host-sample:7000 {
+    reverse_proxy host.docker.internal:17001
+}
+
+http://n8n.host-sample:7000 {
+    reverse_proxy host.docker.internal:18000
+}
+
+http://netdata.host-sample:7000 {
+    reverse_proxy host.docker.internal:18002
+}
+
+http://nginx-proxy-manager.host-sample:7000 {
+    reverse_proxy host.docker.internal:18003
+}
+
+http://nginx-proxy-manager-https.host-sample:7000 {
+    reverse_proxy https://host.docker.internal:18004 {
+        transport http {
+            tls_insecure_skip_verify
+        }
+    }
+}
+
+http://nginx.host-sample:7000 {
+    reverse_proxy host.docker.internal:18006
+}
+
+http://ntfy.host-sample:7000 {
+    reverse_proxy host.docker.internal:18014
+}
+
+http://oneuptime.host-sample:7000 {
+    reverse_proxy host.docker.internal:19000
+}
+
+http://open-project.host-sample:7000 {
+    reverse_proxy host.docker.internal:19001
+}
+
+http://outline.host-sample:7000 {
+    reverse_proxy host.docker.internal:19003
+}
+
+http://outline-https.host-sample:7000 {
+    reverse_proxy https://host.docker.internal:19004 {
+        transport http {
+            tls_insecure_skip_verify
+        }
+    }
+}
+
+http://paperless-ngx.host-sample:7000 {
+    reverse_proxy host.docker.internal:20000
+}
+
+http://passbolt.host-sample:7000 {
+    reverse_proxy host.docker.internal:20002
+}
+
+http://passbolt-https.host-sample:7000 {
+    reverse_proxy https://host.docker.internal:20003 {
+        transport http {
+            tls_insecure_skip_verify
+        }
+    }
+}
+
+http://penpot.host-sample:7000 {
+    reverse_proxy host.docker.internal:20005
+}
+
+http://pihole.host-sample:7000 {
+    reverse_proxy host.docker.internal:20009
+}
+
+http://plane.host-sample:7000 {
+    reverse_proxy host.docker.internal:20013
+}
+
+http://planka.host-sample:7000 {
+    reverse_proxy host.docker.internal:20017
+}
+
+http://portainer.host-sample:7000 {
+    reverse_proxy host.docker.internal:20019
+}
+
+http://postal.host-sample:7000 {
+    reverse_proxy host.docker.internal:20020
+}
+
+http://scrutiny.host-sample:7000 {
+    reverse_proxy host.docker.internal:23000
+}
+
+http://sentry.host-sample:7000 {
+    reverse_proxy host.docker.internal:23002
+}
+
+http://speedtest-tracker.host-sample:7000 {
+    reverse_proxy host.docker.internal:23003
+}
+
+http://stumpapp.host-sample:7000 {
+    reverse_proxy host.docker.internal:23004
+}
+
+http://timetagger.host-sample:7000 {
+    reverse_proxy host.docker.internal:24000
+}
+
+http://tldraw.host-sample:7000 {
+    reverse_proxy host.docker.internal:24001
+}
+
+http://traefik.host-sample:7000 {
+    reverse_proxy host.docker.internal:24002
+}
+
+http://traefik-https.host-sample:7000 {
+    reverse_proxy https://host.docker.internal:24003 {
+        transport http {
+            tls_insecure_skip_verify
+        }
+    }
+}
+
+http://trilium-next.host-sample:7000 {
+    reverse_proxy host.docker.internal:24005
+}
+
+http://trudesk.host-sample:7000 {
+    reverse_proxy host.docker.internal:24006
+}
+
+http://tuleap.host-sample:7000 {
+    reverse_proxy host.docker.internal:24010
+}
+
+http://uptime-kuma.host-sample:7000 {
+    reverse_proxy host.docker.internal:25000
+}
+
+http://webcheck.host-sample:7000 {
+    reverse_proxy host.docker.internal:27000
+}
+
+http://wikijs.host-sample:7000 {
+    reverse_proxy host.docker.internal:27001
+}
+
+http://wikijs-https.host-sample:7000 {
+    reverse_proxy https://host.docker.internal:27002 {
+        transport http {
+            tls_insecure_skip_verify
+        }
+    }
+}
+
