@@ -11,15 +11,13 @@
     }
 }
 
-localhost {
-    # Services
-    # --------------------
-    handle_path /changedetection/* {
-        reverse_proxy host.docker.internal:7004
-    }
-
-    handle_path /dozzle/* {
-        reverse_proxy host.docker.internal:8000
-    }
-
+# Services
+# --------------------
+http://changedetection.iardo-desktop-dev {
+    reverse_proxy host.docker.internal:7004
 }
+
+http://dozzle.iardo-desktop-dev {
+    reverse_proxy host.docker.internal:8000
+}
+
