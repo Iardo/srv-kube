@@ -2,6 +2,7 @@
 # --------------------
 # https://hub.docker.com/_/caddy
 # https://caddyserver.com/docs/quick-starts/docker
+# https://github.com/zackwag/caddy-ui
 
 networks:
   caddy:
@@ -12,6 +13,8 @@ volumes:
     name: caddy-data
   caddy-config:
     name: caddy-config
+  caddy-ui-config:
+    name: caddy-ui-config
 
 services:
   caddy-web:
@@ -31,8 +34,46 @@ services:
     volumes:
       - caddy-data:/data
       - caddy-config:/config
+      - ./logs:/var/log/caddy
       # Per-host override: Set CADDY_CADDYFILE in that host's .env
       # to a path relative to this file (e.g. ../../host/<host>/caddyfile),
       # otherwise falls back to this generic example.
       - ${CADDY_CADDYFILE:-./conf/Caddyfile}:/etc/caddy/Caddyfile
-      
+
+  caddy-ui-backend:
+    image: zackwag/caddy-ui-backend:latest
+    container_name: caddy-ui-backend
+    restart: unless-stopped
+    depends_on:
+      - caddy-web
+    networks:
+      - caddy
+    ports:
+      - ${CADDY_WEB_UI_API:-3001}:3001
+    volumes:
+      - caddy-ui-config:/etc/caddy-ui
+      - caddy-data:/data/caddy
+      - ./logs:/var/log/caddy
+      # Same file caddy-web itself reads/writes
+      - ${CADDY_CADDYFILE:-./conf/Caddyfile}:/etc/caddy/Caddyfile
+    environment:
+      CADDY_ADMIN_URL: http://caddy-web:2019
+      CADDY_CONFIG_PATH: /etc/caddy/Caddyfile
+      CADDY_CONTAINER_NAME: caddy-web
+      CADDY_DATA_PATH: /data/caddy
+      CADDY_LOG_PATH: /var/log/caddy/access.log
+      CADDY_UI_USER: ${CADDY_UI_USER:?}
+      CADDY_UI_PASSWORD: ${CADDY_UI_PASS:?}
+      JWT_SECRET: ${CADDY_UI_JWT_SECRET:?}
+      PORT: '3001'
+
+  caddy-ui-frontend:
+    image: zackwag/caddy-ui-frontend:latest
+    container_name: caddy-ui-frontend
+    restart: unless-stopped
+    depends_on:
+      - caddy-ui-backend
+    networks:
+      - caddy
+    ports:
+      - ${CADDY_WEB_UI_HTTP:-80}:80

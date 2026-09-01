@@ -16,7 +16,7 @@ class Service:
         'aria2-pro': ['web-http', 'rpc', 'muse-tcp', 'muse-udp'],
         'authentik': ['web-http', 'web-https', 'database', 'cache'],
         'azimutt': ['web-http', 'database', 'gateway'],
-        'caddy': ['web-http', 'web-https'],
+        'caddy': ['web-http', 'web-https', 'web-ui-http', 'web-ui-api'],
         'changedetection': ['web-http'],
         'cloudbeaver': ['web-http'],
         'crafty': ['web-http', 'web-https', 'dynmap', 'bedrock'],
@@ -87,6 +87,11 @@ class Service:
         'azimutt': [
             ('AZIMUTT_POSTGRES_USER', 'azimutt # Dummy'),
             ('AZIMUTT_POSTGRES_PASS', 'azimutt # Dummy'),
+        ],
+        'caddy': [
+            ('CADDY_UI_USER', 'admin # Dummy'),
+            ('CADDY_UI_PASS', 'admin # Dummy'),
+            ('CADDY_UI_JWT_SECRET', random_hex),
         ],
         'cronjob-org': [
             ('CRONJOB_ORG_MYSQL_USER_MASTER', 'cronjoborg # Dummy'),
