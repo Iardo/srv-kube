@@ -56,7 +56,7 @@ services:
   immich-database:
     # NOTE: Must stay on this image, it ships the vector extension
     # Immich's database migrations depend on.
-    image: ghcr.io/immich-app/postgres:14-vectorchord0.4.3-pgvector0.8
+    image: ghcr.io/immich-app/postgres:14-vectorchord1.1.1-pgvector0.8.5
     container_name: immich-database
     restart: unless-stopped
     networks:
