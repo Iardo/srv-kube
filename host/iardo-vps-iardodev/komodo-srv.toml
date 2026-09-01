@@ -2,5 +2,5 @@
 name = "iardo-vps-iardodev"
 
 [server.config]
-enabled = true
+enabled = false
 # address = "http://iardo.dev:9120"
