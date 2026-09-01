@@ -80,10 +80,15 @@ class Caddy:
         try:
             domain = os.path.basename(os.path.normpath(host)).lstrip('@')
             env = Host.read_env_file(os.path.join(host, '.env'))
-            # NOTE:
-            # Caddy itself is published without port remapping
-            # so its own real, externally reachable port has to be spelled out in each site address
-            # otherwise it defaults to assuming 80.
+            # Caddy runs on a custom port here, not the usual 80.
+            # It has no way to know that on its own, so each site address
+            # below has to say the port out loud.
+            # Skip it and Caddy just assumes port 80, which breaks things.
+            #
+            # NOTE: 
+            # This still won't fix caddy-ui's own route links though.
+            # Its API only exposes "match.host", never the listener's port,
+            # so its links always default to :80 regardless of what's set here.
             caddy_web_http = env.get('CADDY_WEB_HTTP', '80')
             caddy_path = os.path.join(host, 'caddyfile')
             caddy_file = open(caddy_path, 'a')
