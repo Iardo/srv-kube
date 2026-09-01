@@ -1,6 +1,8 @@
 # NOTE:
 # Used only by Komodo's own stack deploy (see komodo-stk.toml).
 include: [
+  '${SERV:?}/caddy/${FILE:?}',
+  '${SERV:?}/dnsmasq/${FILE:?}',
   # adguard-home
   # aria2pro
   # bazarr

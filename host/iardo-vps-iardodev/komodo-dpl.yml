@@ -2,6 +2,8 @@
 # Used only by Komodo's own stack deploy (see komodo-stk.toml).
 include: [
   '${SERV:?}/authentik/${FILE:?}',
+  '${SERV:?}/caddy/${FILE:?}',
+  '${SERV:?}/dnsmasq/${FILE:?}',
   '${SERV:?}/open-project/${FILE:?}',
   '${SERV:?}/outline/${FILE:?}',
   # beszel

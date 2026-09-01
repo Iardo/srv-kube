@@ -2,6 +2,8 @@
 # Used only by Komodo's own stack deploy (see komodo-stk.toml).
 include: [
   '${SERV:?}/actual/${FILE:?}',
+  '${SERV:?}/caddy/${FILE:?}',
+  '${SERV:?}/dnsmasq/${FILE:?}',
   '${SERV:?}/linkace/${FILE:?}',
   '${SERV:?}/ntfy/${FILE:?}',
   # astralapp

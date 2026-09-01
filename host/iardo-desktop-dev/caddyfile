@@ -13,15 +13,11 @@
 
 # Services
 # --------------------
-http://*.iardo-desktop-dev:7000 {
-    @changedetection host changedetection.iardo-desktop-dev
-    handle @changedetection {
-        reverse_proxy host.docker.internal:7004
-    }
-
-    @dozzle host dozzle.iardo-desktop-dev
-    handle @dozzle {
-        reverse_proxy host.docker.internal:8000
-    }
-
+http://changedetection.iardo-desktop-dev:7000 {
+    reverse_proxy host.docker.internal:7004
 }
+
+http://dozzle.iardo-desktop-dev:7000 {
+    reverse_proxy host.docker.internal:8001
+}
+

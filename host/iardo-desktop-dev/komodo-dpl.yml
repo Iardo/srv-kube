@@ -2,7 +2,7 @@
 # Used only by Komodo's own stack deploy (see komodo-stk.toml).
 include: [
   '${SERV:?}/caddy/${FILE:?}',
-  '${SERV:?}/caddy-ui/${FILE:?}',
   '${SERV:?}/changedetection/${FILE:?}',
+  '${SERV:?}/dnsmasq/${FILE:?}',
   '${SERV:?}/dozzle/${FILE:?}',
 ]
