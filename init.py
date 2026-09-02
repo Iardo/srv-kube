@@ -4,6 +4,7 @@ import os
 import sys
 
 from source.caddy import Caddy
+from source.cleanup import Cleanup
 from source.dnsmasq import Dnsmasq
 from source.envs import Env
 from source.globals.error import Error
@@ -26,6 +27,11 @@ def main():
 
     args = Args.read()
     host = Host.select(args.host)
+
+    if args.cleanup:
+        Cleanup.run(host)
+        return
+
     conf = Host.conf_read(host, ('docker-compose.yml', 'komodo-dpl.yml'))
 
     Env.clean(host)

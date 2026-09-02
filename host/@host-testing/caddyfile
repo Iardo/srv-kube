@@ -13,95 +13,15 @@
 
 # Services
 # --------------------
-http://adguard-home.host-testing:7000 {
-    reverse_proxy host.docker.internal:5000
+http://openhands.host-testing:7000 {
+    reverse_proxy host.docker.internal:19000
 }
 
-http://aria2-pro.host-testing:7000 {
-    reverse_proxy host.docker.internal:5004
+http://openwebui.host-testing:7000 {
+    reverse_proxy host.docker.internal:19001
 }
 
-http://bazarr.host-testing:7000 {
-    reverse_proxy host.docker.internal:6000
-}
-
-http://docuseal.host-testing:7000 {
-    reverse_proxy host.docker.internal:8001
-}
-
-http://flood.host-testing:7000 {
-    reverse_proxy host.docker.internal:10000
-}
-
-http://homepage.host-testing:7000 {
-    reverse_proxy host.docker.internal:12000
-}
-
-http://immich.host-testing:7000 {
-    reverse_proxy host.docker.internal:13000
-}
-
-http://jackett.host-testing:7000 {
-    reverse_proxy host.docker.internal:14000
-}
-
-http://jellyfin.host-testing:7000 {
-    reverse_proxy host.docker.internal:14001
-}
-
-http://jellyfin-https.host-testing:7000 {
-    reverse_proxy https://host.docker.internal:14002 {
-        transport http {
-            tls_insecure_skip_verify
-        }
-    }
-}
-
-http://kavitareader.host-testing:7000 {
-    reverse_proxy host.docker.internal:15000
-}
-
-http://mealie.host-testing:7000 {
-    reverse_proxy host.docker.internal:17000
-}
-
-http://netbootxyz.host-testing:7000 {
-    reverse_proxy host.docker.internal:18000
-}
-
-http://paperless-ngx.host-testing:7000 {
-    reverse_proxy host.docker.internal:20000
-}
-
-http://radarr.host-testing:7000 {
-    reverse_proxy host.docker.internal:22000
-}
-
-http://romm.host-testing:7000 {
-    reverse_proxy host.docker.internal:22001
-}
-
-http://sonarr.host-testing:7000 {
-    reverse_proxy host.docker.internal:23000
-}
-
-http://speedtest-tracker.host-testing:7000 {
-    reverse_proxy host.docker.internal:23001
-}
-
-http://stumpapp.host-testing:7000 {
-    reverse_proxy host.docker.internal:23002
-}
-
-http://transmission.host-testing:7000 {
-    reverse_proxy host.docker.internal:24000
-}
-
-http://wger.host-testing:7000 {
-    reverse_proxy host.docker.internal:27000
-}
-
-http://wireguard-easy.host-testing:7000 {
-    reverse_proxy host.docker.internal:27003
+http://zeroclaw.host-testing:7000 {
+    reverse_proxy host.docker.internal:30000
 }
 

@@ -1,0 +1,41 @@
+# References
+# --------------------
+# https://github.com/ggml-org/llama.cpp
+# https://github.com/ggml-org/llama.cpp/blob/master/docs/docker.md
+
+# NOTE:
+# This host installs llama.cpp at machine level instead (see "install.sh"),
+# to access the GPU/Metal API directly. This compose file is only here for
+# hosts where a containerized, GPU-passthrough deployment makes more sense.
+
+networks:
+  llama-cpp:
+    name: llama-cpp
+
+services:
+  llama-cpp-web:
+    image: ghcr.io/ggml-org/llama.cpp:server
+    container_name: llama-cpp-web
+    restart: unless-stopped
+    networks:
+      - llama-cpp
+    ports:
+      - ${LLAMA_CPP_WEB_HTTP:-8080}:8080
+    volumes:
+      - ./data/models:/models
+    command:
+      - --model
+      - /models/${LLAMA_CPP_MODEL:?}
+      - --host
+      - 0.0.0.0
+      - --port
+      - '8080'
+    environment:
+      TZ: ${TIMEZONE:-America/Panama}
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]

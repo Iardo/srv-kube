@@ -21,6 +21,7 @@ class Service:
         'caddy': ['web-http', 'web-https', 'web-ui-http', 'web-ui-api'],
         'changedetection': ['web-http'],
         'cloudbeaver': ['web-http'],
+        'comfyui': ['web-http'],
         'crafty': ['web-http', 'web-https', 'dynmap', 'bedrock'],
         'cronicle': ['web-http'],
         'cronjob-org': ['web-http', 'database-master', 'database-node'],
@@ -50,6 +51,7 @@ class Service:
         'komodo': ['web-http', 'web-https', 'database', 'ferretdb'],
         'linkace': ['web-http', 'web-https', 'database', 'cache'],
         'linkwarden': ['web-http', 'database'],
+        'llama-cpp': ['web-http'],
         'mealie': ['web-http'],
         'mirotalksfu': ['web-http'],
         'monica': ['web-http'],
@@ -62,6 +64,8 @@ class Service:
         'ntfy': ['web-http'],
         'oneuptime': ['web-http'],
         'open-project': ['web-http', 'database'],
+        'openhands': ['web-http'],
+        'openwebui': ['web-http'],
         'outline': ['web-http', 'web-https', 'database', 'cache'],
         'paperless-ngx': ['web-http', 'database'],
         'passbolt': ['web-http', 'web-https', 'database'],
@@ -91,6 +95,7 @@ class Service:
         'wikijs': ['web-http', 'web-https', 'database'],
         'wireguard': ['vpn'],
         'wireguard-easy': ['vpn', 'web-http'],
+        'zeroclaw': ['web-http'],
     }
 
     '''
@@ -159,6 +164,9 @@ class Service:
             ('OPEN_PROJECT_POSTGRESQL_PASS', 'openproject # Dummy'),
             ('OPEN_PROJECT_SECRET_KEY_BASE', random_hex),
         ],
+        'openwebui': [
+            ('OPENWEBUI_SECRET_KEY', random_hex),
+        ],
         'paperless-ngx': [
             ('PAPERLESS_NGX_POSTGRESQL_USER', 'paperlessngx # Dummy'),
             ('PAPERLESS_NGX_POSTGRESQL_PASS', 'paperlessngx # Dummy'),
@@ -187,6 +195,9 @@ class Service:
         ],
         'wireguard-easy': [
             ('WIREGUARD_EASY_PASSWORD_HASH', '$$2a$$12$$dGVzdGluZ2R1bW15aGFzaHZhbHVlMTIzNDU2 # Dummy, generate a real one with: docker run ghcr.io/wg-easy/wg-easy wgpw yourpassword'),
+        ],
+        'zeroclaw': [
+            ('ZEROCLAW_OPENROUTER_API_KEY', 'sk-or-v1-changeme # Dummy, replace with a real OpenRouter API key'),
         ],
     }
 

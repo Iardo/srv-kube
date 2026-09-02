@@ -1,0 +1,32 @@
+# References
+# --------------------
+# https://github.com/open-webui/open-webui
+# https://docs.openwebui.com/getting-started/quick-start/
+
+networks:
+  openwebui:
+    name: openwebui
+
+volumes:
+  openwebui-data:
+    name: openwebui-data
+
+services:
+  openwebui-web:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: openwebui-web
+    restart: unless-stopped
+    networks:
+      - openwebui
+    ports:
+      - ${OPENWEBUI_WEB_HTTP:-8080}:8080
+    # llama.cpp (see serv/llama-cpp) runs at machine level on this host,
+    # not as a docker service, hence reaching it through host.docker.internal.
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    volumes:
+      - openwebui-data:/app/backend/data
+    env_file: .env
+    environment:
+      WEBUI_SECRET_KEY: ${OPENWEBUI_SECRET_KEY:?}
+      TZ: ${TIMEZONE:-America/Panama}

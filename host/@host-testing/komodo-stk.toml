@@ -18,23 +18,18 @@ additional_env_files = [
     { track = false, path = "host/@host-testing/.env-secrets" },
     { track = false, path = "host/@host-testing/.env-secrets.local" },
     # SERV
-    { track = true, path = "serv/docuseal/.env" },
-    { track = true, path = "serv/immich/.env" },
-    { track = true, path = "serv/paperless-ngx/.env" },
-    { track = true, path = "serv/romm/.env" },
-    { track = true, path = "serv/wger/.env" },
-    { track = true, path = "serv/wireguard-easy/.env" },
+    { track = true, path = "serv/openwebui/.env" },
 ]
 
 pre_deploy.shell_mode = false
 pre_deploy.command = """
     [ -f host/@host-testing/.env-secrets.local ] || cp host/@host-testing/.env-secrets host/@host-testing/.env-secrets.local
 
-    # Paperless-ngx
-    bash serv/paperless-ngx/task/task-gen-directories.sh
-    bash serv/paperless-ngx/task/task-set-permissions.sh
+    # ComfyUI
+    # Installed at machine level, not a container, to access metal api
+    bash serv/comfyui/install.sh
 
-    # Wger
-    bash serv/wger/task/task-gen-directories.sh
-    bash serv/wger/task/task-set-permissions.sh
+    # llama.cpp
+    # Installed at machine level, not a container, to access metal api
+    bash serv/llama-cpp/install.sh
 """

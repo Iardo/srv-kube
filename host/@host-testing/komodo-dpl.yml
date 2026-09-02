@@ -1,28 +1,12 @@
 # NOTE:
 # Used only by Komodo's own stack deploy (see komodo-stk.toml).
 include: [
-  '${SERV:?}/adguard-home/${FILE:?}',
-  '${SERV:?}/aria2-pro/${FILE:?}',
-  '${SERV:?}/bazarr/${FILE:?}',
   '${SERV:?}/caddy/${FILE:?}',
   '${SERV:?}/dnsmasq/${FILE:?}',
-  '${SERV:?}/docuseal/${FILE:?}',
-  '${SERV:?}/flood/${FILE:?}',
-  '${SERV:?}/homepage/${FILE:?}',
-  '${SERV:?}/immich/${FILE:?}',
-  '${SERV:?}/jackett/${FILE:?}',
-  '${SERV:?}/jellyfin/${FILE:?}',
-  '${SERV:?}/kavitareader/${FILE:?}',
-  '${SERV:?}/mealie/${FILE:?}',
-  '${SERV:?}/netbootxyz/${FILE:?}',
-  '${SERV:?}/paperless-ngx/${FILE:?}',
-  '${SERV:?}/radarr/${FILE:?}',
-  '${SERV:?}/romm/${FILE:?}',
-  '${SERV:?}/sonarr/${FILE:?}',
-  '${SERV:?}/speedtest-tracker/${FILE:?}',
-  '${SERV:?}/stumpapp/${FILE:?}',
-  '${SERV:?}/transmission/${FILE:?}',
-  '${SERV:?}/wger/${FILE:?}',
-  '${SERV:?}/wireguard/${FILE:?}',
-  '${SERV:?}/wireguard-easy/${FILE:?}',
+  '${SERV:?}/openhands/${FILE:?}',
+  '${SERV:?}/openwebui/${FILE:?}',
+  '${SERV:?}/zeroclaw/${FILE:?}',
 ]
+
+# comfyui - install at host server level to access metal api
+# llama.cpp - install at host server level to access metal api

@@ -1,0 +1,29 @@
+# References
+# --------------------
+# https://github.com/zeroclaw-labs/zeroclaw
+# https://github.com/zeroclaw-labs/zeroclaw/wiki/13.1-Docker-Deployment
+
+networks:
+  zeroclaw:
+    name: zeroclaw
+
+volumes:
+  zeroclaw-data:
+    name: zeroclaw-data
+
+services:
+  zeroclaw-web:
+    image: ghcr.io/zeroclaw-labs/zeroclaw:latest
+    container_name: zeroclaw-web
+    restart: unless-stopped
+    networks:
+      - zeroclaw
+    ports:
+      - ${ZEROCLAW_WEB_HTTP:-42617}:42617
+    volumes:
+      - zeroclaw-data:/zeroclaw-data
+    environment:
+      ZEROCLAW_gateway__host: 0.0.0.0
+      ZEROCLAW_gateway__port: '42617'
+      ZEROCLAW_providers__models__openrouter__default__api_key: ${ZEROCLAW_OPENROUTER_API_KEY:?}
+      TZ: ${TIMEZONE:-America/Panama}
