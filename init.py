@@ -35,6 +35,7 @@ def main():
     conf = Host.conf_read(host, ('docker-compose.yml', 'komodo-dpl.yml'))
 
     Env.clean(host)
+    Env.build_overrides(host, conf)
     Env.build(host, conf)
     Secret.clean(host)
     Secret.build(host, conf)

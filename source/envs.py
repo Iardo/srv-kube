@@ -54,6 +54,84 @@ class Env:
     # it gets this fixed, reserved block instead.
     komodo_port_base = 31000
 
+    # Per-host overrides that only make sense
+    # while their generated file exists,
+    # keyed by the service that owns it.
+    #
+    # Value is (header, key, filename).
+    override_list = {
+        'caddy'  : ('# Caddy'  , 'CADDY_CADDYFILE', 'caddyfile'),
+        'dnsmasq': ('# Dnsmasq', 'DNSMASQ_CONF'   , 'dnsmasq.conf'),
+    }
+
+    '''
+    Strips any previously-written service overrides,
+    so re-running "build_overrides" never accumulates duplicates.
+    '''
+    @staticmethod
+    def strip_overrides(host):
+        try:
+            headers = {header: f'{key}=' for header, key, _ in Env.override_list.values()}
+
+            env_path = os.path.join(host, '.env')
+            env_file = open(env_path, 'r')
+            lines = env_file.readlines()
+            env_file.close()
+
+            index = 0
+            while index < len(lines):
+                header = lines[index].strip()
+                if header in headers and \
+                   index + 1 < len(lines) and \
+                   lines[index + 1].startswith(headers[header]):
+                    remove = 2
+                    if index + 2 < len(lines) and not lines[index + 2].strip():
+                        remove = 3
+                    del lines[index:index + remove]
+                    continue
+                index = index + 1
+
+            env_file = open(env_path, 'w')
+            env_file.writelines(lines)
+            env_file.close()
+        except Exception as err:
+            print(err)
+
+    '''
+    Writes the caddy/dnsmasq per-host file overrides.
+    '''
+    @staticmethod
+    def build_overrides(host: str, user_conf: list):
+        Env.strip_overrides(host)
+
+        blocks = []
+        dirname = os.path.basename(os.path.normpath(host))
+        for serv_name, (header, key, filename) in Env.override_list.items():
+            if serv_name in user_conf:
+                blocks.append(f'{header}\n{key}=../../host/{dirname}/{filename}\n\n')
+
+        if not blocks:
+            return
+
+        try:
+            env_path = os.path.join(host, '.env')
+            env_file = open(env_path, 'r')
+            lines = env_file.readlines()
+            env_file.close()
+
+            for index, text in enumerate(lines):
+                if Env.env_line_target in text:
+                    insert_at = index - 1
+                    break
+
+            lines[insert_at:insert_at] = [line for block in blocks for line in block.splitlines(keepends=True)]
+
+            env_file = open(env_path, 'w')
+            env_file.writelines(lines)
+            env_file.close()
+        except Exception as err:
+            print(err)
+
     '''
     Cleans-up all the ports from the environment file
     '''

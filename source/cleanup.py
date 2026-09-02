@@ -2,9 +2,11 @@
 
 # Ruleset
 # ----------------------
-# Resets a host back to a blank slate: wipes generated ports/secrets,
-# removes the caddy/dnsmasq generated files, and rewrites the include
-# lists plus "komodo-stk.toml" back to their fresh, service-less form.
+# Resets a host back to a blank slate:
+#   - Wipes generated ports/secrets,
+#   - Removes the caddy/dnsmasq generated files
+#   - Rewrites the include lists plus "komodo-stk.toml" back to their fresh, service-less form.
+# 
 # Only touches the selected host, never anything else.
 
 import os
@@ -49,44 +51,6 @@ class Cleanup:
         '"""\n'
     )
 
-    # Per-host overrides that only make sense while their generated file
-    # still exists, keyed by the comment header that precedes them in ".env".
-    env_overrides = {
-        '# Caddy': 'CADDY_CADDYFILE=',
-        '# Dnsmasq': 'DNSMASQ_CONF=',
-    }
-
-    '''
-    Strips the caddy/dnsmasq override entries from ".env", since the files
-    they point to ("caddyfile", "dnsmasq.conf") no longer exist after cleanup.
-    '''
-    @staticmethod
-    def strip_env_overrides(host: str):
-        try:
-            env_path = os.path.join(host, '.env')
-            env_file = open(env_path, 'r')
-            lines = env_file.readlines()
-            env_file.close()
-
-            index = 0
-            while index < len(lines):
-                header = lines[index].strip()
-                if header in Cleanup.env_overrides and \
-                   index + 1 < len(lines) and \
-                   lines[index + 1].startswith(Cleanup.env_overrides[header]):
-                    remove = 2
-                    if index + 2 < len(lines) and not lines[index + 2].strip():
-                        remove = 3
-                    del lines[index:index + remove]
-                    continue
-                index = index + 1
-
-            env_file = open(env_path, 'w')
-            env_file.writelines(lines)
-            env_file.close()
-        except Exception as err:
-            print(err)
-
     '''
     Resets the given host to its initial, service-less state.
     '''
@@ -96,7 +60,7 @@ class Cleanup:
             dirname = os.path.basename(os.path.normpath(host))
             name = dirname.lstrip('@')
 
-            Cleanup.strip_env_overrides(host)
+            Env.strip_overrides(host)
             Env.clean(host)
             Secret.clean(host)
 
