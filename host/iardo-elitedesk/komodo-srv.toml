@@ -3,4 +3,4 @@ name = "iardo-elitedesk"
 
 [server.config]
 enabled = false
-address = "http://home.iardo-elitedesk:9120"
+address = "http://iardo-elitedesk:9120"

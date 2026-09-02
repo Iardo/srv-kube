@@ -3,4 +3,4 @@ name = "iardo-desktop-game"
 
 [server.config]
 enabled = false
-address = "http://home.iardo-desktop-game:9120"
+address = "http://iardo-desktop-game:9120"
