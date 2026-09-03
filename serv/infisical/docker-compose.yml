@@ -77,3 +77,5 @@ services:
     environment:
       DB_CONNECTION_URI: postgresql://${INFISICAL_POSTGRESQL_USER:?}:${INFISICAL_POSTGRESQL_PASS:?}@infisical-database:5432/infisical
       AUTH_SECRET: ${INFISICAL_AUTH_SECRET:?}
+      ENCRYPTION_KEY: ${INFISICAL_ENCRYPTION_KEY:?}
+

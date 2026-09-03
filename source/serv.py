@@ -4,14 +4,14 @@ import os
 import subprocess
 
 '''
-Generates a random 32-byte hex secret.
+Generates a random hex secret, "nbytes" long.
 '''
-def random_hex():
-    result = subprocess.run(['openssl', 'rand', '-hex', '32'], capture_output=True, text=True, check=True)
+def random_hex(nbytes=32):
+    result = subprocess.run(['openssl', 'rand', '-hex', str(nbytes)], capture_output=True, text=True, check=True)
     return result.stdout.strip()
 
 '''
-Generates a random base64-encoded 32-byte key, prefixed like a Laravel APP_KEY.
+Generates a random base64-encoded 32-byte key.
 '''
 def random_base64_key():
     result = subprocess.run(['openssl', 'rand', '-base64', '32'], capture_output=True, text=True, check=True)
@@ -175,7 +175,7 @@ class Service:
         'infisical': [
             ('INFISICAL_POSTGRESQL_USER', 'infisical # Dummy'),
             ('INFISICAL_POSTGRESQL_PASS', 'infisical # Dummy'),
-            ('INFISICAL_ENCRYPTION_KEY', random_hex),
+            ('INFISICAL_ENCRYPTION_KEY', lambda: random_hex(16)),
             ('INFISICAL_AUTH_SECRET', random_hex),
         ],
         'komodo': [
