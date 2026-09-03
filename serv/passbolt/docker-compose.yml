@@ -33,6 +33,15 @@ services:
       - passbolt-jwt:/etc/passbolt/jwt
     env_file: .env
     environment:
+      # NOTE:
+      # Passbolt only supports one base URL, it can't serve multiple
+      # hostnames/ports like some other services here.
+      # It should only be used over HTTPS anyway (it's a password manager),
+      # so this always points at the HTTPS port.
+      #
+      # The plain HTTP port (PASSBOLT_WEB_HTTP) will load a blank page,
+      # since its assets are all built against this HTTPS URL instead.
+      APP_FULL_BASE_URL: https://localhost:${PASSBOLT_WEB_HTTPS:?}
       DATASOURCES_DEFAULT_DRIVER: 'Cake\Database\Driver\Postgres'
       DATASOURCES_DEFAULT_ENCODING: utf8
       DATASOURCES_DEFAULT_HOST: passbolt-database
