@@ -2,6 +2,8 @@
 # --------------------
 # https://woodpecker-ci.org/docs/administration/installation/docker-compose
 # https://github.com/woodpecker-ci/woodpecker/blob/main/docker-compose.example.yaml
+# https://github.com/dagger/dagger
+# https://docs.dagger.io/reference/configuration/custom-runner/
 
 networks:
   woodpecker:
@@ -10,6 +12,8 @@ networks:
 volumes:
   woodpecker-data:
     name: woodpecker-data
+  dagger-engine-data:
+    name: dagger-engine-data
 
 services:
   woodpecker-web:
@@ -38,6 +42,7 @@ services:
     restart: unless-stopped
     depends_on:
       - woodpecker-web
+      - dagger-engine
     networks:
       - woodpecker
     volumes:
@@ -45,3 +50,18 @@ services:
     environment:
       WOODPECKER_SERVER: woodpecker-web:9000
       WOODPECKER_AGENT_SECRET: ${WOODPECKER_AGENT_SECRET:?}
+      # NOTE:
+      # Points any pipeline step running the "dagger" CLI at the shared engine below,
+      # instead of each step starting its own from scratch.
+      # This needs docker.sock mounted above, that's how it reaches it.
+      _EXPERIMENTAL_DAGGER_RUNNER_HOST: container://dagger-engine
+
+  dagger-engine:
+    image: registry.dagger.io/engine:v0.21.9
+    container_name: dagger-engine
+    restart: unless-stopped
+    privileged: true
+    networks:
+      - woodpecker
+    volumes:
+      - dagger-engine-data:/var/lib/dagger

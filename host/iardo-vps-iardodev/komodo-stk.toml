@@ -14,10 +14,11 @@ run_directory = "/etc/srv-kube"
 # "--build" tells it to build the image instead.
 extra_args = ["--build"]
 
-# NOTE:
+ NOTE:
 # One-shot jobs that exit 0 by design after doing their work (seeding, migrations)
 # without this Komodo flags them as unhealthy for exiting.
 ignore_services = [
+    "infisical-migration",
     "open-project-seeder",
     "open-project-upgrade",
 ]
@@ -28,38 +29,34 @@ file_paths = [
 
 additional_env_files = [
     # HOST
-    { track = true,  path = "host/iardo-vps-iardodev/.env" },
-    { track = false, path = "host/iardo-vps-iardodev/.env-secrets" },
-    { track = false, path = "host/iardo-vps-iardodev/.env-secrets.local" },
+    { track = true,  path = "host/@host-testing/.env" },
+    { track = false, path = "host/@host-testing/.env-secrets" },
+    { track = false, path = "host/@host-testing/.env-secrets.local" },
     # SERV
-    { track = true, path = "serv/actual/.env" },
-    { track = true, path = "serv/authentik/.env" },
-    { track = true, path = "serv/linkace/.env" },
-    { track = true, path = "serv/open-project/.env" },
-    { track = true, path = "serv/outline/.env" },
+    { track = true, path = "serv/bugsink/.env" },
+    { track = true, path = "serv/coolify/.env" },
+    { track = true, path = "serv/grafana/.env" },
+    { track = true, path = "serv/infisical/.env" },
+    { track = true, path = "serv/mailpit/.env" },
+    { track = true, path = "serv/openwebui/.env" },
+    { track = true, path = "serv/passbolt/.env" },
+    { track = true, path = "serv/woodpecker/.env" },
 ]
 
 pre_deploy.shell_mode = false
 pre_deploy.command = """
-    [ -f host/iardo-vps-iardodev/.env-secrets.local ] || cp host/iardo-vps-iardodev/.env-secrets host/iardo-vps-iardodev/.env-secrets.local
+    [ -f host/@host-testing/.env-secrets.local ] || cp host/@host-testing/.env-secrets host/@host-testing/.env-secrets.local
 
-    # Actual
-    bash serv/actual/task/task-gen-directories.sh
-    bash serv/actual/task/task-set-permissions.sh
+    # Coolify
+    bash serv/coolify/task/task-gen-directories.sh
+    bash serv/coolify/task/task-set-permissions.sh
 
-    # Authentik
-    bash serv/authentik/task/task-gen-directories.sh
-    bash serv/authentik/task/task-set-permissions.sh
+    # Caddy/dnsmasq bind-mount a single file, restart them only if it changed.
+    bash utils/task/task-restart-if-changed.sh \
+        host/@host-testing/caddyfile host/@host-testing/.caddyfile.sha256 \
+        caddy-web caddy-ui-backend caddy-ui-frontend
 
-    # Linkace
-    bash serv/linkace/task/task-gen-directories.sh
-    bash serv/linkace/task/task-set-permissions.sh
-
-    # Nginx Proxy Manager
-    bash serv/nginx-proxy-manager/task/task-gen-directories.sh
-    bash serv/nginx-proxy-manager/task/task-set-permissions.sh
-
-    # Open Project
-    bash serv/open-project/task/task-gen-directories.sh
-    bash serv/open-project/task/task-set-permissions.sh
+    bash utils/task/task-restart-if-changed.sh \
+        host/@host-testing/dnsmasq.conf host/@host-testing/.dnsmasq.conf.sha256 \
+        dnsmasq
 """

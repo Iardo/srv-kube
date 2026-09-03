@@ -18,7 +18,3 @@ include: [
   '${SERV:?}/webcheck/${FILE:?}',
   '${SERV:?}/woodpecker/${FILE:?}',
 ]
-
-# dagger - not implementable as a docker-compose service: it's a CLI/SDK
-# tool that provisions its own engine container on demand, with no
-# self-hostable, always-on web service or official docker-compose deployment.

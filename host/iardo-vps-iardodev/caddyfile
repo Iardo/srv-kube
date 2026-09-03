@@ -25,6 +25,30 @@ http://authentik-https.iardo-vps-iardodev:7000 {
     }
 }
 
+http://beszel.iardo-vps-iardodev:7000 {
+    reverse_proxy host.docker.internal:6001
+}
+
+http://bugsink.iardo-vps-iardodev:7000 {
+    reverse_proxy host.docker.internal:6002
+}
+
+http://coolify.iardo-vps-iardodev:7000 {
+    reverse_proxy host.docker.internal:7004
+}
+
+http://gatus.iardo-vps-iardodev:7000 {
+    reverse_proxy host.docker.internal:11000
+}
+
+http://grafana.iardo-vps-iardodev:7000 {
+    reverse_proxy host.docker.internal:11001
+}
+
+http://infisical.iardo-vps-iardodev:7000 {
+    reverse_proxy host.docker.internal:13000
+}
+
 http://komodo.iardo-vps-iardodev:7000 {
     reverse_proxy host.docker.internal:31000
 }
@@ -37,19 +61,39 @@ http://komodo-https.iardo-vps-iardodev:7000 {
     }
 }
 
+http://mailpit.iardo-vps-iardodev:7000 {
+    reverse_proxy host.docker.internal:17000
+}
+
 http://open-project.iardo-vps-iardodev:7000 {
     reverse_proxy host.docker.internal:19000
 }
 
-http://outline.iardo-vps-iardodev:7000 {
-    reverse_proxy host.docker.internal:19002
-}
-
 http://outline-https.iardo-vps-iardodev:7000 {
-    reverse_proxy https://host.docker.internal:19003 {
+    reverse_proxy https://host.docker.internal:19002 {
         transport http {
             tls_insecure_skip_verify
         }
     }
+}
+
+http://passbolt-https.iardo-vps-iardodev:7000 {
+    reverse_proxy https://host.docker.internal:20000 {
+        transport http {
+            tls_insecure_skip_verify
+        }
+    }
+}
+
+http://umami.iardo-vps-iardodev:7000 {
+    reverse_proxy host.docker.internal:25000
+}
+
+http://webcheck.iardo-vps-iardodev:7000 {
+    reverse_proxy host.docker.internal:27000
+}
+
+http://woodpecker.iardo-vps-iardodev:7000 {
+    reverse_proxy host.docker.internal:27001
 }
 
