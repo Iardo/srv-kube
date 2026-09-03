@@ -1,3 +1,24 @@
 # NOTE:
 # Used only by Komodo's own stack deploy (see komodo-stk.toml).
-include: []
+include: [
+  '${SERV:?}/authentik/${FILE:?}',
+  '${SERV:?}/beszel/${FILE:?}',
+  '${SERV:?}/bugsink/${FILE:?}',
+  '${SERV:?}/caddy/${FILE:?}',
+  '${SERV:?}/coolify/${FILE:?}',
+  '${SERV:?}/dnsmasq/${FILE:?}',
+  '${SERV:?}/gatus/${FILE:?}',
+  '${SERV:?}/grafana/${FILE:?}',
+  '${SERV:?}/infisical/${FILE:?}',
+  '${SERV:?}/mailpit/${FILE:?}',
+  '${SERV:?}/open-project/${FILE:?}',
+  '${SERV:?}/outline/${FILE:?}',
+  '${SERV:?}/passbolt/${FILE:?}',
+  '${SERV:?}/umami/${FILE:?}',
+  '${SERV:?}/webcheck/${FILE:?}',
+  '${SERV:?}/woodpecker/${FILE:?}',
+]
+
+# dagger - not implementable as a docker-compose service: it's a CLI/SDK
+# tool that provisions its own engine container on demand, with no
+# self-hostable, always-on web service or official docker-compose deployment.

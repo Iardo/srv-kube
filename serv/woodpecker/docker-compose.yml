@@ -1,0 +1,47 @@
+# References
+# --------------------
+# https://woodpecker-ci.org/docs/administration/installation/docker-compose
+# https://github.com/woodpecker-ci/woodpecker/blob/main/docker-compose.example.yaml
+
+networks:
+  woodpecker:
+    name: woodpecker
+
+volumes:
+  woodpecker-data:
+    name: woodpecker-data
+
+services:
+  woodpecker-web:
+    image: woodpeckerci/woodpecker-server:v3.18.0
+    container_name: woodpecker-web
+    restart: unless-stopped
+    networks:
+      - woodpecker
+    ports:
+      - ${WOODPECKER_WEB_HTTP:-8000}:8000
+    volumes:
+      - woodpecker-data:/var/lib/woodpecker
+    env_file: .env
+    environment:
+      # NOTE: WOODPECKER_GITHUB_CLIENT / WOODPECKER_GITHUB_SECRET must be filled
+      # in with a real OAuth app's credentials before login/CI will work.
+      # Create one at https://github.com/settings/developers with callback
+      # URL: ${WOODPECKER_HOST}/authorize
+      WOODPECKER_GITHUB_CLIENT: ${WOODPECKER_GITHUB_CLIENT:?}
+      WOODPECKER_GITHUB_SECRET: ${WOODPECKER_GITHUB_SECRET:?}
+      WOODPECKER_AGENT_SECRET: ${WOODPECKER_AGENT_SECRET:?}
+
+  woodpecker-agent:
+    image: woodpeckerci/woodpecker-agent:v3.18.0
+    container_name: woodpecker-agent
+    restart: unless-stopped
+    depends_on:
+      - woodpecker-web
+    networks:
+      - woodpecker
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      WOODPECKER_SERVER: woodpecker-web:9000
+      WOODPECKER_AGENT_SECRET: ${WOODPECKER_AGENT_SECRET:?}

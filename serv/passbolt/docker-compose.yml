@@ -1,0 +1,63 @@
+# References
+# --------------------
+# https://www.passbolt.com/docs/hosting/install/ce/docker/
+# https://github.com/passbolt/passbolt_docker
+
+networks:
+  passbolt:
+    name: passbolt
+
+volumes:
+  passbolt-database:
+    name: passbolt-database
+  passbolt-gpg:
+    name: passbolt-gpg
+  passbolt-jwt:
+    name: passbolt-jwt
+
+services:
+  passbolt-web:
+    image: passbolt/passbolt:5.15.0-1-ce-non-root
+    container_name: passbolt-web
+    restart: unless-stopped
+    depends_on:
+      passbolt-database:
+        condition: service_healthy
+    networks:
+      - passbolt
+    ports:
+      - ${PASSBOLT_WEB_HTTP:-80}:8080
+      - ${PASSBOLT_WEB_HTTPS:-443}:4433
+    volumes:
+      - passbolt-gpg:/etc/passbolt/gpg
+      - passbolt-jwt:/etc/passbolt/jwt
+    env_file: .env
+    environment:
+      DATASOURCES_DEFAULT_DRIVER: 'Cake\Database\Driver\Postgres'
+      DATASOURCES_DEFAULT_ENCODING: utf8
+      DATASOURCES_DEFAULT_HOST: passbolt-database
+      DATASOURCES_DEFAULT_DATABASE: passbolt
+      DATASOURCES_DEFAULT_USERNAME: ${PASSBOLT_POSTGRESQL_USER:?}
+      DATASOURCES_DEFAULT_PASSWORD: ${PASSBOLT_POSTGRESQL_PASS:?}
+
+  # NOTE: First-run setup — after the stack is up, register the admin user with:
+  #   task/task-create-admin-user.sh
+  # This prints a one-time setup URL used to finish account creation
+  # (set a passphrase + install the browser extension).
+  passbolt-database:
+    image: postgres:16-alpine
+    container_name: passbolt-database
+    restart: unless-stopped
+    networks:
+      - passbolt
+    volumes:
+      - passbolt-database:/var/lib/postgresql/data
+    healthcheck:
+      test: pg_isready --username=${PASSBOLT_POSTGRESQL_USER:?} && psql --username=${PASSBOLT_POSTGRESQL_USER:?} --list
+      interval: 5s
+      timeout: 10s
+      retries: 10
+    environment:
+      POSTGRES_DB: passbolt
+      POSTGRES_USER: ${PASSBOLT_POSTGRESQL_USER:?}
+      POSTGRES_PASSWORD: ${PASSBOLT_POSTGRESQL_PASS:?}

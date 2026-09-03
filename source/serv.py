@@ -10,6 +10,13 @@ def random_hex():
     result = subprocess.run(['openssl', 'rand', '-hex', '32'], capture_output=True, text=True, check=True)
     return result.stdout.strip()
 
+'''
+Generates a random base64-encoded 32-byte key, prefixed like a Laravel APP_KEY.
+'''
+def random_base64_key():
+    result = subprocess.run(['openssl', 'rand', '-base64', '32'], capture_output=True, text=True, check=True)
+    return f'base64:{result.stdout.strip()}'
+
 class Service:
     serv_list: dict = {
         'actual': ['web-http'],
@@ -18,10 +25,13 @@ class Service:
         'authentik': ['web-http', 'web-https', 'database', 'cache'],
         'azimutt': ['web-http', 'database', 'gateway'],
         'bazarr': ['web-http'],
+        'beszel': ['web-http'],
+        'bugsink': ['web-http'],
         'caddy': ['web-http', 'web-https', 'web-ui-http', 'web-ui-api'],
         'changedetection': ['web-http'],
         'cloudbeaver': ['web-http'],
         'comfyui': ['web-http'],
+        'coolify': ['web-http', 'realtime', 'realtime-metrics'],
         'crafty': ['web-http', 'web-https', 'dynmap', 'bedrock'],
         'cronicle': ['web-http'],
         'cronjob-org': ['web-http', 'database-master', 'database-node'],
@@ -36,6 +46,7 @@ class Service:
         'firefly3': ['web-http', 'database'],
         'flood': ['web-http'],
         'gatus': ['web-http'],
+        'grafana': ['web-http'],
         'grimoire': ['web-http', 'database'],
         'grist': ['web-http', 'database', 'cache'],
         'guacamole': ['web-http'],
@@ -44,7 +55,7 @@ class Service:
         'homepage': ['web-http'],
         'huly': ['web-http', 'database', 'account', 'collaborator', 'transactor', 'rekoni', 'minio', 'elasticsearch'],
         'immich': ['web-http'],
-        'infisical': ['web-http', 'database', 'cache'],
+        'infisical': ['web-http'],
         'jackett': ['web-http'],
         'jellyfin': ['web-http', 'web-https', 'discovery', 'dlna'],
         'kavitareader': ['web-http'],
@@ -52,6 +63,7 @@ class Service:
         'linkace': ['web-http', 'web-https', 'database', 'cache'],
         'linkwarden': ['web-http', 'database'],
         'llama-cpp': ['web-http'],
+        'mailpit': ['web-http', 'smtp'],
         'mealie': ['web-http'],
         'mirotalksfu': ['web-http'],
         'monica': ['web-http'],
@@ -68,7 +80,7 @@ class Service:
         'openwebui': ['web-http'],
         'outline': ['web-http', 'web-https', 'database', 'cache'],
         'paperless-ngx': ['web-http', 'database'],
-        'passbolt': ['web-http', 'web-https', 'database'],
+        'passbolt': ['web-http', 'web-https'],
         'penpot': ['web-http', 'database', 'cache', 'mailcatch'],
         'pihole': ['web-http', 'dns-tcp', 'dns-udp', 'dhcp'],
         'plane': ['web-http', 'database', 'cache', 'minio'],
@@ -89,12 +101,14 @@ class Service:
         'trilium-next': ['web-http'],
         'trudesk': ['web-http', 'database', 'elasticsearch', 'elasticsearch-transport'],
         'tuleap': ['web-http'],
+        'umami': ['web-http'],
         'uptime-kuma': ['web-http'],
         'webcheck': ['web-http'],
         'wger': ['web-http'],
         'wikijs': ['web-http', 'web-https', 'database'],
         'wireguard': ['vpn'],
         'wireguard-easy': ['vpn', 'web-http'],
+        'woodpecker': ['web-http'],
         'zeroclaw': ['web-http'],
     }
 
@@ -110,10 +124,28 @@ class Service:
             ('AZIMUTT_POSTGRES_USER', 'azimutt # Dummy'),
             ('AZIMUTT_POSTGRES_PASS', 'azimutt # Dummy'),
         ],
+        'bugsink': [
+            ('BUGSINK_SECRET_KEY', random_hex),
+            ('BUGSINK_CREATE_SUPERUSER', 'admin@example.com:admin # Dummy, format is email:password'),
+            ('BUGSINK_POSTGRESQL_USER', 'bugsink # Dummy'),
+            ('BUGSINK_POSTGRESQL_PASS', 'bugsink # Dummy'),
+        ],
         'caddy': [
             ('CADDY_UI_USER', 'admin # Dummy'),
             ('CADDY_UI_PASS', 'admin # Dummy'),
             ('CADDY_UI_JWT_SECRET', random_hex),
+        ],
+        'coolify': [
+            ('COOLIFY_APP_KEY', random_base64_key),
+            ('COOLIFY_POSTGRESQL_USER', 'coolify # Dummy'),
+            ('COOLIFY_POSTGRESQL_PASS', 'coolify # Dummy'),
+            ('COOLIFY_REDIS_PASS', 'coolify # Dummy'),
+            ('COOLIFY_PUSHER_APP_ID', random_hex),
+            ('COOLIFY_PUSHER_APP_KEY', random_hex),
+            ('COOLIFY_PUSHER_APP_SECRET', random_hex),
+            ('COOLIFY_ROOT_USERNAME', 'admin # Dummy'),
+            ('COOLIFY_ROOT_USER_EMAIL', 'admin@example.com # Dummy'),
+            ('COOLIFY_ROOT_USER_PASSWORD', 'coolify # Dummy'),
         ],
         'cronjob-org': [
             ('CRONJOB_ORG_MYSQL_USER_MASTER', 'cronjoborg # Dummy'),
@@ -132,9 +164,19 @@ class Service:
             ('DOCMOST_POSTGRESQL_USER', 'docmost # Dummy'),
             ('DOCMOST_POSTGRESQL_PASS', 'docmost # Dummy'),
         ],
+        'grafana': [
+            ('GRAFANA_ADMIN_USER', 'admin # Dummy'),
+            ('GRAFANA_ADMIN_PASSWORD', 'admin # Dummy'),
+        ],
         'immich': [
             ('IMMICH_POSTGRESQL_USER', 'immich # Dummy'),
             ('IMMICH_POSTGRESQL_PASS', 'immich # Dummy'),
+        ],
+        'infisical': [
+            ('INFISICAL_POSTGRESQL_USER', 'infisical # Dummy'),
+            ('INFISICAL_POSTGRESQL_PASS', 'infisical # Dummy'),
+            ('INFISICAL_ENCRYPTION_KEY', random_hex),
+            ('INFISICAL_AUTH_SECRET', random_hex),
         ],
         'komodo': [
             ('KOMODO_DATABASE_USERNAME', 'admin # Dummy'),
@@ -172,6 +214,10 @@ class Service:
             ('PAPERLESS_NGX_POSTGRESQL_PASS', 'paperlessngx # Dummy'),
             ('PAPERLESS_NGX_SECRET_KEY', random_hex),
         ],
+        'passbolt': [
+            ('PASSBOLT_POSTGRESQL_USER', 'passbolt # Dummy'),
+            ('PASSBOLT_POSTGRESQL_PASS', 'passbolt # Dummy'),
+        ],
         'planka': [
             ('PLANKA_POSTGRES_USER', 'planka # Dummy'),
             ('PLANKA_POSTGRES_PASS', 'planka # Dummy'),
@@ -184,6 +230,12 @@ class Service:
         'timetagger': [
             ('TIMETAGGER_CREDENTIALS', 'timetagger:$$2a$$08$$oFD7M9lLEcvtXWw4ePpVe.k7/vOYUrxrozNlwJnBCgKGXwiIVXdWS # Dummy'),
         ],
+        'umami': [
+            ('UMAMI_POSTGRESQL_USER', 'umami # Dummy'),
+            ('UMAMI_POSTGRESQL_PASS', 'umami # Dummy'),
+            ('UMAMI_APP_SECRET', random_hex),
+            ('UMAMI_TWO_FACTOR_ENCRYPTION_KEY', random_hex),
+        ],
         'wger': [
             ('WGER_POSTGRESQL_USER', 'wger # Dummy'),
             ('WGER_POSTGRESQL_PASS', 'wger # Dummy'),
@@ -195,6 +247,11 @@ class Service:
         ],
         'wireguard-easy': [
             ('WIREGUARD_EASY_PASSWORD_HASH', '$$2a$$12$$dGVzdGluZ2R1bW15aGFzaHZhbHVlMTIzNDU2 # Dummy, generate a real one with: docker run ghcr.io/wg-easy/wg-easy wgpw yourpassword'),
+        ],
+        'woodpecker': [
+            ('WOODPECKER_GITHUB_CLIENT', 'changeme # Dummy, create a GitHub OAuth app at https://github.com/settings/developers'),
+            ('WOODPECKER_GITHUB_SECRET', 'changeme # Dummy, from the same GitHub OAuth app'),
+            ('WOODPECKER_AGENT_SECRET', random_hex),
         ],
         'zeroclaw': [
             ('ZEROCLAW_OPENROUTER_API_KEY', 'sk-or-v1-changeme # Dummy, replace with a real OpenRouter API key'),

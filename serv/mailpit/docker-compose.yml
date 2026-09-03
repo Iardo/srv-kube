@@ -1,0 +1,25 @@
+# References
+# --------------------
+# https://mailpit.axllent.org/docs/install/docker/
+# https://github.com/axllent/mailpit
+
+networks:
+  mailpit:
+    name: mailpit
+
+services:
+  mailpit-web:
+    image: axllent/mailpit:v1.31.0
+    container_name: mailpit-web
+    restart: unless-stopped
+    networks:
+      - mailpit
+    ports:
+      - ${MAILPIT_WEB_HTTP:-8025}:8025
+      - ${MAILPIT_SMTP:-1025}:1025
+    volumes:
+      - ./data:/data
+    env_file: .env
+    environment:
+      TZ: ${TIMEZONE:-America/Panama}
+      MP_DATABASE: /data/mailpit.db

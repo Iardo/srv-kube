@@ -13,7 +13,7 @@ include: [
   # dagger
   # gatus
   # grafana
-  # infisical (optional)
+  # infisical
   # mailpit
   # passbolt
   # umami

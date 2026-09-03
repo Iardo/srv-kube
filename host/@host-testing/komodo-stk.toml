@@ -17,9 +17,22 @@ additional_env_files = [
     { track = true,  path = "host/@host-testing/.env" },
     { track = false, path = "host/@host-testing/.env-secrets" },
     { track = false, path = "host/@host-testing/.env-secrets.local" },
+    # SERV
+    { track = true, path = "serv/bugsink/.env" },
+    { track = true, path = "serv/coolify/.env" },
+    { track = true, path = "serv/grafana/.env" },
+    { track = true, path = "serv/infisical/.env" },
+    { track = true, path = "serv/mailpit/.env" },
+    { track = true, path = "serv/openwebui/.env" },
+    { track = true, path = "serv/passbolt/.env" },
+    { track = true, path = "serv/woodpecker/.env" },
 ]
 
 pre_deploy.shell_mode = false
 pre_deploy.command = """
     [ -f host/@host-testing/.env-secrets.local ] || cp host/@host-testing/.env-secrets host/@host-testing/.env-secrets.local
+
+    # Coolify
+    bash serv/coolify/task/task-gen-directories.sh
+    bash serv/coolify/task/task-set-permissions.sh
 """

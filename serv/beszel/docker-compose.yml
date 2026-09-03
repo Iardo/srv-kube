@@ -1,0 +1,23 @@
+# References
+# --------------------
+# https://beszel.dev/guide/hub-installation
+# https://github.com/henrygd/beszel
+# https://hub.docker.com/r/henrygd/beszel
+
+networks:
+  beszel:
+    name: beszel
+
+services:
+  beszel-web:
+    image: henrygd/beszel:0.18.8
+    container_name: beszel-web
+    restart: unless-stopped
+    networks:
+      - beszel
+    ports:
+      - ${BESZEL_WEB_HTTP:-8090}:8090
+    volumes:
+      - ./data:/beszel_data
+    environment:
+      APP_URL: http://localhost:${BESZEL_WEB_HTTP:-8090}

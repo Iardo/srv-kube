@@ -1,0 +1,112 @@
+# References
+# --------------------
+# https://coolify.io/
+# https://github.com/coollabsio/coolify
+# https://github.com/coollabsio/coolify/blob/main/docker-compose.yml
+# https://github.com/coollabsio/coolify/blob/main/docker-compose.prod.yml
+#
+# NOTE: Coolify's official install script bootstraps its Laravel app by
+# bind-mounting a generated /data/coolify/source/.env file into the
+# container. To keep this in line with the rest of this repo (config comes
+# from compose env/secrets, not a generated dotenv file on disk), all of
+# that file's keys are instead passed straight in via `environment:` below.
+# Laravel/phpdotenv falls back to real process env vars for anything not
+# found in an on-disk .env file, so this is equivalent for a fresh install.
+
+networks:
+  coolify:
+    name: coolify
+
+volumes:
+  coolify-database:
+    name: coolify-database
+  coolify-cache:
+    name: coolify-cache
+
+services:
+  coolify-web:
+    image: coollabsio/coolify:4.3.14
+    container_name: coolify-web
+    restart: unless-stopped
+    working_dir: /var/www/html
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    depends_on:
+      - coolify-database
+      - coolify-cache
+      - coolify-realtime
+    networks:
+      - coolify
+    ports:
+      - ${COOLIFY_WEB_HTTP:-8000}:8080
+    volumes:
+      - ./data/ssh:/var/www/html/storage/app/ssh
+      - ./data/applications:/var/www/html/storage/app/applications
+      - ./data/databases:/var/www/html/storage/app/databases
+      - ./data/services:/var/www/html/storage/app/services
+      - ./data/backups:/var/www/html/storage/app/backups
+      - ./data/images:/var/www/html/storage/app/images
+    env_file: .env
+    environment:
+      APP_NAME: Coolify
+      APP_KEY: ${COOLIFY_APP_KEY:?}
+      DB_HOST: coolify-database
+      DB_PORT: 5432
+      DB_DATABASE: coolify
+      DB_USERNAME: ${COOLIFY_POSTGRESQL_USER:?}
+      DB_PASSWORD: ${COOLIFY_POSTGRESQL_PASS:?}
+      REDIS_HOST: coolify-cache
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ${COOLIFY_REDIS_PASS:?}
+      PUSHER_HOST: coolify-realtime
+      PUSHER_PORT: 6001
+      PUSHER_APP_ID: ${COOLIFY_PUSHER_APP_ID:?}
+      PUSHER_APP_KEY: ${COOLIFY_PUSHER_APP_KEY:?}
+      PUSHER_APP_SECRET: ${COOLIFY_PUSHER_APP_SECRET:?}
+      ROOT_USERNAME: ${COOLIFY_ROOT_USERNAME:?}
+      ROOT_USER_EMAIL: ${COOLIFY_ROOT_USER_EMAIL:?}
+      ROOT_USER_PASSWORD: ${COOLIFY_ROOT_USER_PASSWORD:?}
+
+  coolify-database:
+    image: postgres:15-alpine
+    container_name: coolify-database
+    restart: unless-stopped
+    networks:
+      - coolify
+    volumes:
+      - coolify-database:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: ${COOLIFY_POSTGRESQL_USER:?}
+      POSTGRES_PASSWORD: ${COOLIFY_POSTGRESQL_PASS:?}
+      POSTGRES_DB: coolify
+
+  coolify-cache:
+    image: redis:7-alpine
+    container_name: coolify-cache
+    restart: unless-stopped
+    command: redis-server --save 20 1 --loglevel warning --requirepass ${COOLIFY_REDIS_PASS:?}
+    networks:
+      - coolify
+    volumes:
+      - coolify-cache:/data
+    environment:
+      REDIS_PASSWORD: ${COOLIFY_REDIS_PASS:?}
+
+  coolify-realtime:
+    image: coollabsio/coolify-realtime:1.0.18
+    container_name: coolify-realtime
+    restart: unless-stopped
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    networks:
+      - coolify
+    ports:
+      - ${COOLIFY_REALTIME:-6001}:6001
+      - ${COOLIFY_REALTIME_METRICS:-6002}:6002
+    environment:
+      APP_NAME: Coolify
+      SOKETI_DEBUG: 'false'
+      SOKETI_DEFAULT_APP_ID: ${COOLIFY_PUSHER_APP_ID:?}
+      SOKETI_DEFAULT_APP_KEY: ${COOLIFY_PUSHER_APP_KEY:?}
+      SOKETI_DEFAULT_APP_SECRET: ${COOLIFY_PUSHER_APP_SECRET:?}
+      SOKETI_HOST: 0.0.0.0

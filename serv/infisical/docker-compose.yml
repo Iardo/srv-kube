@@ -1,0 +1,79 @@
+# References
+# --------------------
+# https://infisical.com/docs/self-hosting/deployment-options/docker-compose
+# https://github.com/Infisical/infisical/blob/main/docker-compose.prod.yml
+
+networks:
+  infisical:
+    name: infisical
+
+volumes:
+  infisical-database:
+    name: infisical-database
+
+services:
+  infisical-web:
+    image: infisical/infisical:v0.165.2
+    container_name: infisical-web
+    restart: unless-stopped
+    depends_on:
+      infisical-database:
+        condition: service_healthy
+      infisical-cache:
+        condition: service_started
+      infisical-migration:
+        condition: service_completed_successfully
+    networks:
+      - infisical
+    ports:
+      - ${INFISICAL_WEB_HTTP:-8080}:8080
+    env_file: .env
+    environment:
+      NODE_ENV: production
+      DB_CONNECTION_URI: postgresql://${INFISICAL_POSTGRESQL_USER:?}:${INFISICAL_POSTGRESQL_PASS:?}@infisical-database:5432/infisical
+      REDIS_URL: redis://infisical-cache:6379
+      ENCRYPTION_KEY: ${INFISICAL_ENCRYPTION_KEY:?}
+      AUTH_SECRET: ${INFISICAL_AUTH_SECRET:?}
+
+  infisical-database:
+    image: postgres:16-alpine
+    container_name: infisical-database
+    restart: unless-stopped
+    networks:
+      - infisical
+    volumes:
+      - infisical-database:/var/lib/postgresql/data
+    healthcheck:
+      test: pg_isready --username=${INFISICAL_POSTGRESQL_USER:?} && psql --username=${INFISICAL_POSTGRESQL_USER:?} --list
+      interval: 5s
+      timeout: 10s
+      retries: 10
+    environment:
+      POSTGRES_DB: infisical
+      POSTGRES_USER: ${INFISICAL_POSTGRESQL_USER:?}
+      POSTGRES_PASSWORD: ${INFISICAL_POSTGRESQL_PASS:?}
+
+  infisical-cache:
+    image: redis:7.4-alpine
+    container_name: infisical-cache
+    restart: unless-stopped
+    networks:
+      - infisical
+    environment:
+      ALLOW_EMPTY_PASSWORD: 'yes'
+
+  # One-shot job: applies pending database schema migrations, then exits.
+  # It must complete successfully before infisical-web is allowed to start.
+  infisical-migration:
+    image: infisical/infisical:v0.165.2
+    container_name: infisical-migration
+    restart: 'no'
+    command: npm run migration:latest
+    depends_on:
+      infisical-database:
+        condition: service_healthy
+    networks:
+      - infisical
+    environment:
+      DB_CONNECTION_URI: postgresql://${INFISICAL_POSTGRESQL_USER:?}:${INFISICAL_POSTGRESQL_PASS:?}@infisical-database:5432/infisical
+      AUTH_SECRET: ${INFISICAL_AUTH_SECRET:?}
