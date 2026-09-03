@@ -14,7 +14,7 @@ run_directory = "/etc/srv-kube"
 # "--build" tells it to build the image instead.
 extra_args = ["--build"]
 
- NOTE:
+# NOTE:
 # One-shot jobs that exit 0 by design after doing their work (seeding, migrations)
 # without this Komodo flags them as unhealthy for exiting.
 ignore_services = [
