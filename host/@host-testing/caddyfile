@@ -1,0 +1,47 @@
+# Reverse Proxy
+# --------------------
+# https://caddyserver.com/docs/caddyfile
+
+# Not published to the host,
+# only reachable by other containers on the "caddy" network (e.g. caddy-ui-backend).
+{
+    admin 0.0.0.0:2019
+    log {
+        output file /var/log/caddy/access.log
+    }
+}
+
+# Services
+# --------------------
+http://actual.host-testing:7000 {
+    reverse_proxy host.docker.internal:5000
+}
+
+http://astral.host-testing:7000 {
+    reverse_proxy host.docker.internal:5001
+}
+
+http://github-stars-manager.host-testing:7000 {
+    reverse_proxy host.docker.internal:11000
+}
+
+http://linkace.host-testing:7000 {
+    reverse_proxy host.docker.internal:16000
+}
+
+http://linkace-https.host-testing:7000 {
+    reverse_proxy https://host.docker.internal:16001 {
+        transport http {
+            tls_insecure_skip_verify
+        }
+    }
+}
+
+http://ntfy.host-testing:7000 {
+    reverse_proxy host.docker.internal:18000
+}
+
+http://silverbullet.host-testing:7000 {
+    reverse_proxy host.docker.internal:23000
+}
+

@@ -1,3 +1,12 @@
 # NOTE:
 # Used only by Komodo's own stack deploy (see komodo-stk.toml).
-include: []
+include: [
+  '${SERV:?}/actual/${FILE:?}',
+  '${SERV:?}/astral/${FILE:?}',
+  '${SERV:?}/caddy/${FILE:?}',
+  '${SERV:?}/dnsmasq/${FILE:?}',
+  '${SERV:?}/github-stars-manager/${FILE:?}',
+  '${SERV:?}/linkace/${FILE:?}',
+  '${SERV:?}/ntfy/${FILE:?}',
+  '${SERV:?}/silverbullet/${FILE:?}',
+]

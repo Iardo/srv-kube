@@ -22,6 +22,7 @@ class Service:
         'actual': ['web-http'],
         'adguard-home': ['web-http', 'panel', 'dns-tcp', 'dns-udp'],
         'aria2-pro': ['web-http', 'rpc', 'muse-tcp', 'muse-udp'],
+        'astral': ['web-http'],
         'authentik': ['web-http', 'web-https', 'database', 'cache'],
         'azimutt': ['web-http', 'database', 'gateway'],
         'bazarr': ['web-http'],
@@ -46,6 +47,7 @@ class Service:
         'firefly3': ['web-http', 'database'],
         'flood': ['web-http'],
         'gatus': ['web-http'],
+        'github-stars-manager': ['web-http'],
         'grafana': ['web-http'],
         'grimoire': ['web-http', 'database'],
         'grist': ['web-http', 'database', 'cache'],
@@ -91,6 +93,7 @@ class Service:
         'romm': ['web-http'],
         'scrutiny': ['web-http', 'database'],
         'sentry': ['web-http'],
+        'silverbullet': ['web-http'],
         'sonarr': ['web-http'],
         'speedtest-tracker': ['web-http'],
         'stumpapp': ['web-http'],
@@ -116,6 +119,10 @@ class Service:
     Secret variables each service needs, with dummy values.
     '''
     envs_list: dict = {
+        'astral': [
+            ('ASTRAL_GITHUB_CLIENT_ID', 'changeme # Dummy, create a GitHub OAuth app at https://github.com/settings/developers'),
+            ('ASTRAL_GITHUB_CLIENT_SECRET', 'changeme # Dummy, from the same GitHub OAuth app'),
+        ],
         'authentik': [
             ('AUTHENTIK_POSTGRESQL__USER', 'authentik # Dummy'),
             ('AUTHENTIK_POSTGRESQL__PASSWORD', 'authentik # Dummy'),
@@ -163,6 +170,10 @@ class Service:
             ('DOCMOST_APP_SECRET', random_hex),
             ('DOCMOST_POSTGRESQL_USER', 'docmost # Dummy'),
             ('DOCMOST_POSTGRESQL_PASS', 'docmost # Dummy'),
+        ],
+        'github-stars-manager': [
+            ('GITHUB_STARS_MANAGER_API_SECRET', random_hex),
+            ('GITHUB_STARS_MANAGER_ENCRYPTION_KEY', random_hex),
         ],
         'grafana': [
             ('GRAFANA_ADMIN_USER', 'admin # Dummy'),
@@ -226,6 +237,9 @@ class Service:
             ('ROMM_MYSQL_USER', 'romm # Dummy'),
             ('ROMM_MYSQL_PASS', 'romm # Dummy'),
             ('ROMM_AUTH_SECRET_KEY', random_hex),
+        ],
+        'silverbullet': [
+            ('SILVERBULLET_USER', 'admin:admin # Dummy'),
         ],
         'timetagger': [
             ('TIMETAGGER_CREDENTIALS', 'timetagger:$$2a$$08$$oFD7M9lLEcvtXWw4ePpVe.k7/vOYUrxrozNlwJnBCgKGXwiIVXdWS # Dummy'),
