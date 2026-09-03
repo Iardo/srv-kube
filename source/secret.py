@@ -7,6 +7,7 @@
 # Real values belong in ".env-secrets.local" instead.
 
 import os
+import shutil
 
 from source.serv import Service
 
@@ -67,5 +68,20 @@ class Secret:
                 if passes is not length:
                     secret_file.write(f'\n')
             secret_file.close()
+        except Exception as err:
+            print(err)
+
+    '''
+    Overwrites ".env-secrets.local" with the freshly generated ".env-secrets".
+
+    Development only: ".env-secrets.local" is normally meant to stay fixed once it exists,
+    so a live/deployed host never has its already-bootstrapped services' secrets pulled out.
+    '''
+    @staticmethod
+    def update_local(host):
+        try:
+            secret_path = os.path.join(host, '.env-secrets')
+            local_path = os.path.join(host, '.env-secrets.local')
+            shutil.copyfile(secret_path, local_path)
         except Exception as err:
             print(err)

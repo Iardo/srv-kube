@@ -57,24 +57,16 @@ http://open-project.host-testing:7000 {
     reverse_proxy host.docker.internal:19000
 }
 
-http://outline.host-testing:7000 {
-    reverse_proxy host.docker.internal:19002
-}
-
 http://outline-https.host-testing:7000 {
-    reverse_proxy https://host.docker.internal:19003 {
+    reverse_proxy https://host.docker.internal:19002 {
         transport http {
             tls_insecure_skip_verify
         }
     }
 }
 
-http://passbolt.host-testing:7000 {
-    reverse_proxy host.docker.internal:20000
-}
-
 http://passbolt-https.host-testing:7000 {
-    reverse_proxy https://host.docker.internal:20001 {
+    reverse_proxy https://host.docker.internal:20000 {
         transport http {
             tls_insecure_skip_verify
         }

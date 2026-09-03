@@ -75,7 +75,6 @@ services:
     networks:
       - outline
     ports:
-      - ${OUTLINE_WEB_HTTP:?}:80
       - ${OUTLINE_WEB_HTTPS:?}:443
     volumes:
       - outline-portal:/var/lib/https-portal
@@ -88,11 +87,11 @@ services:
     env_file: ./.env
     environment:
       # NOTE:
-      # The plain HTTP port always redirects to https on port 443,
+      # HTTPS only, on purpose.
+      # https-portal's http-to-https redirect always points at port 443,
       # no matter what OUTLINE_WEB_HTTPS is actually set to.
-      # That's just how https-portal works, it can't be changed here.
-      # So don't use the HTTP port,
-      # go straight to https://<host>:<OUTLINE_WEB_HTTPS>/ instead.
+      # There's no way to change that, so the plain HTTP port never
+      # actually reaches Outline, only https://<host>:<OUTLINE_WEB_HTTPS>/ does.
       DOMAINS: 'localhost -> http://outline-web:3000, host.docker.internal -> http://outline-web:3000'
       STAGE: 'local'
       WEBSOCKET: 'true'

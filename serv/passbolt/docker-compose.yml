@@ -26,7 +26,6 @@ services:
     networks:
       - passbolt
     ports:
-      - ${PASSBOLT_WEB_HTTP:-80}:8080
       - ${PASSBOLT_WEB_HTTPS:-443}:4433
     volumes:
       - passbolt-gpg:/etc/passbolt/gpg
@@ -34,13 +33,10 @@ services:
     env_file: .env
     environment:
       # NOTE:
+      # HTTPS only, on purpose.
       # Passbolt only supports one base URL, it can't serve multiple
-      # hostnames/ports like some other services here.
-      # It should only be used over HTTPS anyway (it's a password manager),
-      # so this always points at the HTTPS port.
-      #
-      # The plain HTTP port (PASSBOLT_WEB_HTTP) will load a blank page,
-      # since its assets are all built against this HTTPS URL instead.
+      # hostnames/ports like some other services here, and it should only
+      # be used over HTTPS anyway (it's a password manager).
       APP_FULL_BASE_URL: https://localhost:${PASSBOLT_WEB_HTTPS:?}
       DATASOURCES_DEFAULT_DRIVER: 'Cake\Database\Driver\Postgres'
       DATASOURCES_DEFAULT_ENCODING: utf8

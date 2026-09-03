@@ -39,6 +39,8 @@ def main():
     Env.build(host, conf)
     Secret.clean(host)
     Secret.build(host, conf)
+    if args.update_env_local:
+        Secret.update_local(host)
     Caddy.clean(host, conf)
     Caddy.build(host, conf)
     Dnsmasq.clean(host, conf)
