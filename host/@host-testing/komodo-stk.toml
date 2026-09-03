@@ -44,4 +44,13 @@ pre_deploy.command = """
     # Coolify
     bash serv/coolify/task/task-gen-directories.sh
     bash serv/coolify/task/task-set-permissions.sh
+
+    # Caddy/dnsmasq bind-mount a single file, restart them only if it changed.
+    bash utils/task/task-restart-if-changed.sh \
+        host/@host-testing/caddyfile host/@host-testing/.caddyfile.sha256 \
+        caddy-web caddy-ui-backend caddy-ui-frontend
+
+    bash utils/task/task-restart-if-changed.sh \
+        host/@host-testing/dnsmasq.conf host/@host-testing/.dnsmasq.conf.sha256 \
+        dnsmasq
 """

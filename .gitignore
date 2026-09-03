@@ -20,3 +20,4 @@ __pycache__
 # ignore files:
 .DS_Store
 /host/**/.env-secrets.local
+/host/**/.*.sha256
