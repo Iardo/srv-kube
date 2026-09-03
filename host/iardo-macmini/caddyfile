@@ -13,15 +13,15 @@
 
 # Services
 # --------------------
-http://openhands.host-testing:7000 {
+http://openhands.iardo-macmini:7000 {
     reverse_proxy host.docker.internal:19000
 }
 
-http://openwebui.host-testing:7000 {
+http://openwebui.iardo-macmini:7000 {
     reverse_proxy host.docker.internal:19001
 }
 
-http://zeroclaw.host-testing:7000 {
+http://zeroclaw.iardo-macmini:7000 {
     reverse_proxy host.docker.internal:30000
 }
 

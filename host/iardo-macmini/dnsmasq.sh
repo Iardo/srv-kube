@@ -7,7 +7,7 @@
 set -e
 
 PORT=8000
-DOMAINS="host-testing"
+DOMAINS="iardo-macmini"
 
 sudo mkdir -p /etc/systemd/resolved.conf.d
 printf '[Resolve]\nDNS=127.0.0.1:%s\nDomains=%s\n' "$PORT" "$(echo "$DOMAINS" | sed 's/[^ ]*/~&/g')" \

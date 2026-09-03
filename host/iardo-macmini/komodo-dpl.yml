@@ -3,10 +3,7 @@
 include: [
   '${SERV:?}/caddy/${FILE:?}',
   '${SERV:?}/dnsmasq/${FILE:?}',
-  # openhands
-  # openwebui
-  # zeroclaw
+  '${SERV:?}/openhands/${FILE:?}',
+  '${SERV:?}/openwebui/${FILE:?}',
+  '${SERV:?}/zeroclaw/${FILE:?}',
 ]
-
-# comfyui - install at host server level to access metal api
-# llama.cpp - install at host server level to access metal api

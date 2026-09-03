@@ -17,19 +17,9 @@ additional_env_files = [
     { track = true,  path = "host/@host-testing/.env" },
     { track = false, path = "host/@host-testing/.env-secrets" },
     { track = false, path = "host/@host-testing/.env-secrets.local" },
-    # SERV
-    { track = true, path = "serv/openwebui/.env" },
 ]
 
 pre_deploy.shell_mode = false
 pre_deploy.command = """
     [ -f host/@host-testing/.env-secrets.local ] || cp host/@host-testing/.env-secrets host/@host-testing/.env-secrets.local
-
-    # ComfyUI
-    # Installed at machine level, not a container, to access metal api
-    bash serv/comfyui/install.sh
-
-    # llama.cpp
-    # Installed at machine level, not a container, to access metal api
-    bash serv/llama-cpp/install.sh
 """
