@@ -54,6 +54,21 @@ class Env:
     # it gets this fixed, reserved block instead.
     komodo_port_base = 31000
 
+    # NOTE:
+    # Ports that browsers (Chrome/Firefox) refuse to connect to directly
+    # no matter what's listening there, since they're historically tied to
+    # other protocols (X11, IRC, etc).
+    blocked_ports = {6000, 6566, 6665, 6666, 6667, 6668, 6669, 6697, 10080}
+
+    '''
+    Bumps "port" forward past any browser-blocked port.
+    '''
+    @staticmethod
+    def skip_blocked(port):
+        while port in Env.blocked_ports:
+            port = port + 1
+        return port
+
     # Per-host overrides that only make sense
     # while their generated file exists,
     # keyed by the service that owns it.
@@ -189,6 +204,7 @@ class Env:
                 if group != serv_name[0]:
                     group = serv_name[0]
                     count = (Env.port_list[serv_name[0]].value * 1000) + Env.port_start_at
+                    count = Env.skip_blocked(count)
                     env_file.write(f'# {group}\n')
                     env_file.write(f'# ----\n')
                 if not serv_containers:
@@ -200,7 +216,7 @@ class Env:
                     setting = [prefix, postfix]
                     setting = "_".join(setting).upper()
                     env_file.write(f'{setting}={count}\n')
-                    count = count + 1
+                    count = Env.skip_blocked(count + 1)
                 if passes is not length:
                     env_file.write(f'\n')
             env_file.close()

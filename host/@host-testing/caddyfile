@@ -26,11 +26,11 @@ http://authentik-https.host-testing:7000 {
 }
 
 http://beszel.host-testing:7000 {
-    reverse_proxy host.docker.internal:6000
+    reverse_proxy host.docker.internal:6001
 }
 
 http://bugsink.host-testing:7000 {
-    reverse_proxy host.docker.internal:6001
+    reverse_proxy host.docker.internal:6002
 }
 
 http://coolify.host-testing:7000 {
