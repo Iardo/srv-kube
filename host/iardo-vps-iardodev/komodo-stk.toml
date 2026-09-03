@@ -15,7 +15,7 @@ run_directory = "/etc/srv-kube"
 extra_args = ["--build"]
 
 # NOTE:
-# These containers run once then exit on purpose (seeding, migrations),
+# One-shot jobs that exit 0 by design after doing their work (seeding, migrations)
 # without this Komodo flags them as unhealthy for exiting.
 ignore_services = [
     "open-project-seeder",

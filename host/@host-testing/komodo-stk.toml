@@ -12,6 +12,15 @@ file_paths = [
     "host/@host-testing/komodo-dpl.yml",
 ]
 
+# NOTE:
+# One-shot jobs that exit 0 by design after doing their work (seeding, migrations)
+# without this Komodo flags them as unhealthy for exiting.
+ignore_services = [
+    "infisical-migration",
+    "open-project-seeder",
+    "open-project-upgrade",
+]
+
 additional_env_files = [
     # HOST
     { track = true,  path = "host/@host-testing/.env" },
