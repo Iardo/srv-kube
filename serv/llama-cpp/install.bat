@@ -80,6 +80,17 @@ for %%b in (llama-server llama-cli llama) do (
     )
 )
 
+rem Unlike Linux where a symlink still resolves shared libs via the build folder's own rpath),
+rem Windows looks for a DLL next to whatever path the exe was actually launched from.
+rem A hardlink in %USERPROFILE%\bin counts as that path, so llama.dll/ggml.dll/etc need to live there too,
+rem not just in the build folder, or the linked exe fails to start
+rem with no output at all (STATUS_DLL_NOT_FOUND, exit code -1073741515 / 0xC0000135).
+for %%d in ("%rootpath%\code\build\bin\Release\*.dll") do (
+    del /f /q "%USERPROFILE%\bin\%%~nxd" 2>nul
+    mklink /H "%USERPROFILE%\bin\%%~nxd" "%%d" >nul 2>nul
+    if errorlevel 1 copy /Y "%%d" "%USERPROFILE%\bin\%%~nxd" >nul
+)
+
 rem Models live centralized under the user profile,
 rem junctioned in at the path other tooling expects.
 set "models_dir=%USERPROFILE%\llms\models\llamacpp"

@@ -102,7 +102,7 @@ This means `./start.py` and `./init.py` do **not** cover them, picking a host th
 
 #### Setup: Linux / MacOS
 
-```
+```bash
         ./serv/llama-cpp/install.sh   # installation
 python3 ./serv/llama-cpp/models.py    # downloads models listed in host/<host-name>/data/llama-cpp/models.yml
 ```
@@ -115,32 +115,64 @@ Additionally `llama-cpp\install.bat` needs to run with the MSVC environment load
 You can use on of these methods:
 - Use the "Developer Command Prompt for VS" shortcut the Visual Studio installer adds to the Start Menu, `cd` into `serv\llama-cpp`, then run `install.bat`
 - Load it and run the install in one line, from `cmd.exe`:
-```
+```cmd
 cmd /k ""C:\Program Files\Microsoft Visual Studio\<edition>\VC\Auxiliary\Build\vcvarsall.bat" x64 && cd /d C:\path\to\srv-kube\serv\llama-cpp && install.bat"
 ```
 - Load it and run the install in one line, from `powershell.exe`:
-```
+```powershell
 cmd /c '"C:\Program Files\Microsoft Visual Studio\<edition>\VC\Auxiliary\Build\vcvarsall.bat" x64 && cd /d C:\path\to\srv-kube\serv\llama-cpp && install.bat'
 ```
 
 > [!NOTE]
-> The `<edition>` varies by Visual Studio install (example: `2022\BuildTools`, `2022\Community`).
+> The `<edition>` varies by Visual Studio install (example: `2022\BuildTools`, `2022\Community`). Find yours with:
+>
+> | Shell            | Command                                                                                                                                                                             |
+> |------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+> | `cmd.exe`        | `dir /s /b "C:\Program Files\Microsoft Visual Studio\vcvarsall.bat" "C:\Program Files (x86)\Microsoft Visual Studio\vcvarsall.bat"`                                                 |
+> | `powershell.exe` | `(Get-ChildItem "C:\Program Files\Microsoft Visual Studio","C:\Program Files (x86)\Microsoft Visual Studio" -Recurse -Filter vcvarsall.bat -ErrorAction SilentlyContinue).FullName` |
+
+> [!NOTE]
+> On Windows, `install.bat` links `llama-server`/`llama-cli`/`llama` (and the `comfyui` wrapper) into `%USERPROFILE%\bin`, which isn't on `PATH` by default, so the plain `llama-server ...` / `comfyui ...` commands below won't resolve until you add it.
 > 
-> Find yours with:
->   ```
->   dir /s /b "C:\Program Files\Microsoft Visual Studio\vcvarsall.bat" "C:\Program Files (x86)\Microsoft Visual Studio\vcvarsall.bat"
->   ```
+> Do this once, then open a **new** terminal (PATH changes don't apply to an already-open session). `cmd.exe` shells out to PowerShell for the actual write, since `setx` alone risks silently truncating `PATH` past 1024 characters and corrupting it:
+>
+> | Shell            | Command                                                                                                                                                                             |
+> |------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+> | `cmd.exe`        | `powershell -NoProfile -Command "[Environment]::SetEnvironmentVariable('PATH', $([Environment]::GetEnvironmentVariable('PATH','User')) + ';' + $env:USERPROFILE + '\bin', 'User')"` |
+> | `powershell.exe` | `[Environment]::SetEnvironmentVariable("PATH", "$([Environment]::GetEnvironmentVariable('PATH','User'));$env:USERPROFILE\bin", "User")`                                             |
 
 #### Running Server
 
-| Mode                            | Command                                                                                                                  |
-|---------------------------------|--------------------------------------------------------------------------------------------------------------------------|
-| Text-only                       | `llama-server --model <path-to-model>.gguf --host 0.0.0.0 --port 8080`                                                   |
-| GPU offload + vision/file input | `llama-server --model <path-to-model>.gguf --mmproj <path-to-mmproj>.gguf --n-gpu-layers 999 --host 0.0.0.0 --port 8080` |
+> [!NOTE]
+> If `llama-server` exits immediately with no output at all (not even an error), that's `STATUS_DLL_NOT_FOUND` (exit code `-1073741515` / `0xC0000135`), not a bad model path. Unlike Linux, where a symlinked binary still finds its shared libraries through the build folder's own rpath, Windows looks for a DLL next to whatever path the exe was actually *invoked* from, so `llama.dll`/`ggml.dll`/`ggml-base.dll`/`ggml-cpu.dll`/`mtmd.dll`/`llama-common.dll`/`llama-server-impl.dll` all need to sit alongside the linked `llama-server.exe` in `%USERPROFILE%\bin`, not just in the build folder. `install.bat` links these in automatically now, but if you installed before this fix, copy them over by hand once:
+>
+> | Shell            | Command                                                                                                                  |
+> |------------------|--------------------------------------------------------------------------------------------------------------------------|
+> | `cmd.exe`        | `copy /Y "C:\path\to\srv-kube\serv\llama-cpp\code\build\bin\Release\*.dll" "%USERPROFILE%\bin\"`                         |
+> | `powershell.exe` | `Copy-Item "C:\path\to\srv-kube\serv\llama-cpp\code\build\bin\Release\*.dll" -Destination "$env:USERPROFILE\bin" -Force` |
 
-The GPU offload + vision/file input mode needs the model's own `--mmproj` file, some models ship one, e.g. `models.yml`'s `*-mmproj-f16.gguf` entries.
+##### Commands: General
 
-Models live at `~/llms/models/llamacpp` (`%USERPROFILE%\llms\models\llamacpp` on Windows), that's where `models.py` downloads to, and where `install.sh`/`install.bat` prints both exact commands with the right paths filled in.
+| Mode                            | Linux / MacOS                                                                                                                                                | Windows (cmd.exe)                                                                                                                                                                    | Windows (PowerShell)                                                                                                                                                                           |
+|---------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Text-only                       | `llama-server --model ~/llms/models/llamacpp/<model>.gguf --host 0.0.0.0 --port 8080`                                                                        | `llama-server --model %USERPROFILE%\llms\models\llamacpp\<model>.gguf --host 0.0.0.0 --port 8080`                                                                                    | `llama-server --model "$env:USERPROFILE\llms\models\llamacpp\<model>.gguf" --host 0.0.0.0 --port 8080`                                                                                         |
+| GPU offload + vision/file input | `llama-server --model ~/llms/models/llamacpp/<model>.gguf --mmproj ~/llms/models/llamacpp/<model-mmproj>.gguf --n-gpu-layers 999 --host 0.0.0.0 --port 8080` | `llama-server --model %USERPROFILE%\llms\models\llamacpp\<model>.gguf --mmproj %USERPROFILE%\llms\models\llamacpp\<model-mmproj>.gguf --n-gpu-layers 999 --host 0.0.0.0 --port 8080` | `llama-server --model "$env:USERPROFILE\llms\models\llamacpp\<model>.gguf" --mmproj "$env:USERPROFILE\llms\models\llamacpp\<model-mmproj>.gguf" --n-gpu-layers 999 --host 0.0.0.0 --port 8080` |
+
+The GPU offload + vision/file input mode needs the model's own `--mmproj` file, some models ship one, e.g. `models.yml`'s `*-mmproj-f16.gguf` entries. Models live at `~/llms/models/llamacpp` (`%USERPROFILE%\llms\models\llamacpp` on Windows), that's where `models.py` downloads to. On Windows, note `cmd.exe` uses `%USERPROFILE%` while PowerShell needs `$env:USERPROFILE`, plain `%USERPROFILE%` is not expanded there and gets passed through as a literal, broken path.
+
+##### Commands: Real example (Powershell)
+
+```powershell
+llama-server `
+  --model "$env:USERPROFILE\llms\models\llamacpp\qwen3.5-9B-Q4_K_S.gguf" `
+  --mmproj "$env:USERPROFILE\llms\models\llamacpp\qwen3.5-9B-mmproj-f16.gguf" `
+  --n-gpu-layers 999 `
+  --ctx-size 24576 `
+  --host 0.0.0.0 `
+  --port 8080 `
+  --alias qwen3.5-9b `
+  --flash-attn on
+```
 
 ---
 
@@ -153,9 +185,9 @@ Models live at `~/llms/models/llamacpp` (`%USERPROFILE%\llms\models\llamacpp` on
 | [Git](https://git-scm.com/download/win)       |                                             |
 | [Python 3](https://www.python.org/downloads/) | check "Add python.exe to PATH" during setup |
 
-#### Setup: Linux / macOS
+#### Setup: Linux / MacOS
 
-```
+```bash
         ./serv/comfyui/install.sh     # installation
 python3 ./serv/comfyui/models.py      # downloads models listed in host/<host-name>/data/comfyui/models.yml
 ```
@@ -168,7 +200,7 @@ The `install.bat` needs the requirement tools, on `PATH`, installed by hand firs
 
 Defaults to port `8188`
 
-```
+```bash
 comfyui --listen 0.0.0.0
 ```
 
