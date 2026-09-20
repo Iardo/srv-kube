@@ -119,4 +119,9 @@ done
 touch "$rootpath/code/.installed"
 
 echo "Done. Place your .gguf model(s) under $models_dir and start the server with:"
+echo ""
+echo "Text-only:"
 echo "  llama-server --model $models_dir/<model>.gguf --host 0.0.0.0 --port 8080"
+echo ""
+echo "With GPU offload and vision/file input (needs the model's own --mmproj file, some models ship one):"
+echo "  llama-server --model $models_dir/<model>.gguf --mmproj $models_dir/<model-mmproj>.gguf --n-gpu-layers 999 --host 0.0.0.0 --port 8080"

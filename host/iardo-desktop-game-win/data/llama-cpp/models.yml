@@ -1,0 +1,13 @@
+# Models - Host Selected
+
+models:
+  - name: gemma-3-12b-it-heretic-IQ4_NL.gguf
+    url: https://huggingface.co/mradermacher/gemma-3-12b-it-heretic-i1-GGUF/resolve/main/gemma-3-12b-it-heretic.i1-IQ4_NL.gguf
+  - name: gemma-3-12b-it-heretic-mmproj-f16.gguf
+    url: https://huggingface.co/mradermacher/gemma-3-12b-it-heretic-GGUF/resolve/main/gemma-3-12b-it-heretic.mmproj-f16.gguf
+  - name: qwen3.5-9B-Q4_K_S.gguf
+    url: https://huggingface.co/unsloth/Qwen3.5-9B-GGUF/resolve/main/Qwen3.5-9B-Q4_K_S.gguf
+  - name: qwen3.5-9B-mmproj-f16.gguf
+    url: https://huggingface.co/unsloth/Qwen3.5-9B-GGUF/resolve/main/mmproj-F16.gguf
+  - name: phi-4-mini-reasoning-Q4_K_M.gguf
+    url: https://huggingface.co/unsloth/Phi-4-mini-reasoning-GGUF/resolve/main/Phi-4-mini-reasoning-Q4_K_M.gguf

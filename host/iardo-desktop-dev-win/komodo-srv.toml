@@ -1,5 +1,5 @@
 [[server]]
-name = "iardo-desktop-dev"
+name = "iardo-desktop-dev-win"
 
 [server.config]
 enabled = false

@@ -1,0 +1,27 @@
+[[stack]]
+name = "iardo-desktop-dev-gnu"
+
+[stack.config]
+server        = "iardo-desktop-dev-gnu"
+branch        = "kubernetes"
+repo          = "iardo/srv-kube"
+clone_path    = "/etc/srv-kube"
+run_directory = "/etc/srv-kube"
+
+file_paths = [
+    "host/iardo-desktop-dev-gnu/komodo-dpl.yml",
+]
+
+additional_env_files = [
+    # HOST
+    { track = true,  path = "host/iardo-desktop-dev-gnu/.env" },
+    { track = false, path = "host/iardo-desktop-dev-gnu/.env-secrets" },
+    { track = false, path = "host/iardo-desktop-dev-gnu/.env-secrets.local" },
+    # SERV
+    { track = true, path = "serv/changedetection/.env" },
+]
+
+pre_deploy.shell_mode = false
+pre_deploy.command = """
+    [ -f host/iardo-desktop-dev-gnu/.env-secrets.local ] || cp host/iardo-desktop-dev-gnu/.env-secrets host/iardo-desktop-dev-gnu/.env-secrets.local
+"""

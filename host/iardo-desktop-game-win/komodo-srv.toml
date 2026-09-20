@@ -1,0 +1,6 @@
+[[server]]
+name = "iardo-desktop-game-win"
+
+[server.config]
+enabled = false
+address = "http://iardo-desktop-game:9120"

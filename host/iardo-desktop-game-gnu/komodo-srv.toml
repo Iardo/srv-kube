@@ -1,5 +1,5 @@
 [[server]]
-name = "iardo-desktop-game"
+name = "iardo-desktop-game-gnu"
 
 [server.config]
 enabled = false

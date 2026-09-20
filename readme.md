@@ -4,11 +4,11 @@ Collection of docker files for a lot of different services.
 
 ---
 
-## How This Works
+## How it Works
 
-Two ways to deploy,
-`./start.py` (local, one host at a time),
-or Komodo (web UI, deploys to any machine, auto-redeploys on git push).
+Two ways to deploy:
+- Running `./start.py` (local, one host at a time)
+- Using Komodo (web UI, deploys to any machine, auto-redeploys on git push).
 
 Komodo is optional,
 Komodo itself is just another service in this repo.
@@ -79,6 +79,100 @@ on the machine, per host that has `dnsmasq` (needs `sudo`):
 ./host/<host-name>/dnsmasq.sh
 ```
 It's rewritten on every `./init.py` run, re-run it if you add a host or the port changes.
+
+---
+
+## GPU-bound Services (llama.cpp, ComfyUI)
+
+The `llama-cpp` and `comfyui` need direct GPU access (CUDA / Apple's Metal API), so on every host in this repo today they're installed straight onto the machine instead of through Docker.
+
+This means `./start.py` and `./init.py` do **not** cover them, picking a host that "runs" one of these does not install, build, or start it, since neither is in that host's `docker-compose.yml` include list.
+
+---
+
+### `llama-cpp`
+
+#### Requirements
+
+| Requirement                                                    | Notes                                                                                                                        |
+|----------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------|
+| [Git](https://git-scm.com/download/win)                        |                                                                                                                              |
+| [CMake](https://cmake.org/download/)                           |                                                                                                                              |
+| [Visual Studio](https://visualstudio.microsoft.com/downloads/) | MSVC C/C++ build tools, the "Desktop development with C++" workload (Build Tools alone is enough, a full IDE isn't required) |
+
+#### Setup: Linux / MacOS
+
+```
+        ./serv/llama-cpp/install.sh   # installation
+python3 ./serv/llama-cpp/models.py    # downloads models listed in host/<host-name>/data/llama-cpp/models.yml
+```
+
+#### Setup: Windows
+
+The `install.bat` needs the requirement tools, on `PATH`, installed by hand first.
+
+Additionally `llama-cpp\install.bat` needs to run with the MSVC environment loaded, so `cl.exe` is on `PATH`, which a plain `cmd.exe`/PowerShell window doesn't set up on its own.
+You can use on of these methods:
+- Use the "Developer Command Prompt for VS" shortcut the Visual Studio installer adds to the Start Menu, `cd` into `serv\llama-cpp`, then run `install.bat`
+- Load it and run the install in one line, from `cmd.exe`:
+```
+cmd /k ""C:\Program Files\Microsoft Visual Studio\<edition>\VC\Auxiliary\Build\vcvarsall.bat" x64 && cd /d C:\path\to\srv-kube\serv\llama-cpp && install.bat"
+```
+- Load it and run the install in one line, from `powershell.exe`:
+```
+cmd /c '"C:\Program Files\Microsoft Visual Studio\<edition>\VC\Auxiliary\Build\vcvarsall.bat" x64 && cd /d C:\path\to\srv-kube\serv\llama-cpp && install.bat'
+```
+
+> [!NOTE]
+> The `<edition>` varies by Visual Studio install (example: `2022\BuildTools`, `2022\Community`).
+> 
+> Find yours with:
+>   ```
+>   dir /s /b "C:\Program Files\Microsoft Visual Studio\vcvarsall.bat" "C:\Program Files (x86)\Microsoft Visual Studio\vcvarsall.bat"
+>   ```
+
+#### Running Server
+
+| Mode                            | Command                                                                                                                  |
+|---------------------------------|--------------------------------------------------------------------------------------------------------------------------|
+| Text-only                       | `llama-server --model <path-to-model>.gguf --host 0.0.0.0 --port 8080`                                                   |
+| GPU offload + vision/file input | `llama-server --model <path-to-model>.gguf --mmproj <path-to-mmproj>.gguf --n-gpu-layers 999 --host 0.0.0.0 --port 8080` |
+
+The GPU offload + vision/file input mode needs the model's own `--mmproj` file, some models ship one, e.g. `models.yml`'s `*-mmproj-f16.gguf` entries.
+
+Models live at `~/llms/models/llamacpp` (`%USERPROFILE%\llms\models\llamacpp` on Windows), that's where `models.py` downloads to, and where `install.sh`/`install.bat` prints both exact commands with the right paths filled in.
+
+---
+
+### `comfyui`
+
+#### Requirements
+
+| Requirement                                   | Notes                                       |
+|-----------------------------------------------|---------------------------------------------|
+| [Git](https://git-scm.com/download/win)       |                                             |
+| [Python 3](https://www.python.org/downloads/) | check "Add python.exe to PATH" during setup |
+
+#### Setup: Linux / macOS
+
+```
+        ./serv/comfyui/install.sh     # installation
+python3 ./serv/comfyui/models.py      # downloads models listed in host/<host-name>/data/comfyui/models.yml
+```
+
+#### Setup: Windows
+
+The `install.bat` needs the requirement tools, on `PATH`, installed by hand first.
+
+#### Running Server
+
+Defaults to port `8188`
+
+```
+comfyui --listen 0.0.0.0
+```
+
+Models live at `~/llms/models/comfyui` (`%USERPROFILE%\llms\models\comfyui` on Windows), split into subfolders by category (checkpoints, loras, vae, etc.), matching ComfyUI's own `models/<category>` layout.
 
 ---
 

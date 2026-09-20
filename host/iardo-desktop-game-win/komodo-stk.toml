@@ -1,0 +1,25 @@
+[[stack]]
+name = "iardo-desktop-game-win"
+
+[stack.config]
+server        = "iardo-desktop-game-win"
+branch        = "kubernetes"
+repo          = "iardo/srv-kube"
+clone_path    = "/etc/srv-kube"
+run_directory = "/etc/srv-kube"
+
+file_paths = [
+    "host/iardo-desktop-game-win/docker-compose.yml",
+]
+
+additional_env_files = [
+    # HOST
+    { track = true,  path = "host/iardo-desktop-game-win/.env" },
+    { track = false, path = "host/iardo-desktop-game-win/.env-secrets" },
+    { track = false, path = "host/iardo-desktop-game-win/.env-secrets.local" },
+]
+
+pre_deploy.shell_mode = false
+pre_deploy.command = """
+    [ -f host/iardo-desktop-game-win/.env-secrets.local ] || cp host/iardo-desktop-game-win/.env-secrets host/iardo-desktop-game-win/.env-secrets.local
+"""
