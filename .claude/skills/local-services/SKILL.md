@@ -29,7 +29,7 @@ Hosts running `llama-cpp` / `comfyui` natively:
 
 | Host                          | GPU                   | Platform | Install method |
 |-------------------------------|-----------------------|----------|----------------|
-| `host/iardo-macmini`          | Apple Silicon (Metal) | macOS    | Native         |
+| `host/iardo-macmini`          | Apple Silicon (Metal) | MacOS    | Native         |
 | `host/iardo-desktop-game-win` | NVIDIA                | Windows  | Native         |
 | `host/iardo-desktop-game-gnu` | NVIDIA                | Linux    | Native         |
 
@@ -38,9 +38,12 @@ Hosts running `llama-cpp` / `comfyui` natively:
 #### Windows
 
 - `install.bat`'s requirements differ per service, neither installs its own requirements, both fail fast with a message instead: `llama-cpp` needs Git, CMake, and Visual Studio's MSVC C/C++ build tools (the "Desktop development with C++" workload, Build Tools alone is enough, no full IDE needed); `comfyui` needs Git and Python 3 (with "Add python.exe to PATH" checked during its install)
-- `llama-cpp\install.bat` additionally needs to run with the MSVC environment loaded, so `cl.exe` is on `PATH`, which a plain `cmd.exe`/PowerShell window doesn't set up on its own, unlike the Linux/macOS `install.sh`, which needs no such step
-  - Load it via the "Developer Command Prompt for VS" Start Menu shortcut, or manually with that Visual Studio install's own `vcvarsall.bat x64`, see `readme.md`'s own GPU-bound Services section for the exact one-liners (they differ between `cmd.exe` and `powershell.exe`, see below)
+- `llama-cpp\install.bat` additionally needs to run with the MSVC environment loaded, so `cl.exe` is on `PATH`, which a plain `cmd.exe`/PowerShell window doesn't set up on its own, unlike the Linux/MacOS `install.sh`, which needs no such step
+  - Load it via the "Developer Command Prompt for VS" Start Menu shortcut, or manually with that Visual Studio install's own `vcvarsall.bat x64`, see `docs/services-gpu-bound.md` for the exact one-liners (they differ between `cmd.exe` and `powershell.exe`, see below)
   - `comfyui\install.bat` needs no such step
+- `llama-cpp\install.bat` also needs the CUDA Toolkit's `nvcc` on `PATH` at build time for GPU offload, the driver alone (what `nvidia-smi` reports) isn't enough, without it the script silently builds CPU-only and `--n-gpu-layers` becomes a no-op even on a capable GPU
+  - Verify with `CMakeCache.txt`'s `GGML_CUDA:BOOL` value, then install the toolkit and force a rebuild if it reads `OFF`, see `docs/services-gpu-bound.md`'s Running Server section for the exact commands
+  - Symptoms of this look like a slow model rather than a broken one: GPU usage near idle during generation, RAM usage matching the model file size instead of VRAM usage, prompt processing far below what the card should give
 - `cmd.exe` and `powershell.exe` are not interchangeable for these commands, a command written for one silently breaks in the other rather than erroring clearly:
   - Environment variables: `%USERPROFILE%` (`cmd.exe`) vs `$env:USERPROFILE` (PowerShell); PowerShell does not expand `%VAR%` at all, it gets passed through as a literal broken path segment instead of failing loudly
   - The `cmd /k ""path\to\file.bat" args"` doubled-leading-quote trick (works around a `cmd.exe`-specific `/k` quoting quirk) only works when the outer shell is `cmd.exe` itself; from PowerShell, use `cmd /c '"path\to\file.bat" args'` instead (single-quoted, since PowerShell's own double-quote escaping mangles the doubled-quote trick)
@@ -66,8 +69,8 @@ Hosts running `llama-cpp` / `comfyui` natively:
 #### GPU-bound Services
 
 - `llama-cpp` and `comfyui` each need direct GPU access (CUDA, or Apple's Metal API) for acceptable inference/generation speed
-  - On a host where Docker itself cannot reach the GPU the way the machine's own OS can, most notably macOS (Docker Desktop for Mac has no path to Metal, and no NVIDIA GPU passthrough either), these two services are installed straight onto the machine instead of run in a container
-  - `serv/llama-cpp/install.sh`/`install.bat` and `serv/comfyui/install.sh`/`install.bat` do this native install (`.sh` for Linux/macOS, `.bat` for Windows); each is meant to be run by hand on that host, not something Komodo deploys
+  - On a host where Docker itself cannot reach the GPU the way the machine's own OS can, most notably MacOS (Docker Desktop for Mac has no path to Metal, and no NVIDIA GPU passthrough either), these two services are installed straight onto the machine instead of run in a container
+  - `serv/llama-cpp/install.sh`/`install.bat` and `serv/comfyui/install.sh`/`install.bat` do this native install (`.sh` for Linux/MacOS, `.bat` for Windows); each is meant to be run by hand on that host, not something Komodo deploys
   - `serv/llama-cpp/docker-compose.yml` and `serv/comfyui/docker-compose.yml` still exist, requesting `driver: nvidia` under `deploy.resources.reservations.devices`, but they are not this project's actual default, every host in this repo runs both services natively, including the ones with an NVIDIA GPU
     - Each compose file's own leading comment frames it as an option for "hosts where a containerized, GPU-passthrough deployment makes more sense", but in practice none of this repo's hosts have opted into that, prefer the native install unless a host explicitly asks to be the exception, see Specialized Rules: Hosts above for what each host actually does today
   - Do not add `llama-cpp` or `comfyui` to a host's `komodo-dpl.yml` `include:` list to solve a "make this host run it too" request, that swaps the native, direct-GPU install for a containerized one, which is the opposite of what these two services are set up to do here, ask first if a host genuinely needs the containerized path instead of assuming it

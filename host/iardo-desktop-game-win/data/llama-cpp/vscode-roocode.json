@@ -1,0 +1,28 @@
+{
+  "providerProfiles": {
+    "currentApiConfigName": "local-qwen35",
+    "apiConfigs": {
+      "local-qwen35": {
+        "id": "local-qwen35",
+        "apiProvider": "openAiCompatible",
+        "openAiBaseUrl": "http://127.0.0.1:8080/v1",
+        "openAiApiKey": "sk-no-key-required",
+        "openAiModelId": "qwen3.5-9b",
+        "openAiCustomModelInfo": {
+          "maxTokens": 8192,
+          "contextWindow": 24576,
+          "supportsImages": true,
+          "supportsComputerUse": false,
+          "supportsPromptCache": false,
+          "inputPrice": 0,
+          "outputPrice": 0,
+          "cacheReadsPrice": 0,
+          "cacheWritesPrice": 0
+        },
+        "includeMaxTokens": true,
+        "openAiStreamingEnabled": true
+      }
+    },
+    "modeApiConfigs": {}
+  }
+}
