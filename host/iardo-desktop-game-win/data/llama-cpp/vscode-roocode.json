@@ -10,7 +10,7 @@
         "openAiModelId": "qwen3.5-9b",
         "openAiCustomModelInfo": {
           "maxTokens": 8192,
-          "contextWindow": 24576,
+          "contextWindow": 49152,
           "supportsImages": true,
           "supportsComputerUse": false,
           "supportsPromptCache": false,

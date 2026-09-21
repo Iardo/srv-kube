@@ -10,12 +10,14 @@ This means `./start.py` and `./init.py` do **not** cover them, picking a host th
 
 ### Requirements
 
-| Requirement                                                      | Notes                                                                                                                                                       |
-| ---------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [CUDA Toolkit](https://developer.nvidia.com/cuda-downloads)      | Only for NVIDIA GPU offload, the driver alone (what `nvidia-smi` reports) isn't enough, `install.bat` needs `nvcc` on `PATH` or it silently builds CPU-only |
-| [Git](https://git-scm.com/download/win)                          |                                                                                                                                                             |
-| [CMake](https://cmake.org/download/)                             |                                                                                                                                                             |
-| [Visual Studio](https://visualstudio.microsoft.com/downloads/)   | MSVC C/C++ build tools, the "Desktop development with C++" workload (Build Tools alone is enough, a full IDE isn't required)                                |
+| Requirement                                                      | Notes                                                                                                                                                                                                                                                                                                         |
+| ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [CUDA Toolkit](https://developer.nvidia.com/cuda-downloads)      | Only for NVIDIA GPU offload, the driver alone (what `nvidia-smi` reports) isn't enough, `install.bat` needs `nvcc` on `PATH` or it silently builds CPU-only                                                                                                                                                   |
+| [FFmpeg](https://ffbinaries.com/downloads)                       | Only for `.webp` image input, llama.cpp's built-in image decoder (`stb_image`) doesn't support `.webp` and falls back to `ffmpeg`/`ffprobe` to decode it as a single video frame, without it that image is silently dropped from the request instead of erroring loudly                                       |
+| [FFprobe](https://git-scm.com/download/win)                      | Only for `.webp` image input, llama.cpp's built-in image decoder (`stb_image`) doesn't support `.webp` and falls back to `ffmpeg`/`ffprobe` to decode it as a single video frame, without it that image is silently dropped from the request instead of erroring loudly                                       |
+| [Git](https://git-scm.com/download/win)                          |                                                                                                                                                                                                                                                                                                               |
+| [CMake](https://cmake.org/download/)                             |                                                                                                                                                                                                                                                                                                               |
+| [Visual Studio](https://visualstudio.microsoft.com/downloads/)   | MSVC C/C++ build tools, the "Desktop development with C++" workload (Build Tools alone is enough, a full IDE isn't required)                                                                                                                                                                                  |
 
 ### Setup: Linux / MacOS
 
@@ -55,6 +57,12 @@ You can use on of these methods:
 ### Running Server
 
 > [!NOTE]
+> `failed to launch ffprobe` followed by `failed to decode webp buffer` means FFmpeg (see Requirements above) isn't installed, install it then open a **new** terminal so `PATH` picks it up:
+> ```
+> winget install --id Gyan.FFmpeg --source winget
+> ```
+
+> [!NOTE]
 > If `llama-server` exits immediately with no output at all (not even an error), that's `STATUS_DLL_NOT_FOUND` (exit code `-1073741515` / `0xC0000135`), not a bad model path. Unlike Linux, where a symlinked binary still finds its shared libraries through the build folder's own rpath, Windows looks for a DLL next to whatever path the exe was actually *invoked* from, so `llama.dll`/`ggml.dll`/`ggml-base.dll`/`ggml-cpu.dll`/`mtmd.dll`/`llama-common.dll`/`llama-server-impl.dll` all need to sit alongside the linked `llama-server.exe` in `%USERPROFILE%\bin`, not just in the build folder. `install.bat` links these in automatically now, but if you installed before this fix, copy them over by hand once:
 >
 > | Shell              | Command                                                                                                                    |
@@ -92,7 +100,7 @@ The GPU offload + vision/file input mode needs the model's own `--mmproj` file, 
 
 ##### One-liner
 ```powershell
-llama-server --model "$env:USERPROFILE\llms\models\llamacpp\qwen3.5-9B-Q4_K_S.gguf" --mmproj "$env:USERPROFILE\llms\models\llamacpp\qwen3.5-9B-mmproj-f16.gguf" --alias qwen3.5-9b --ctx-size 24576 --port 8080 --host 0.0.0.0 --n-gpu-layers 999 --jinja --flash-attn on
+llama-server --model "$env:USERPROFILE\llms\models\llamacpp\qwen3.5-9B-Q4_K_S.gguf" --mmproj "$env:USERPROFILE\llms\models\llamacpp\qwen3.5-9B-mmproj-f16.gguf" --alias qwen3.5-9b --port 8080 --host 0.0.0.0 --ctx-size 49152 --parallel 1 --n-gpu-layers 999 --jinja --flash-attn on
 ```
 
 ##### Multi-line
@@ -101,13 +109,16 @@ llama-server `
   --model "$env:USERPROFILE\llms\models\llamacpp\qwen3.5-9B-Q4_K_S.gguf" `
   --mmproj "$env:USERPROFILE\llms\models\llamacpp\qwen3.5-9B-mmproj-f16.gguf" `
   --alias qwen3.5-9b `
-  --ctx-size 24576 `
   --port 8080 `
   --host 0.0.0.0 `
+  --ctx-size 49152 `
+  --parallel 1 `
   --n-gpu-layers 999 `
   --jinja `
   --flash-attn on
 ```
+
+`--parallel 1` matches how RooCode (and most single-conversation clients) actually use the server, one request at a time, without it the default of 4 slots each reserve their own KV cache sized to the full context, wasting VRAM on parallelism nothing is using instead of letting it go toward a larger usable context.
 
 ---
 

@@ -3,6 +3,8 @@
 
 # ignored folders:
 __pycache__
+.claude
+.roo
 /data/backup/*
 /logs/*
 /serv/**/backups/*
@@ -19,5 +21,6 @@ __pycache__
 
 # ignore files:
 .DS_Store
-/host/**/.env-secrets.local
+/CLAUDE.md
 /host/**/.*.sha256
+/host/**/.env-secrets.local
