@@ -120,6 +120,7 @@ class Service:
             ('ASTRAL_GITHUB_CLIENT_SECRET', 'changeme # Dummy, from the same GitHub OAuth app'),
         ],
         'authentik': [
+            ('AUTHENTIK_SECRET_KEY', GENERATE_HEX32),
             ('AUTHENTIK_POSTGRESQL__USER', 'authentik # Do not change'),
             ('AUTHENTIK_POSTGRESQL__PASSWORD', 'authentik # Do not change'),
         ],

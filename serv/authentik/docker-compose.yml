@@ -47,9 +47,12 @@ services:
       - ./data/authentik/templates:/templates
     env_file: .env
     environment:
+      AUTHENTIK_SECRET_KEY: ${AUTHENTIK_SECRET_KEY:?}
       AUTHENTIK_LISTEN__HTTP: 0.0.0.0:9000
       AUTHENTIK_LISTEN__HTTPS: 0.0.0.0:9443
       AUTHENTIK_POSTGRESQL__PORT: 5432
+      AUTHENTIK_POSTGRESQL__USER: ${AUTHENTIK_POSTGRESQL__USER:?}
+      AUTHENTIK_POSTGRESQL__PASSWORD: ${AUTHENTIK_POSTGRESQL__PASSWORD:?}
       AUTHENTIK_REDIS__PORT: 6379
 
   authentik-database:
@@ -120,3 +123,7 @@ services:
       - ./data/authentik/media:/media
       - ./data/authentik/templates:/templates
     env_file: .env
+    environment:
+      AUTHENTIK_SECRET_KEY: ${AUTHENTIK_SECRET_KEY:?}
+      AUTHENTIK_POSTGRESQL__USER: ${AUTHENTIK_POSTGRESQL__USER:?}
+      AUTHENTIK_POSTGRESQL__PASSWORD: ${AUTHENTIK_POSTGRESQL__PASSWORD:?}

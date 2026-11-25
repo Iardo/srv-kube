@@ -25,6 +25,7 @@ additional_env_files = [
     { track = false, path = "host/iardo-vps-iardolive/.env-secrets" },
     { track = false, path = "host/iardo-vps-iardolive/.env-secrets.local" },
     # SERV
+    { track = true, path = "serv/authentik/.env" },
     { track = true, path = "serv/grafana/.env" },
     { track = true, path = "serv/infisical/.env" },
     { track = true, path = "serv/passbolt/.env" },
