@@ -8,7 +8,7 @@ networks:
 
 services:
   bazarr-web:
-    image: lscr.io/linuxserver/bazarr:latest
+    image: lscr.io/linuxserver/bazarr@sha256:b3db4247d3afa0c68bc5aa311bedd67b1caf4b3eabc3a85577682970435d5013 # 1.6.2
     container_name: bazarr-web
     restart: unless-stopped
     networks:

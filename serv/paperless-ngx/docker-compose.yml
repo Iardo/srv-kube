@@ -85,7 +85,7 @@ services:
       - paperless-ngx
 
   paperless-ngx-tika:
-    image: docker.io/apache/tika:latest
+    image: docker.io/apache/tika@sha256:9f3e5bb9da4229a971a4839416b3204499f20668ee834fa741a6a7504bbea7bf # 3.4.0.0
     container_name: paperless-ngx-tika
     restart: unless-stopped
     networks:

@@ -17,24 +17,12 @@ http://actual.host-testing:7000 {
     reverse_proxy host.docker.internal:5000
 }
 
-http://astral.host-testing:7000 {
-    reverse_proxy host.docker.internal:5001
-}
-
 http://github-stars-manager.host-testing:7000 {
     reverse_proxy host.docker.internal:11000
 }
 
 http://linkace.host-testing:7000 {
     reverse_proxy host.docker.internal:16000
-}
-
-http://linkace-https.host-testing:7000 {
-    reverse_proxy https://host.docker.internal:16001 {
-        transport http {
-            tls_insecure_skip_verify
-        }
-    }
 }
 
 http://ntfy.host-testing:7000 {

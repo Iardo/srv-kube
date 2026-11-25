@@ -8,7 +8,7 @@ networks:
 
 services:
   radarr-web:
-    image: lscr.io/linuxserver/radarr:latest
+    image: lscr.io/linuxserver/radarr@sha256:044788f5508b7f67a3e0368cdd142c77c4d4cd5aec2efaba53e1a68b6b6231e7 # 7.0.3
     container_name: radarr-web
     restart: unless-stopped
     networks:

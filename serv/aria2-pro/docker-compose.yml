@@ -8,7 +8,7 @@ networks:
 
 services:
   aria2-pro-server:
-    image: p3terx/aria2-pro
+    image: p3terx/aria2-pro@sha256:086d1a37c586edb07ec0fb956bf9edd89d1d38d138ad5309ff96d510c8c9a011 # 202209060423
     container_name: aria2-pro-server
     restart: unless-stopped
     # Since Aria2 will continue to generate logs,
@@ -36,7 +36,9 @@ services:
       TZ: ${TIMEZONE:-America/Panama}
 
   aria2-pro-web:
-    image: p3terx/ariang
+    # No versioned tag exists upstream, only "latest".
+    # Pinned to what "latest" resolved to on 2026-11-25.
+    image: p3terx/ariang@sha256:5e258716e459bb1ee4f61ab52462fa6c1862e94a9de2c53e1d1ff403a24a4ca8
     container_name: aria2-pro-web
     restart: unless-stopped
     command: --port 6880 --ipv6

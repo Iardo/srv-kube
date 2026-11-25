@@ -8,7 +8,7 @@ networks:
     
 services:
   jellyfin-web:
-    image: lscr.io/linuxserver/jellyfin:latest
+    image: lscr.io/linuxserver/jellyfin@sha256:1c60c32d1de1529cc58ea6c7879dd47f89d0d88082b085a66214243de3150b5c # 12.4ubu2604-ls61
     container_name: jellyfin-web
     restart: unless-stopped
     networks:

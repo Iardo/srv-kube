@@ -13,7 +13,7 @@ volumes:
 
 services:
   firefly3-web:
-    image: fireflyiii/core:latest
+    image: fireflyiii/core@sha256:10bbe21fbdc68b8fa955d85827aeed197ab46d62c8c745e949d322b9f4b73ff5 # 6.7.9
     container_name: firefly3-web
     depends_on:
       - firefly3-database
@@ -26,6 +26,7 @@ services:
     restart: unless-stopped
     env_file: .env
     environment:
+      APP_KEY: ${FIREFLY3_APP_KEY:?}
       # pgsql | mysql | sqlite
       DB_CONNECTION: mysql
       DB_HOST: firefly3-database
@@ -37,7 +38,7 @@ services:
       TZ: ${TIMEZONE:-America/Panama}
 
   firefly3-database:
-    image: mariadb
+    image: mariadb@sha256:a8992b5e5404d11e03c54a31d0c1bdea3fd116d283aa6d1a627551f29045309b # 11.4.13
     container_name: firefly3-database
     restart: unless-stopped
     networks:

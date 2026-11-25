@@ -15,7 +15,6 @@ class Service:
         'actual': ['web-http'],
         'adguard-home': ['web-http', 'panel', 'dns-tcp', 'dns-udp'],
         'aria2-pro': ['web-http', 'rpc', 'muse-tcp', 'muse-udp'],
-        'astral': ['web-http'],
         'authentik': ['web-http', 'web-https', 'database', 'cache'],
         'azimutt': ['web-http', 'database', 'gateway'],
         'bazarr': ['web-http'],
@@ -115,16 +114,13 @@ class Service:
     Secret variables each service needs, with dummy values.
     '''
     envs_list: dict = {
-        'astral': [
-            ('ASTRAL_GITHUB_CLIENT_ID', 'changeme # Dummy, create a GitHub OAuth app at https://github.com/settings/developers'),
-            ('ASTRAL_GITHUB_CLIENT_SECRET', 'changeme # Dummy, from the same GitHub OAuth app'),
-        ],
         'authentik': [
             ('AUTHENTIK_SECRET_KEY', GENERATE_HEX32),
             ('AUTHENTIK_POSTGRESQL__USER', 'authentik # Do not change'),
             ('AUTHENTIK_POSTGRESQL__PASSWORD', 'authentik # Do not change'),
         ],
         'azimutt': [
+            ('AZIMUTT_SECRET_KEY_BASE', GENERATE_HEX32),
             ('AZIMUTT_POSTGRES_USER', 'azimutt # Do not change'),
             ('AZIMUTT_POSTGRES_PASS', 'azimutt # Do not change'),
         ],
@@ -172,6 +168,9 @@ class Service:
             ('DOCMOST_POSTGRESQL_USER', 'docmost # Do not change'),
             ('DOCMOST_POSTGRESQL_PASS', 'docmost # Do not change'),
         ],
+        'firefly3': [
+            ('FIREFLY3_APP_KEY', GENERATE_HEX16),
+        ],
         'github-stars-manager': [
             ('GITHUB_STARS_MANAGER_API_SECRET', GENERATE_HEX32),
             ('GITHUB_STARS_MANAGER_ENCRYPTION_KEY', GENERATE_HEX32),
@@ -208,6 +207,7 @@ class Service:
             ('LINKACE_CACHE_PASS', 'linkace # Dummy'),
         ],
         'linkwarden': [
+            ('LINKWARDEN_NEXTAUTH_SECRET', GENERATE_HEX32),
             ('LINKWARDEN_POSTGRES_USER', 'linkwarden # Do not change'),
             ('LINKWARDEN_POSTGRES_PASS', 'linkwarden # Do not change'),
         ],
@@ -218,6 +218,7 @@ class Service:
             ('N8N_POSTGRESQL_PASS_NON_ROOT', 'n8n # Do not change'),
         ],
         'notesnook': [
+            ('NOTESNOOK_API_SECRET', GENERATE_HEX32),
             ('NOTESNOOK_MINIO_ROOT_USER', 'notesnook # Do not change'),
             ('NOTESNOOK_MINIO_ROOT_PASSWORD', 'notesnook # Do not change'),
         ],

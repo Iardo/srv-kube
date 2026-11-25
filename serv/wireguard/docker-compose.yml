@@ -8,7 +8,7 @@ networks:
 
 services:
   wireguard-server:
-    image: lscr.io/linuxserver/wireguard:latest
+    image: lscr.io/linuxserver/wireguard@sha256:10db56ad834f94541307d5dfdbe87370e26d155bb341a5bf65789f970f24ab5c # 1.0.20260223
     container_name: wireguard-server
     restart: unless-stopped
     cap_add:

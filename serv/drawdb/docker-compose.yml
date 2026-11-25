@@ -9,7 +9,7 @@ networks:
     
 services:
   drawdb-web:
-    image: xinsodev/drawdb:latest
+    image: wilmardma/drawdb@sha256:5444c49c9485b425b07ea4f62a186e0699ab86d1ceec785a97cb5b1a99dd855e
     container_name: drawdb-web
     restart: unless-stopped
     networks:

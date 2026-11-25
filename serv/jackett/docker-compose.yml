@@ -8,7 +8,7 @@ networks:
 
 services:
   jackett-web:
-    image: lscr.io/linuxserver/jackett:latest
+    image: lscr.io/linuxserver/jackett@sha256:e3ab924fd49c8a519d1f1f3cfe3a7273b7de552aef1beffcad4a122c5db28e15 # 0.25.39
     container_name: jackett-web
     restart: unless-stopped
     networks:

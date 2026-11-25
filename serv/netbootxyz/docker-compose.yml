@@ -9,7 +9,9 @@ networks:
 
 services:
   netbootxyz-web:
-    image: ghcr.io/netbootxyz/netbootxyz:latest
+    # No versioned tag exists upstream, only "latest" (plus commit-sha build tags).
+    # Pinned to what "latest" resolved to on 2026-11-25.
+    image: ghcr.io/netbootxyz/netbootxyz@sha256:a3af92f8447d4df33e7d18607c968db792a6b2da0db9c2255ceb7f45e01897bd
     container_name: netbootxyz-web
     restart: unless-stopped
     networks:

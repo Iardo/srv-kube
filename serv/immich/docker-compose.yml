@@ -15,7 +15,7 @@ volumes:
 
 services:
   immich-web:
-    image: ghcr.io/immich-app/immich-server:release
+    image: ghcr.io/immich-app/immich-server@sha256:fc880c1bf665b4aab1e74c15e56ab871225989cd546536e6b77e771869af06bd # v3.4.2
     container_name: immich-web
     restart: unless-stopped
     depends_on:
@@ -37,7 +37,7 @@ services:
       REDIS_HOSTNAME: immich-cache
 
   immich-machine-learning:
-    image: ghcr.io/immich-app/immich-machine-learning:release
+    image: ghcr.io/immich-app/immich-machine-learning@sha256:739405742a79bd7447227c553bb62ed5491aa36acf00bc667af7f9c93b6fae91 # v3.4.2
     container_name: immich-machine-learning
     restart: unless-stopped
     networks:

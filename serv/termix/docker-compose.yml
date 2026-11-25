@@ -10,7 +10,7 @@ networks:
 
 services:
   termix-web:
-    image: ghcr.io/termix-ssh/termix:latest
+    image: ghcr.io/termix-ssh/termix@sha256:f5a208e3c570fa5d3ec65dc2ad462eacf96e0d9a7f4f84410e5694f5a388f5ba # 26.11.3
     container_name: termix-web
     restart: unless-stopped
     networks:

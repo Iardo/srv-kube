@@ -14,7 +14,9 @@ volumes:
 
 services:
   azimutt-web:
-    image: ghcr.io/azimuttapp/azimutt:main
+    # No versioned tag exists upstream, only "main".
+    # Pinned to what "main" resolved to on 2026-11-25.
+    image: ghcr.io/azimuttapp/azimutt@sha256:ecb0ca8b51ed397cf5e8500de748c3d1490cdf1f9773777be8f769f4b9f1ae99
     container_name: azimutt-web
     platform: linux/amd64
     restart: unless-stopped
@@ -24,6 +26,7 @@ services:
       - ${AZIMUTT_WEB_HTTP:-4000}:4000
     env_file: .env
     environment:
+      SECRET_KEY_BASE: ${AZIMUTT_SECRET_KEY_BASE:?}
       PORT: 4000
       GATEWAY_URL: http://azimutt-gateway:4177
       DATABASE_URL: postgresql://${AZIMUTT_POSTGRES_USER:?}:${AZIMUTT_POSTGRES_PASS:?}@azimutt-database:5432/${POSTGRES_NAME:?}

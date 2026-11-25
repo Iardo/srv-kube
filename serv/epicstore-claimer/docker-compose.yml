@@ -17,7 +17,7 @@ networks:
 
 services:
   epicstore-claimer:
-    image: ghcr.io/jackblk/epicgames-freebies-claimer:latest
+    image: ghcr.io/jackblk/epicgames-freebies-claimer@sha256:e40501f13370bd38c2ca37da41f155a3b0bf3f1b378e3ae541d706a38cc71ca7 # 1.5.8
     container_name: epicstore-claimer
     restart: unless-stopped
     stdin_open: true # docker run -i

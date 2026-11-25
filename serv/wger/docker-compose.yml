@@ -18,7 +18,7 @@ volumes:
 
 services:
   wger-web:
-    image: wger/server:latest
+    image: wger/server@sha256:1c5789b93bfe5eed0b7287255782d9177027b255de2b22b59f511a693a48db04 # 2.7.0
     container_name: wger-web
     restart: unless-stopped
     depends_on:
@@ -52,7 +52,7 @@ services:
       POSTGRES_PASSWORD: ${WGER_POSTGRESQL_PASS:?}
 
   wger-nginx:
-    image: nginx:stable
+    image: nginx@sha256:755983e0e0e568e4c86297cc91485d7a6f9fb73e42d8a19cdba3eac9e8b8cfc9 # 1.30.8
     container_name: wger-nginx
     restart: unless-stopped
     depends_on:

@@ -15,8 +15,9 @@ volumes:
     name: notesnook-minio
     driver: local
 
-x-discovery: 
+x-discovery:
   &discovery
+    NOTESNOOK_API_SECRET: ${NOTESNOOK_API_SECRET:?}
     SELF_HOSTED: ${SELF_HOSTED:?}
     # Ports
     NOTESNOOK_SERVER_PORT: 5264
@@ -34,7 +35,7 @@ x-discovery:
 
 services:
   notesnook-validate:
-    image: vandot/alpine-bash
+    image: vandot/alpine-bash@sha256:1c1a1e5dcfb35eca7094b63705902535555d60e176871310d19f15980dccd006 # 3.20.1
     container_name: notesnook-validate
     # Ensure the validate service runs first
     restart: "no"
@@ -46,7 +47,7 @@ services:
     env_file: .env
 
   notesnook-server:
-    image: streetwriters/notesnook-sync:latest
+    image: streetwriters/notesnook-sync@sha256:7d34249355eac88e3b0d07c526486710df58da84121aca0fc928c03899126909 # v1.0-beta.52
     container_name: notesnook-server
     depends_on:
       - notesnook-identity
@@ -78,7 +79,7 @@ services:
       S3_SERVICE_URL: http://localhost:${NOTESNOOK_MINIO_API:?}
 
   notesnook-identity:
-    image: streetwriters/identity:latest
+    image: streetwriters/identity@sha256:5e6eed47697455e1a549e947edb43d81a8455c8fc1732029494759d95912f545 # v1.0-beta.52
     container_name: notesnook-identity
     depends_on:
       - notesnook-database
@@ -101,7 +102,7 @@ services:
       MONGODB_DATABASE_NAME: identity
 
   notesnook-events:
-    image: streetwriters/sse:latest
+    image: streetwriters/sse@sha256:52cad0b1424efe97b556b651aaf32b0ba284289934e8b5b69937600c50f064f4 # v1.0-beta.52
     container_name: notesnook-events
     depends_on:
       - notesnook-identity
@@ -123,7 +124,7 @@ services:
       <<: *discovery
 
   notesnook-monograph:
-    image: streetwriters/monograph:latest
+    image: streetwriters/monograph@sha256:1b7fcf885c8d3cb33ba74354ee32970430f7a6e992de96b61de2e8a310330a66 # 1.3.1
     container_name: notesnook-monograph
     depends_on:
       - notesnook-server
@@ -146,7 +147,7 @@ services:
       PUBLIC_URL: http://localhost:${NOTESNOOK_MONOGRAPH:-6264}
 
   notesnook-autoheal:
-    image: willfarrell/autoheal:latest
+    image: willfarrell/autoheal@sha256:31f580ef0279eaced5b38d631b08c474d70d8403c1c2fdd6ddcf2e879d5f3f7c # 1.2.0
     container_name: notesnook-autoheal
     restart: always
     depends_on:

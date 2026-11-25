@@ -8,7 +8,7 @@ networks:
 
 services:
   kavitareader-web:
-    image: lscr.io/linuxserver/kavita:latest
+    image: lscr.io/linuxserver/kavita@sha256:4634afda85a8d0303e6973174700f89814fe2b8dd9ebd4659d38a97294fff9b6 # 0.9.1
     container_name: kavitareader-web
     restart: unless-stopped
     networks:

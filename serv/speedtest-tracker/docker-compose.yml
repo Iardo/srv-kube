@@ -9,7 +9,9 @@ networks:
     
 services:
   speedtest-tracker-web:
-    image: henrywhitaker3/speedtest-tracker
+    # No versioned stable tag exists upstream, only "latest" (plus unstable "dev").
+    # Pinned to what "latest" resolved to on 2026-11-25.
+    image: henrywhitaker3/speedtest-tracker@sha256:47159a9402291275bd9f8a8ed4f5c1ce8502de216465ed29da8a3c995b807df1
     container_name: speedtest-tracker-web
     restart: unless-stopped
     logging:

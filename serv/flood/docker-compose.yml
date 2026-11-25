@@ -16,7 +16,7 @@ networks:
 
 services:
   flood-web:
-    image: jesec/flood
+    image: jesec/flood@sha256:72bdc95ff160e1f6b8ad72c171eff53f0bab8aa651389ca710ffff170278390a # 4.16.4
     container_name: flood-web
     restart: unless-stopped
     command:

@@ -51,6 +51,7 @@ services:
       - linkwarden-archives:/data/data/archives
     env_file: .env
     environment:
+      NEXTAUTH_SECRET: ${LINKWARDEN_NEXTAUTH_SECRET:?}
       NEXT_PUBLIC_DISABLE_REGISTRATION: ${LINKWARDEN_DISABLE_REGISTRATION:-false}
 
   linkwarden-database:

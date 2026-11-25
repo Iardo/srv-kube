@@ -9,7 +9,7 @@ networks:
 
 services:
   adguard-home-web:
-    image: adguard/adguardhome:latest
+    image: adguard/adguardhome@sha256:f00a586f0d1caa74f149340bfb225014960310488ffa838406b89256900a96c2 # v1.0.0
     container_name: adguard-home-web
     restart: unless-stopped
     networks:

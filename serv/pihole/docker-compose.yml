@@ -8,7 +8,7 @@ networks:
 
 services:
   pihole-web:
-    image: pihole/pihole:latest
+    image: pihole/pihole@sha256:66c798d79a95c2691f280329c3611dba1746117c61c9f331907ca35a06a52778 # 2026.11.0
     container_name: pihole-web
     restart: unless-stopped
     cap_add:

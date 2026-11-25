@@ -12,7 +12,7 @@ volumes:
 
 services:
   changedetection-web:
-    image: ghcr.io/dgtlmoon/changedetection.io
+    image: ghcr.io/dgtlmoon/changedetection.io@sha256:b6aae2572a0bf1a671b1b202365ddcfe16a31fa8a60be89df606705731b55f8b # 0.70.4
     container_name: changedetection-web
     restart: unless-stopped
     # If WEBDRIVER or PLAYWRIGHT are enabled, changedetection container depends on that
@@ -53,7 +53,7 @@ services:
   #                           playwright_proxy_username, playwright_proxy_password
   # https://playwright.dev/python/docs/api/class-browsertype#browser-type-launch-option-proxy
   changedetection-sockpuppet:
-    image: dgtlmoon/sockpuppetbrowser:latest
+    image: dgtlmoon/sockpuppetbrowser@sha256:71fed9b1de8de865a8f30c61e6d8d129de183bf34f8cc545dc7ae499198ec935 # 0.0.5
     container_name: changedetection-sockpuppet
     restart: unless-stopped
     cap_add:

@@ -14,7 +14,9 @@ networks:
 
 services:
   comfyui-web:
-    image: ghcr.io/ai-dock/comfyui:latest-cuda
+    # Versioned tags exist but track an old CUDA/base-image combo (stuck at v0.2.7);
+    # "latest-cuda" is the actively maintained line. Pinned to what it resolved to on 2026-11-25.
+    image: ghcr.io/ai-dock/comfyui@sha256:9f99d5383690f85f3f8eb8ccdde41ca3edfbfaecf41dcf53291741c1e8db297e
     container_name: comfyui-web
     restart: unless-stopped
     networks:

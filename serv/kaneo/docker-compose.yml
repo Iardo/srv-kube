@@ -15,7 +15,7 @@ volumes:
 
 services:
   kaneo-web:
-    image: ghcr.io/usekaneo/kaneo:latest
+    image: ghcr.io/usekaneo/kaneo@sha256:03ad082e33945b9c091266af60c7c88865cb2fab37ff33d91cbbcab626b0094d # 2.50.0
     container_name: kaneo-web
     restart: unless-stopped
     depends_on:

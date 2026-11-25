@@ -13,7 +13,7 @@ networks:
 
 services:
   docuseal-web:
-    image: docuseal/docuseal:latest
+    image: docuseal/docuseal@sha256:b664cc84014f607f090140973f2e082cc551954d42f6f17e07fdd54dee6fdc08 # 3.4.0
     container_name: docuseal-web
     restart: unless-stopped
     networks:

@@ -41,7 +41,7 @@ services:
       - ${CADDY_CADDYFILE:-./conf/Caddyfile}:/etc/caddy/Caddyfile
 
   caddy-ui-backend:
-    image: zackwag/caddy-ui-backend:latest
+    image: zackwag/caddy-ui-backend@sha256:1964ab7e297da7945aee42f8e357357918d2bfb9c068d9ea78f45f6cf5ecf269 # 3.9.1
     container_name: caddy-ui-backend
     restart: unless-stopped
     depends_on:
@@ -68,7 +68,7 @@ services:
       PORT: '3001'
 
   caddy-ui-frontend:
-    image: zackwag/caddy-ui-frontend:latest
+    image: zackwag/caddy-ui-frontend@sha256:109c1c3f03f742654116df0cd1e9b35da2390cef11e8c08175c6d8f27654258b # 3.9.1
     container_name: caddy-ui-frontend
     restart: unless-stopped
     depends_on:

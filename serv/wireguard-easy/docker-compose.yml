@@ -8,7 +8,7 @@ networks:
 
 services:
   wireguard-easy-web:
-    image: ghcr.io/wg-easy/wg-easy:latest
+    image: ghcr.io/wg-easy/wg-easy@sha256:071f79a639e9361123a5e57733107320207b844ddbbd92dfa6962f541fe8aac8 # 15.5.0
     container_name: wireguard-easy-web
     restart: unless-stopped
     cap_add:

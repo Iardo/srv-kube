@@ -9,7 +9,9 @@ networks:
 
 services:
   excalidraw-web:
-    image: excalidraw/excalidraw:sha-4bfc5bb
+    # No numbered release exists upstream, only "latest" (no sha-* tag since 2021).
+    # Pinned to what "latest" resolved to on 2026-11-25.
+    image: excalidraw/excalidraw@sha256:f7ee194addd607bf831d2af0f0a34463dd4225e426cf35199ef0b12a803398e9
     container_name: excalidraw-web
     restart: unless-stopped
     networks:

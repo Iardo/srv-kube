@@ -9,7 +9,7 @@ networks:
 
 services:
   home-assistant-web:
-    image: ghcr.io/home-assistant/home-assistant:stable
+    image: ghcr.io/home-assistant/home-assistant@sha256:24e541ddae5818bf8eb27898b9ba00d0c344a655aa5097e9e9bd4b19356be847 # 2026.11.3
     container_name: home-assistant-web
     restart: unless-stopped
     privileged: true

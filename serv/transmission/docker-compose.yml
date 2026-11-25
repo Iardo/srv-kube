@@ -8,7 +8,7 @@ networks:
 
 services:
   transmission-web:
-    image: lscr.io/linuxserver/transmission:latest
+    image: lscr.io/linuxserver/transmission@sha256:3a8ecd4ebbc9ec657ccddba674a067db20eb28a25d61146698580d724599c7cb # 4.1.4
     container_name: transmission-web
     restart: unless-stopped
     networks:

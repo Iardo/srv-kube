@@ -12,7 +12,7 @@ volumes:
 
 services:
   romm-web:
-    image: rommapp/romm:latest
+    image: rommapp/romm@sha256:8677fb7b81b1d3db20b849e989a1dadc2a11159e51eb34a2acdcb01102274edf # 5.4.1
     container_name: romm-web
     restart: unless-stopped
     depends_on:
@@ -36,7 +36,7 @@ services:
       ROMM_AUTH_SECRET_KEY: ${ROMM_AUTH_SECRET_KEY:?}
 
   romm-database:
-    image: mariadb:latest
+    image: mariadb@sha256:a8992b5e5404d11e03c54a31d0c1bdea3fd116d283aa6d1a627551f29045309b # 11.4.13
     container_name: romm-database
     restart: unless-stopped
     networks:

@@ -15,7 +15,7 @@ networks:
 
 services:
   scrutiny-web:
-    image: ghcr.io/analogj/scrutiny:master-omnibus
+    image: ghcr.io/analogj/scrutiny@sha256:6ee271ee531458f134220ca8b2c5c8ccc2711a799c827fef953fa865d91e312f # v0.9.5-omnibus
     container_name: scrutiny-web
     restart: unless-stopped
     cap_add:
