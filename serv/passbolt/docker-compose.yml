@@ -46,6 +46,13 @@ services:
       DATASOURCES_DEFAULT_DATABASE: passbolt
       DATASOURCES_DEFAULT_USERNAME: ${PASSBOLT_POSTGRESQL_USER:?}
       DATASOURCES_DEFAULT_PASSWORD: ${PASSBOLT_POSTGRESQL_PASS:?}
+      # Used by task/task-create-admin-user.sh,
+      # filled in on the host itself (see readme.md), never committed.
+      # Left optional (no ":?"),
+      # empty until then must not block the stack from coming up.
+      PASSBOLT_ADMIN_EMAIL: ${PASSBOLT_ADMIN_EMAIL:-}
+      PASSBOLT_ADMIN_FIRSTNAME: ${PASSBOLT_ADMIN_FIRSTNAME:-}
+      PASSBOLT_ADMIN_LASTNAME: ${PASSBOLT_ADMIN_LASTNAME:-}
 
   # NOTE: First-run setup — after the stack is up, register the admin user with:
   #   task/task-create-admin-user.sh

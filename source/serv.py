@@ -242,6 +242,9 @@ class Service:
         'passbolt': [
             ('PASSBOLT_POSTGRESQL_USER', 'passbolt # Do not change'),
             ('PASSBOLT_POSTGRESQL_PASS', 'passbolt # Do not change'),
+            ('PASSBOLT_ADMIN_EMAIL', ' # Fill-in, see serv/passbolt/readme.md'),
+            ('PASSBOLT_ADMIN_FIRSTNAME', ' # Fill-in, see serv/passbolt/readme.md'),
+            ('PASSBOLT_ADMIN_LASTNAME', ' # Fill-in, see serv/passbolt/readme.md'),
         ],
         'plane': [
             ('PLANE_SECRET_KEY', GENERATE_HEX32),
