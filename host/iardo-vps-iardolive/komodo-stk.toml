@@ -41,6 +41,10 @@ pre_deploy.command = """
     # Gatus: untracked, host-only endpoints file, never overwritten by a deploy.
     [ -f host/iardo-vps-iardolive/gatus.local.yml ] || printf 'endpoints: []\n' > host/iardo-vps-iardolive/gatus.local.yml
 
+    # Authentik
+    bash serv/authentik/task/task-gen-directories.sh
+    bash serv/authentik/task/task-set-permissions.sh
+
     # Ntfy
     bash serv/ntfy/task/task-set-initial-files.sh
 
