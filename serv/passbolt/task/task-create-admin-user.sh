@@ -14,4 +14,7 @@ if [ -z "$PASSBOLT_ADMIN_EMAIL" ] || [ -z "$PASSBOLT_ADMIN_FIRSTNAME" ] || [ -z 
   exit 1
 fi
 
-docker exec -it passbolt-web su -m -c "/usr/share/php/passbolt/bin/cake passbolt register_user -u $PASSBOLT_ADMIN_EMAIL -f $PASSBOLT_ADMIN_FIRSTNAME -l $PASSBOLT_ADMIN_LASTNAME -r admin" -s /bin/sh www-data
+# The "-non-root" image already runs as "www-data" by default,
+# "su" would just prompt for a password it doesn't have
+# (see passbolt_docker's own README, "Or alternatively for non-root image").
+docker exec -it passbolt-web /usr/share/php/passbolt/bin/cake passbolt register_user -u "$PASSBOLT_ADMIN_EMAIL" -f "$PASSBOLT_ADMIN_FIRSTNAME" -l "$PASSBOLT_ADMIN_LASTNAME" -r admin
