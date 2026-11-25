@@ -1,0 +1,55 @@
+[[stack]]
+name = "iardo-vps-iardoo"
+
+[stack.config]
+server        = "iardo-vps-iardoo"
+branch        = "main"
+repo          = "iardo/srv-kube"
+clone_path    = "/etc/srv-kube"
+run_directory = "/etc/srv-kube"
+
+file_paths = [
+    "host/iardo-vps-iardoo/komodo-dpl.yml",
+]
+
+additional_env_files = [
+    # HOST
+    { track = true,  path = "host/iardo-vps-iardoo/.env" },
+    { track = false, path = "host/iardo-vps-iardoo/.env-secrets" },
+    { track = false, path = "host/iardo-vps-iardoo/.env-secrets.local" },
+    # SERV
+    { track = true, path = "serv/actual/.env" },
+    { track = true, path = "serv/linkace/.env" },
+]
+
+pre_deploy.shell_mode = false
+pre_deploy.command = """
+    [ -f host/iardo-vps-iardoo/.env-secrets.local ] || cp host/iardo-vps-iardoo/.env-secrets host/iardo-vps-iardoo/.env-secrets.local
+
+    bash utils/task/task-fill-secrets.sh host/iardo-vps-iardoo/.env-secrets.local
+
+    # Actual
+    bash serv/actual/task/task-gen-directories.sh
+    bash serv/actual/task/task-set-permissions.sh
+
+    # Linkace
+    bash serv/linkace/task/task-gen-directories.sh
+    bash serv/linkace/task/task-set-permissions.sh
+
+    # Caddy/dnsmasq bind-mount a single file, restart them only if it changed.
+    bash utils/task/task-restart-if-changed.sh \
+        host/iardo-vps-iardoo/caddyfile host/iardo-vps-iardoo/.caddyfile.sha256 \
+        caddy-web caddy-ui-backend caddy-ui-frontend
+
+    bash utils/task/task-restart-if-changed.sh \
+        host/iardo-vps-iardoo/dnsmasq.conf host/iardo-vps-iardoo/.dnsmasq.conf.sha256 \
+        dnsmasq
+"""
+
+# Runs after the containers are up, re-applies each database-backed
+# service's app-user password from .env-secrets.local every deploy, since
+# the database itself only reads it once (see task-sync-db-password.sh).
+post_deploy.shell_mode = false
+post_deploy.command = """
+    bash serv/linkace/task/task-sync-db-password.sh
+"""

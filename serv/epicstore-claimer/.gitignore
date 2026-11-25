@@ -1,0 +1,8 @@
+# folders included:
+# folders ignored:
+
+# --------------------
+# files included:
+!conf/config.json
+
+# files ignored:

@@ -1,0 +1,34 @@
+# REFERENCE
+# https://github.com/postalserver/postal/blob/main/docker-compose.yml
+# https://docs.postalserver.io/getting-started/installation
+
+networks:
+  backend:
+    name: postal-backend
+
+services:
+  postal:
+    container_name: postal-web
+    image: ghcr.io/postalserver/postal:3.3.4
+    restart: on-failure
+    depends_on:
+      - mariadb
+    volumes:
+      - ./config:/config
+      - ./logs:/logs
+    networks:
+      - backend
+    ports:
+      - ${POSTAL_PORT:-5779}:80
+    env_file: .env
+    entrypoint: ["/docker-entrypoint.sh"]
+
+  mariadb:
+    container_name: postal-database
+    image: mariadb:11.5.2
+    restart: always
+    networks:
+      - backend
+    ports:
+      - ${MARIADB_PORT:-9989}:3306
+    env_file: .env

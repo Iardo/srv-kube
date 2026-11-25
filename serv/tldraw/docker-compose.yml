@@ -1,0 +1,19 @@
+# References
+# --------------------
+# https://tldraw.dev/installation
+
+networks:
+  tldraw:
+    name: tldraw
+
+services:
+  tldraw:
+    container_name: tldraw
+    restart: unless-stopped
+    build:
+      context: ./code
+      dockerfile: dockerfile
+    networks:
+      - tldraw
+    ports:
+      - ${TLDRAW_WEB_HTTP:-3000}:3000

@@ -1,0 +1,4 @@
+{
+  "cmake.sourceDirectory": "${workspaceFolder}/serv/llama-cpp/code",
+  "python.terminal.useEnvFile": true
+}

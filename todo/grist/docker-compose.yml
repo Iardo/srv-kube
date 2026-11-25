@@ -1,0 +1,83 @@
+# REFERENCE
+# https://github.com/gristlabs/grist-core/blob/main/docker-compose-examples/grist-with-postgres-redis-minio/docker-compose.yml
+# https://support.getgrist.com/self-managed/
+
+networks:
+  backend:
+    name: grist-backend
+
+volumes:
+  database-data:
+    name: grist-database
+    driver: local
+  redis-data:
+    name: grist-redis
+    driver: local
+
+services:
+  grist:
+    container_name: grist-web
+    image: gristlabs/grist:1
+    depends_on:
+      - database
+      - redis
+      - minio
+      - minio-setup
+    volumes:
+      - ./data/attachments:/persist
+    networks:
+      - backend
+    ports:
+      - ${GRIST_PORT:-8484}:8484
+    env_file: .env
+
+  database:
+    container_name: grist-database
+    image: postgres:alpine
+    volumes:
+      - database-data:/var/lib/postgresql/data
+    networks:
+      - backend
+    ports:
+      - ${POSTGRES_PORT:-5866}:5432
+    env_file: .env
+
+  redis:
+    container_name: grist-redis
+    image: redis:alpine
+    ports:
+      - ${REDIS_PORT:-6990}:6379
+    volumes:
+      - redis-data:/data
+
+  minio:
+    container_name: grist-minio
+    image: minio/minio:RELEASE.2024-09-13T20-26-02Z
+    volumes:
+      - ./data/minio:/data
+    networks:
+      - backend
+    command:
+      server /data --console-address=":9001"
+    env_file: .env
+
+  # This sets up the buckets required in MinIO.
+  # It is only needed to make this example work.
+  # It isn't necessary for deployment and can be safely removed.
+  minio-setup:
+    container_name: grist-minio-setup
+    image: minio/mc
+    restart: on-failure
+    depends_on:
+      minio:
+        condition: service_started
+    networks:
+      - backend
+    env_file: .env
+    entrypoint: >
+      /bin/sh -c "
+      /usr/bin/mc alias set myminio http://minio:9000 grist '$MINIO_ROOT_PASSWORD';
+      /usr/bin/mc mb myminio/grist-docs;
+      /usr/bin/mc anonymous set public myminio/grist-docs;
+      /usr/bin/mc version enable myminio/grist-docs;
+      "

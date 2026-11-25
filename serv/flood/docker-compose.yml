@@ -1,0 +1,32 @@
+# References
+# --------------------
+# https://github.com/jesec/flood
+
+# NOTE:
+# Flood's own builtin login creates the admin account on first visit to
+# the web UI, the Transmission connection (see
+# serv/transmission/docker-compose.yml, reachable as
+# "transmission-web:9091" over this shared network) then gets configured
+# from inside Flood itself afterward, Settings > Torrent Clients. There's
+# no way to pre-configure that connection via a startup flag.
+
+networks:
+  transmission:
+    name: transmission
+
+services:
+  flood-web:
+    image: jesec/flood
+    container_name: flood-web
+    restart: unless-stopped
+    command:
+      - --port
+      - '3000'
+    networks:
+      - transmission
+    ports:
+      - ${FLOOD_WEB_HTTP:-3000}:3000
+    volumes:
+      - ./conf:/config
+    environment:
+      TZ: ${TIMEZONE:-America/Panama}

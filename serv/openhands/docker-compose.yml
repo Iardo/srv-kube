@@ -1,0 +1,23 @@
+# References
+# --------------------
+# https://github.com/OpenHands/OpenHands
+# https://docs.all-hands.dev/usage/installation
+
+networks:
+  openhands:
+    name: openhands
+
+services:
+  openhands-web:
+    image: ghcr.io/openhands/agent-canvas:1.16.0
+    container_name: openhands-web
+    restart: unless-stopped
+    networks:
+      - openhands
+    ports:
+      - ${OPENHANDS_WEB_HTTP:-8000}:8000
+    volumes:
+      - ./conf:/home/openhands/.openhands
+      - ./data:/projects
+    environment:
+      TZ: ${TIMEZONE:-America/Panama}

@@ -1,0 +1,26 @@
+# References
+# --------------------
+# https://www.kavitareader.com/docs/install/docker/
+
+networks:
+  kavitareader:
+    name: kavitareader
+
+services:
+  kavitareader-web:
+    image: lscr.io/linuxserver/kavita:latest
+    container_name: kavitareader-web
+    restart: unless-stopped
+    networks:
+      - kavitareader
+    ports:
+      - ${KAVITAREADER_WEB_HTTP:-5000}:5000
+    volumes:
+      - ./conf:/config
+      - ./data/manga:/manga
+      - ./data/comics:/comics
+      - ./data/books:/books
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: ${TIMEZONE:-America/Panama}

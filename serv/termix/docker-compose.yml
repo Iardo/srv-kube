@@ -1,0 +1,26 @@
+# References
+# --------------------
+# https://github.com/Termix-SSH/Termix
+# https://docs.termix.site/install
+# https://docs.termix.site/configure/environment-variables
+
+networks:
+  termix:
+    name: termix
+
+services:
+  termix-web:
+    image: ghcr.io/termix-ssh/termix:latest
+    container_name: termix-web
+    restart: unless-stopped
+    networks:
+      - termix
+    ports:
+      - ${TERMIX_WEB_HTTP:-8080}:8080
+    volumes:
+      - ./data:/app/data
+    environment:
+      TZ: ${TIMEZONE:-America/Panama}
+      # JWT/encryption/database keys are generated on first boot and
+      # persisted to DATA_DIR/.env (i.e. ./data/.env here), not passed in.
+      PORT: 8080

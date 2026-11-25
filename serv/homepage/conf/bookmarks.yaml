@@ -1,0 +1,45 @@
+---
+# For configuration options and examples:
+# ----
+# https://gethomepage.dev/latest/configs/bookmarks
+
+- Services:
+  - Actual:
+    - abbr: AC
+      href: https://actual.icelemonade.com
+  - CloudBeaver:
+    - abbr: CB
+      href: https://cloudbeaver.icelemonade.com
+  - Excalidraw:
+    - abbr: EX
+      href: https://excalidraw.icelemonade.com
+  - Infisical:
+    - abbr: IF
+      href: https://infisical.icelemonade.com
+  - Linkwarden:
+    - abbr: LW
+      href: https://links.icelemonade.com
+  - Netdata:
+    - abbr: ND
+      href: https://netdata.icelemonade.com
+  - Paperless:
+    - abbr: PL
+      href: https://paperless.icelemonade.com
+  - Passbolt:
+    - abbr: PA
+      href: https://passbolt.icelemonade.com
+  - Penpot:
+    - abbr: PE
+      href: https://penpot.icelemonade.com
+  - Portainer:
+    - abbr: PR
+      href: https://portainer.icelemonade.com
+  - Scrutiny:
+    - abbr: SC
+      href: https://scrutiny.icelemonade.com
+  - Stumpapp:
+    - abbr: ST
+      href: https://stump.icelemonade.com
+  - tldraw:
+    - abbr: TD
+      href: https://tldraw.icelemonade.com

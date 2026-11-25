@@ -1,0 +1,33 @@
+# References
+# --------------------
+# https://github.com/Websoft9test/docker-cloudbeaver/blob/main/docker-compose.yml
+# https://github.com/dbeaver/cloudbeaver/wiki/CloudBeaver-Community-deployment-from-docker-image
+
+
+# Credentials
+# --------------------
+# Sometimes on first login you could get an error 502 bad gateway,
+# just wait some minutes and try again.
+#
+# user: cbadmin
+# pass: $GENERATED_ON_FIRST_START_SETUP
+
+networks:
+  cloudbeaver:
+    name: cloudbeaver
+
+volumes:
+  cloudbeaver-web:
+    name: cloudbeaver-web
+
+services:
+  cloudbeaver-web:
+    image: dbeaver/cloudbeaver:24.1.0
+    container_name: cloudbeaver-web
+    restart: unless-stopped
+    networks:
+      - cloudbeaver
+    ports:
+      - ${CLOUDBEAVER_WEB_HTTP:-8978}:8978
+    volumes: 
+      - cloudbeaver-web:/opt/cloudbeaver/workspace     

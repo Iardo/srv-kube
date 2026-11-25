@@ -1,0 +1,32 @@
+# References
+# --------------------
+# https://github.com/AmintaCCCP/GithubStarsManager
+# https://github.com/AmintaCCCP/GithubStarsManager/blob/main/DOCKER.md
+
+# NOTE:
+# This project has no tagged releases yet, only per-commit "sha-*" builds,
+# so this is pinned to the newest one available at the time this was written
+# instead of floating on ":latest".
+
+networks:
+  github-stars-manager:
+    name: github-stars-manager
+
+volumes:
+  github-stars-manager-data:
+    name: github-stars-manager-data
+
+services:
+  github-stars-manager-web:
+    image: ghcr.io/amintacccp/github-stars-manager-fullstack:sha-5beb01d
+    container_name: github-stars-manager-web
+    restart: unless-stopped
+    networks:
+      - github-stars-manager
+    ports:
+      - ${GITHUB_STARS_MANAGER_WEB_HTTP:-3000}:3000
+    volumes:
+      - github-stars-manager-data:/app/data
+    environment:
+      API_SECRET: ${GITHUB_STARS_MANAGER_API_SECRET:?}
+      ENCRYPTION_KEY: ${GITHUB_STARS_MANAGER_ENCRYPTION_KEY:?}

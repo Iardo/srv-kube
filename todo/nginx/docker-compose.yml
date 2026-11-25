@@ -1,0 +1,30 @@
+# References
+# ---
+# https://stackoverflow.com/a/52824487
+
+# Docker Desktop
+# ---
+# Windows and MacOS uses a VM to run docker
+# it have its own internal network so using network mode "host" does not work
+#
+# https://github.com/docker/for-mac/issues/2716#issuecomment-2076851704
+# To fix this we need to go to:
+# Resources > Network
+#   - Enable Host Networking
+#
+
+services:
+  nginx:
+    image: nginx:1.29.0
+    container_name: nginx
+    platform: linux/amd64
+    restart: unless-stopped
+    network_mode: host
+    volumes:
+      # - ./cert/selfhost.crt:/cert/selfhost.crt:ro
+      # - ./cert/selfhost.key:/cert/selfhost.key:ro
+      - ./logs/nginx:/var/log/nginx
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./nginx.dhparam.pem:/etc/nginx/dhparam.pem:ro
+      - ./nginx.proxy:/etc/nginx/snippets/cfg-proxy.conf:ro
+      - ./nginx.ssl:/etc/nginx/snippets/ssl-params.conf:ro

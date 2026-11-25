@@ -1,0 +1,6 @@
+# Example reverse proxy entry, replace with real hosts/upstreams.
+# https://caddyserver.com/docs/caddyfile
+
+# localhost {
+#     reverse_proxy other-container:8080
+# }

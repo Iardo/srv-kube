@@ -1,0 +1,122 @@
+# References
+# ---
+# https://github.com/outline/outline/blob/main/.env.sample
+# https://github.com/outline/outline/blob/main/docker-compose.yml
+# https://docs.getoutline.com/s/hosting/doc/docker-7pfeLP5a8t
+
+networks:
+  outline:
+    name: outline
+
+volumes:
+  outline-database:
+    name: outline-database
+  outline-portal:
+    name: outline-portal
+  outline-storage:
+    name: outline-storage
+
+services:
+  outline-web:
+    container_name: outline-web
+    image: docker.getoutline.com/outlinewiki/outline@sha256:32d76719c378931dd65d93945930ca380d8376a0337d98a991fcc12b266f33cf # 1.9.2
+    restart: unless-stopped
+    depends_on:
+      - outline-database
+      - outline-cache
+    networks:
+      - outline
+    volumes:
+      - ./cert/selfhost.crt:/opt/outline/public.crt:ro
+      - ./cert/selfhost.key:/opt/outline/private.key:ro
+      - outline-storage:/var/lib/outline/data
+    env_file: ./.env
+    environment:
+      # NOTE:
+      # OUTLINE_DOMAIN is the public host name Caddy serves, e.g. outline-https.<domain>.
+      # Unset, Outline falls back to https://localhost:<OUTLINE_WEB_HTTPS>.
+      URL: 'https://${OUTLINE_DOMAIN:-localhost:${OUTLINE_WEB_HTTPS:-3000}}'
+      PORT: '3000'
+      # Generic OIDC, set per-host in that host's .env-secrets (prefixed
+      # OUTLINE_ there to avoid name clashes) - see serv/outline/.env for
+      # what each of these means.
+      OIDC_CLIENT_ID: ${OUTLINE_OIDC_CLIENT_ID:-}
+      OIDC_CLIENT_SECRET: ${OUTLINE_OIDC_CLIENT_SECRET:-}
+      OIDC_AUTH_URI: ${OUTLINE_OIDC_AUTH_URI:-}
+      OIDC_TOKEN_URI: ${OUTLINE_OIDC_TOKEN_URI:-}
+      OIDC_USERINFO_URI: ${OUTLINE_OIDC_USERINFO_URI:-}
+      OIDC_LOGOUT_URI: ${OUTLINE_OIDC_LOGOUT_URI:-}
+      OIDC_DISPLAY_NAME: ${OUTLINE_OIDC_DISPLAY_NAME:-OpenID Connect}
+
+  outline-database:
+    container_name: outline-database
+    image: postgres@sha256:3a82e1f56c8f0f5616a11103ac3d47e632c3938698946a7ad26da0df1334744a # 18.4
+    restart: unless-stopped
+    networks:
+      - outline
+    ports:
+      - ${OUTLINE_DATABASE:?}:5432
+    volumes:
+      - outline-database:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD", "pg_isready", "-d", "outline", "-U", "user"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+    env_file: ./.env
+    environment:
+      POSTGRES_USER: 'outline'
+      POSTGRES_PASSWORD: 'outline'
+      POSTGRES_DB: 'outline'
+
+  outline-server:
+    container_name: outline-server
+    image: steveltn/https-portal@sha256:d5f9103207ea410f2003166926c378bd9dc89ffe862dd8d7bd72622f2b818efa # 1
+    restart: always
+    depends_on:
+      - outline-web
+    networks:
+      - outline
+    ports:
+      - ${OUTLINE_WEB_HTTPS:?}:443
+    volumes:
+      - outline-portal:/var/lib/https-portal
+      - ./logs/nginx:/var/log/nginx
+    healthcheck:
+      test: ["CMD", "service", "nginx", "status"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+    env_file: ./.env
+    environment:
+      # NOTE:
+      # HTTPS only, on purpose.
+      # https-portal's http-to-https redirect always points at port 443,
+      # no matter what OUTLINE_WEB_HTTPS is actually set to.
+      # There's no way to change that, so the plain HTTP port never
+      # actually reaches Outline, only https://<host>:<OUTLINE_WEB_HTTPS>/ does.
+      # OUTLINE_DOMAIN must be listed here too, https-portal answers 404/421 to any
+      # Host header it doesn't know, which is what Caddy forwards from the public domain.
+      DOMAINS: 'localhost -> http://outline-web:3000, host.docker.internal -> http://outline-web:3000, ${OUTLINE_DOMAIN:-outline.localhost} -> http://outline-web:3000'
+      STAGE: 'local'
+      WEBSOCKET: 'true'
+      CLIENT_MAX_BODY_SIZE: '0'
+
+  outline-cache:
+    container_name: outline-cache
+    image: redis@sha256:e7723ff73d963f5cc6d9c4643ea3d989527a402a319239054e9472a7fb9219a2 # 7.4.10-alpine
+    restart: unless-stopped
+    networks:
+      - outline
+    ports:
+      - ${OUTLINE_CACHE:?}:6379
+    volumes:
+      - ./data/redis:/data
+      - ./conf/redis/redis.conf:/usr/local/etc/redis/redis.conf
+    command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      retries: 3
+      timeout: 30s
+      interval: 10s
+    env_file: ./.env

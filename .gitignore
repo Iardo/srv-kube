@@ -1,0 +1,26 @@
+# include folders:
+!/serv/cert
+
+# ignored folders:
+__pycache__
+.claude
+.roo
+/data/backup/*
+/logs/*
+/serv/**/backups/*
+/serv/**/cert/*
+/serv/**/code/*
+/serv/**/conf/*
+/serv/**/data/*
+/serv/**/logs/*
+/temp/*
+
+# --------------------
+# include files:
+!.gitkeep
+
+# ignore files:
+.DS_Store
+/CLAUDE.md
+/host/**/.*.sha256
+/host/**/.env-secrets.local

@@ -1,0 +1,51 @@
+# Reverse Proxy
+# --------------------
+# https://caddyserver.com/docs/caddyfile
+
+# Not published to the host,
+# only reachable by other containers on the "caddy" network (e.g. caddy-ui-backend).
+{
+    admin 0.0.0.0:2019
+    log {
+        output file /var/log/caddy/access.log
+    }
+}
+
+# Services
+# --------------------
+beszel.iardo.live {
+    reverse_proxy host.docker.internal:6001
+}
+
+gatus.iardo.live {
+    reverse_proxy host.docker.internal:11000
+}
+
+grafana.iardo.live {
+    reverse_proxy host.docker.internal:11001
+}
+
+infisical.iardo.live {
+    reverse_proxy host.docker.internal:13000
+}
+
+ntfy.iardo.live {
+    reverse_proxy host.docker.internal:18000
+}
+
+passbolt.iardo.live {
+    reverse_proxy https://host.docker.internal:20000 {
+        transport http {
+            tls_insecure_skip_verify
+        }
+    }
+}
+
+termix.iardo.live {
+    reverse_proxy host.docker.internal:24000
+}
+
+umami.iardo.live {
+    reverse_proxy host.docker.internal:25000
+}
+

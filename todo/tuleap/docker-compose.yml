@@ -1,0 +1,164 @@
+# Please see https://docs.tuleap.org/installation-guide/docker-image.html
+# https://docs.tuleap.org/installation-guide/docker/introduction.html
+
+services:
+  reverse-proxy:
+    build:
+      context: tools/docker/reverse-proxy
+      platforms:
+        - linux/amd64
+    volumes:
+      - ./tools/docker/reverse-proxy/nginx.conf:/etc/nginx/nginx.conf:ro,cached
+      - reverse-proxy-cert:/etc/pki/tls
+    depends_on:
+    - web
+    networks:
+      default:
+        aliases:
+          - tuleap-web.tuleap-aio-dev.docker # Same as the default sys_default_domain setting in a dev setup
+
+  web:
+    image: ghcr.io/enalean/tuleap-aio-dev:el9-php82
+    hostname: web
+    volumes:
+      - .:/usr/share/tuleap:cached
+      - tuleap-data:/data
+      - reverse-proxy-cert:/front-cert:ro
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+      - .env:/root/.tuleap_env:ro
+    tmpfs: /run
+    env_file:
+    - .env
+    environment:
+    - TULEAP_SYS_DBHOST=db
+    cgroup: host
+    depends_on:
+    - ldap
+    - db
+    - mailhog
+
+  mailhog:
+    image: mailhog/mailhog
+
+  ldap:
+    image: ghcr.io/enalean/ldap
+    env_file:
+    - .env
+    volumes:
+      - ldap-data:/data
+
+  gerrit:
+    build:
+      context: tools/docker/gerrit
+      platforms:
+        - linux/amd64
+    env_file:
+      - .env
+    environment:
+      - CANONICAL_WEB_URL=http://gerrit.tuleap-aio-dev.docker:8080
+    volumes:
+      - gerrit-data:/data
+    depends_on:
+      - ldap
+
+  jenkins:
+    build:
+      context: tools/docker/jenkins
+      platforms:
+        - linux/amd64
+    environment:
+      - JENKINS_OPTS="--prefix=/jenkins"
+    volumes:
+    - jenkins-data:/var/jenkins_home
+    - reverse-proxy-cert:/opt/reverse-proxy-cert:ro
+
+  gitlab:
+    build:
+      context: tools/docker/gitlab
+      platforms:
+        - linux/amd64
+    hostname: 'gitlab.local'
+    environment:
+      GITLAB_OMNIBUS_CONFIG: |
+        external_url 'https://gitlab.local'
+        letsencrypt['enable'] = false
+    volumes:
+      - gitlab-config:/etc/gitlab
+      - gitlab-data:/var/opt/gitlab
+    networks:
+      default:
+        aliases:
+          - gitlab.local
+
+  onlyoffice:
+    image: onlyoffice/documentserver:8.1.0@sha256:423328ee377374c48a30c2aa416e4afedf621faff068f97966cb9b87a28550bd
+    environment:
+      - JWT_ENABLED=true
+      - JWT_SECRET=TULEAP_DO_NOT_USE_THIS_IN_PRODUCTION
+      - USE_UNAUTHORIZED_STORAGE=true
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:20.0.3
+    command:
+      - start-dev
+      - --import-realm
+      - --hostname-url https://tuleap-web.tuleap-aio-dev.docker/keycloak
+      - --hostname-strict=false
+    environment:
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=admin
+    volumes:
+      - ./tools/docker/keycloak/data/import:/opt/keycloak/data/import
+
+  db:
+    image: mysql:8.0
+    env_file:
+      - .env
+    command: --upgrade=FORCE
+    volumes:
+      - ./src/etc/tuleap-mysql80-dev.cnf:/etc/mysql/conf.d/tuleap.cnf:ro,cached
+      - db80-data:/var/lib/mysql
+
+  redis:
+    image: redis:6.2.7@sha256:a93c14584715ec5bd9d2648d58c3b27f89416242bee0bc9e5fb2edc1a4cbec1d
+    volumes:
+      - redis-data:/data
+    command: redis-server --appendonly yes --auto-aof-rewrite-percentage 20 --auto-aof-rewrite-min-size 200kb
+
+  prometheus:
+    image: prom/prometheus:v2.3.0
+    volumes:
+      - .metrics_secret.key:/metrics_secret.key
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prom-data:/prometheus
+
+  meilisearch:
+    image: getmeili/meilisearch:v1.6.0@sha256:5d43759296bfd10786bc08fce9df04792baae1ab7484710c1f635492087762c7
+    volumes:
+      - meilisearch-data:/meili_data
+    environment:
+      - MEILI_ENV=development
+      - MEILI_NO_ANALYTICS=true
+      - MEILI_MASTER_KEY=MEILI_MASTER_KEY_DO_NOT_USE_IN_PRODUCTION
+
+  ldap-admin:
+    image: osixia/phpldapadmin:0.7.1
+    volumes:
+      - ldap-data:/data
+    ports:
+      - "6443:443"
+    environment:
+      - PHPLDAPADMIN_LDAP_HOSTS=ldap
+
+volumes:
+  tuleap-data:
+  ldap-data:
+  gerrit-data:
+  gitlab-config:
+  gitlab-data:
+  db80-data:
+  redis-data:
+  reverse-proxy-cert:
+  prom-data:
+  jenkins-data:
+  meilisearch-data:

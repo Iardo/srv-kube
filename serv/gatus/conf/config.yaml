@@ -1,0 +1,6 @@
+endpoints:
+  - name: gatus
+    url: "http://localhost:8080/health"
+    interval: 5m
+    conditions:
+      - "[STATUS] == 200"

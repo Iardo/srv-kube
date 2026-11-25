@@ -1,0 +1,21 @@
+# REFERENCE
+# https://github.com/getsentry/self-hosted/blob/master/docker-compose.yml
+# https://develop.sentry.dev/self-hosted/
+
+networks:
+  epicstore-claimer:
+    name: epicstore-claimer
+
+services:
+  epicstore-claimer:
+    image: ghcr.io/jackblk/epicgames-freebies-claimer:latest
+    container_name: epicstore-claimer
+    restart: unless-stopped
+    stdin_open: true # docker run -i
+    tty: true        # docker run -t
+    networks:
+      - epicstore-claimer
+    ports:
+      - ${EPICSTORE_PORT:-80}:80
+    volumes:
+      - ./data:/app/data

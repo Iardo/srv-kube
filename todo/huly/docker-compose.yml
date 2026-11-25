@@ -1,0 +1,156 @@
+# REFERENCE
+# https://github.com/hcengineering/huly-selfhost/blob/main/template.compose.yaml
+# https://github.com/hcengineering/huly-selfhost/blob/main/README.md
+
+networks:
+  huly:
+    name: huly
+
+volumes:
+  database-data:
+    name: huly-database
+  elastic-data:
+    name: huly-elasticsearch
+  storage:
+    name: huly-storage
+
+services:
+  frontend:
+    container_name: huly-web
+    image: hardcoreeng/front:0.6.250
+    restart: unless-stopped
+    env_file: .env
+    links:
+      - collaborator
+      - elasticsearch
+      - minio
+      - mongodb
+      - transactor
+    networks:
+      - huly
+    ports:
+      - ${HULY_WEB_PORT:-8087}:8080
+    environment:
+      - SERVER_PORT=8080
+      - SERVER_SECRET=${SECRET_HULY}
+      - UPLOAD_URL=${UPLOAD_PATH}
+
+  account:
+    container_name: huly-account
+    image: hardcoreeng/account:0.6.250
+    restart: unless-stopped
+    env_file: .env
+    links:
+      - minio
+      - mongodb
+    networks:
+      - huly
+    ports:
+      - ${HULY_ACCOUNT_PORT:-3000}:3000
+    environment:
+      - SERVER_PORT=3000
+      - SECRET=${SECRET_ACCOUNT}
+
+  collaborator:
+    container_name: huly-collaborator
+    image: hardcoreeng/collaborator:0.6.250
+    restart: unless-stopped
+    env_file: .env
+    links:
+      - minio
+      - mongodb
+      - transactor
+    networks:
+      - huly
+    ports:
+      - ${HULY_COLLABORATOR_PORT:-3078}:3078
+    environment:
+      - COLLABORATOR_PORT=3078
+      - SECRET=${SECRET_COLLABORATOR}
+      - UPLOAD_URL=${UPLOAD_PATH}
+
+  transactor:
+    container_name: huly-transactor
+    image: hardcoreeng/transactor:0.6.250
+    restart: unless-stopped
+    env_file: .env
+    links:
+      - account
+      - elasticsearch
+      - minio
+      - mongodb
+      - rekoni
+    networks:
+      - huly
+    ports:
+      - ${HULY_TRANSACTOR_PORT:-3333}:3333
+    environment:
+      - SERVER_PORT=3333
+      - SERVER_SECRET=${SECRET_TRANSACTOR}
+      - UPLOAD_URL=${UPLOAD_URL}
+
+  rekoni:
+    container_name: huly-rekoni
+    image: hardcoreeng/rekoni-service:0.6.250
+    restart: unless-stopped
+    env_file: .env
+    deploy:
+      resources:
+        limits:
+          memory: 500M
+    networks:
+      - huly
+    ports:
+      - ${HULY_REKONI_PORT:-4004}:4004
+    environment:
+      - SECRET=${SECRET_REKONI}
+
+  minio:
+    container_name: huly-minio
+    image: "minio/minio"
+    restart: unless-stopped
+    env_file: .env
+    command: server /data --address ":9000" --console-address ":9001"
+    networks:
+      - huly
+    ports:
+      - ${HULY_MINIO_PORT:-9000}:9000
+      - ${HULY_MINIO_CONSOLE_PORT:-9001}:9001
+    volumes:
+      - storage:/data
+
+  mongodb:
+    container_name: huly-database
+    image: mongo:7-jammy
+    restart: unless-stopped
+    networks:
+      - huly
+    ports:
+      - ${HULY_MONGODB_PORT:-27017}:27017
+    volumes:
+      - database-data:/data/db
+    env_file: .env
+    environment:
+      - PUID=1000
+      - PGID=1000
+
+  elasticsearch:
+    container_name: huly-elasticsearch
+    image: elasticsearch:7.14.2
+    restart: unless-stopped
+    command: |
+      /bin/sh -c "./bin/elasticsearch-plugin list | grep -q ingest-attachment || yes | ./bin/elasticsearch-plugin install --silent ingest-attachment;
+      /usr/local/bin/docker-entrypoint.sh eswrapper"
+    networks:
+      - huly
+    ports:
+      - ${HULY_ELASTICSEARCH_PORT:-9200}:9200
+    volumes:
+      - elastic-data:/usr/share/elasticsearch/data
+    healthcheck:
+      test: curl -s http://localhost:9200/_cluster/health | grep -vq '"status":"red"'
+      interval: 20s
+      retries: 10
+    env_file: .env
+    environment:
+      - ELASTICSEARCH_PORT_NUMBER=9200

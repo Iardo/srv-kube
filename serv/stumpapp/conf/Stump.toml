@@ -1,0 +1,13 @@
+profile = "release"
+port = 10801
+verbosity = 0
+pretty_logs = true
+client_dir = "/app/client"
+config_dir = "/config"
+allowed_origins = []
+pdfium_path = "/lib/libpdfium.so"
+disable_swagger = false
+password_hash_cost = 12
+session_ttl = 259200
+expired_session_cleanup_interval = 86400
+scanner_chunk_size = 100

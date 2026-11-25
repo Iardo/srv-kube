@@ -1,0 +1,47 @@
+# References
+# --------------------
+# https://umami.is/docs/install
+# https://github.com/umami-software/umami/blob/master/docker-compose.yml
+
+networks:
+  umami:
+    name: umami
+
+volumes:
+  umami-database:
+    name: umami-database
+
+services:
+  umami-web:
+    image: ghcr.io/umami-software/umami:3.3.1
+    container_name: umami-web
+    restart: unless-stopped
+    depends_on:
+      umami-database:
+        condition: service_healthy
+    networks:
+      - umami
+    ports:
+      - ${UMAMI_WEB_HTTP:-3000}:3000
+    environment:
+      DATABASE_URL: postgresql://${UMAMI_POSTGRESQL_USER:?}:${UMAMI_POSTGRESQL_PASS:?}@umami-database:5432/umami
+      APP_SECRET: ${UMAMI_APP_SECRET:?}
+      TWO_FACTOR_ENCRYPTION_KEY: ${UMAMI_TWO_FACTOR_ENCRYPTION_KEY:?}
+
+  umami-database:
+    image: postgres:15-alpine
+    container_name: umami-database
+    restart: unless-stopped
+    networks:
+      - umami
+    volumes:
+      - umami-database:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${UMAMI_POSTGRESQL_USER:?} -d umami"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    environment:
+      POSTGRES_DB: umami
+      POSTGRES_USER: ${UMAMI_POSTGRESQL_USER:?}
+      POSTGRES_PASSWORD: ${UMAMI_POSTGRESQL_PASS:?}

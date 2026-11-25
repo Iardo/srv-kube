@@ -1,0 +1,11 @@
+# folders included:
+!conf/automations.yaml
+!conf/configuration.yaml
+!conf/scenes.yaml
+!conf/scripts.yaml
+
+# folders ignored:
+
+# --------------------
+# files included:
+# files ignored:

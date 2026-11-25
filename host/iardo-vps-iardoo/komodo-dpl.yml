@@ -1,0 +1,12 @@
+# NOTE:
+# Used only by Komodo's own stack deploy (see komodo-stk.toml).
+include: [
+  '${SERV:?}/actual/${FILE:?}',
+  # astralapp
+  '${SERV:?}/beszel/${FILE:?}',
+  '${SERV:?}/caddy/${FILE:?}',
+  '${SERV:?}/dnsmasq/${FILE:?}',
+  '${SERV:?}/linkace/${FILE:?}',
+  '${SERV:?}/outline/${FILE:?}',
+  '${SERV:?}/silverbullet/${FILE:?}',
+]

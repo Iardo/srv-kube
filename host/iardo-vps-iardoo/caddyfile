@@ -1,0 +1,39 @@
+# Reverse Proxy
+# --------------------
+# https://caddyserver.com/docs/caddyfile
+
+# Not published to the host,
+# only reachable by other containers on the "caddy" network (e.g. caddy-ui-backend).
+{
+    admin 0.0.0.0:2019
+    log {
+        output file /var/log/caddy/access.log
+    }
+}
+
+# Services
+# --------------------
+actual.iardoo.com {
+    reverse_proxy host.docker.internal:5000
+}
+
+beszel.iardoo.com {
+    reverse_proxy host.docker.internal:6001
+}
+
+linkace.iardoo.com {
+    reverse_proxy host.docker.internal:16000
+}
+
+outline.iardoo.com {
+    reverse_proxy https://host.docker.internal:19000 {
+        transport http {
+            tls_insecure_skip_verify
+        }
+    }
+}
+
+silverbullet.iardoo.com {
+    reverse_proxy host.docker.internal:23000
+}
+

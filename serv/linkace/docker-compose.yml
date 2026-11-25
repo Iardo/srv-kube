@@ -1,0 +1,67 @@
+# References
+# --------------------
+# https://github.com/Kovah/LinkAce
+
+networks:
+  linkace:
+    name: linkace
+
+volumes:
+  linkace-database:
+    name: linkace-database
+
+services:
+  linkace-web:
+    image: docker.io/linkace/linkace:v2.6.4
+    container_name: linkace-web
+    restart: unless-stopped
+    depends_on:
+      - linkace-database
+    networks:
+      - linkace
+    ports:
+      - ${LINKACE_WEB_HTTP:?}:80
+    # NOTE:
+    # No LINKACE_WEB_HTTPS/443 mapping
+    # this image has no TLS listener of its own to back it.
+    # Caddy already serves real public HTTPS and proxies to this container's plain :80
+    # (see the "linkace.<domain>" caddyfile route).
+    volumes:
+      - ./.env:/app/.env
+      - ./data/backup:/app/storage/app/backups
+    env_file: .env
+    environment:
+      DB_HOST: linkace-database
+      DB_DATABASE: ${MYSQL_NAME:-linkace}
+      DB_USERNAME: ${LINKACE_MYSQL_USER:-linkace}
+      DB_PASSWORD: ${LINKACE_MYSQL_PASS:-linkace} # Dummy
+
+  linkace-database:
+    image: docker.io/library/mariadb:11.5
+    container_name: linkace-database
+    restart: unless-stopped
+    command: mariadbd --character-set-server=utf8mb4 --collation-server=utf8mb4_bin
+    networks:
+      - linkace
+    ports:
+      - ${LINKACE_DATABASE:?}:3306
+    volumes:
+      - ./data/backup:/backups
+      - linkace-database:/var/lib/mysql
+    environment:
+      - MYSQL_DATABASE=${MYSQL_NAME:?}
+      - MYSQL_USER=${LINKACE_MYSQL_USER:?}
+      - MYSQL_PASSWORD=${LINKACE_MYSQL_PASS:?}
+      # Deliberately not a dummy, and not meant to be hand-edited
+      - MYSQL_ROOT_PASSWORD=${LINKACE_MYSQL_ROOT_PASS:?}
+
+  linkace-redis:
+    image: redis:8.8.0
+    container_name: linkace-cache
+    restart: unless-stopped
+    networks:
+      - linkace
+    ports:
+      - ${LINKACE_CACHE:?}:6379
+    environment:
+      REDIS_PASSWORD: ${LINKACE_CACHE_PASS:?}

@@ -1,0 +1,28 @@
+# References
+# --------------------
+# https://hub.docker.com/r/linuxserver/homeassistant
+# https://www.home-assistant.io/installation/alternative/#docker-compose
+
+networks:
+  home-assistant:
+    name: home-assistant
+
+services:
+  home-assistant-web:
+    image: ghcr.io/home-assistant/home-assistant:stable
+    container_name: home-assistant-web
+    restart: unless-stopped
+    privileged: true
+    networks:
+      - home-assistant
+    ports:
+      - ${HOME_ASSISTANT_WEB_HTTP:-8123}:8123
+    # https://www.home-assistant.io/installation/alternative/#exposing-devices
+    # devices:
+    #   - /dev/ttyUSB0:/dev/ttyUSB0 # Dummy
+    volumes:
+      - ./conf:/config
+      - ./conf/etc/localtime:/etc/localtime:ro
+      - /run/dbus:/run/dbus:ro
+    environment:
+      TZ: ${TIMEZONE:-America/Panama}

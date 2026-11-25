@@ -1,0 +1,8 @@
+# See `man hosts` for details.
+#
+# By default, systemd-resolved or libnss-myhostname will resolve
+# localhost and the system hostname if they're not specified here.
+127.0.0.1       outline.homelab
+
+127.0.0.1       localhost
+::1             localhost

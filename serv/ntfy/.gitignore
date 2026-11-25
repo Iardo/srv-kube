@@ -1,0 +1,10 @@
+# folders included:
+!conf/*
+!data/template
+
+# folders ignored:
+
+# --------------------
+# files included:
+# files ignored:
+conf/server.yml

@@ -1,0 +1,41 @@
+[[stack]]
+name = "iardo-vps-iardodev"
+
+[stack.config]
+server        = "iardo-vps-iardodev"
+branch        = "main"
+repo          = "iardo/srv-kube"
+clone_path    = "/etc/srv-kube"
+run_directory = "/etc/srv-kube"
+
+file_paths = [
+    "host/iardo-vps-iardodev/komodo-dpl.yml",
+]
+
+additional_env_files = [
+    # HOST
+    { track = true,  path = "host/iardo-vps-iardodev/.env" },
+    { track = false, path = "host/iardo-vps-iardodev/.env-secrets" },
+    { track = false, path = "host/iardo-vps-iardodev/.env-secrets.local" },
+    # SERV
+    { track = true, path = "serv/bugsink/.env" },
+    { track = true, path = "serv/kaneo/.env" },
+    { track = true, path = "serv/mailpit/.env" },
+    { track = true, path = "serv/woodpecker/.env" },
+]
+
+pre_deploy.shell_mode = false
+pre_deploy.command = """
+    [ -f host/iardo-vps-iardodev/.env-secrets.local ] || cp host/iardo-vps-iardodev/.env-secrets host/iardo-vps-iardodev/.env-secrets.local
+
+    bash utils/task/task-fill-secrets.sh host/iardo-vps-iardodev/.env-secrets.local
+
+    # Caddy/dnsmasq bind-mount a single file, restart them only if it changed.
+    bash utils/task/task-restart-if-changed.sh \
+        host/iardo-vps-iardodev/caddyfile host/iardo-vps-iardodev/.caddyfile.sha256 \
+        caddy-web caddy-ui-backend caddy-ui-frontend
+
+    bash utils/task/task-restart-if-changed.sh \
+        host/iardo-vps-iardodev/dnsmasq.conf host/iardo-vps-iardodev/.dnsmasq.conf.sha256 \
+        dnsmasq
+"""

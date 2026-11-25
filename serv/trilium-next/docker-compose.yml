@@ -1,0 +1,42 @@
+# References
+# --------------------
+# https://github.com/TriliumNext/Trilium/blob/main/docker-compose.yml
+
+networks:
+  trilium-next:
+    name: trilium-next
+
+volumes:
+  trilium-next-assets:
+    name: trilium-next-assets
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./data/assets
+  trilium-next-theme:
+    name: trilium-next-theme
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./data/theme
+
+services:
+  trilium-next-web:
+    image: triliumnext/trilium:stable
+    container_name: trilium-next-web
+    restart: unless-stopped
+    networks:
+      - trilium-next
+    ports:
+      - ${TRILIUM_NEXT_WEB_HTTP:-8080}:8080
+    volumes:
+      - ./data/trilium:/home/node/trilium-data
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - trilium-next-assets:/usr/src/app/assets
+      - trilium-next-theme:/usr/src/app/share-theme
+    environment:
+      USER_UID: ${TRILIUM_NEXT_UID:-1000}
+      USER_GID: ${TRILIUM_NEXT_GID:-1000}

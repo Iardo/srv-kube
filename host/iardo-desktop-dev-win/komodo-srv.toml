@@ -1,0 +1,6 @@
+[[server]]
+name = "iardo-desktop-dev-win"
+
+[server.config]
+enabled = false
+address = "http://iardo-desktop-dev:9120"

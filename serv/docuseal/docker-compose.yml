@@ -1,0 +1,25 @@
+# References
+# --------------------
+# https://www.docuseal.com/
+# https://github.com/docusealco/docuseal/blob/master/docker-compose.yml
+
+# NOTE:
+# No DATABASE_URL set, DocuSeal falls back to its own embedded SQLite DB,
+# no separate database container needed.
+
+networks:
+  docuseal:
+    name: docuseal
+
+services:
+  docuseal-web:
+    image: docuseal/docuseal:latest
+    container_name: docuseal-web
+    restart: unless-stopped
+    networks:
+      - docuseal
+    ports:
+      - ${DOCUSEAL_WEB_HTTP:-3000}:3000
+    volumes:
+      - ./data:/data/docuseal
+    env_file: .env

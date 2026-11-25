@@ -1,0 +1,14 @@
+# NOTE:
+# Used only by Komodo's own stack deploy (see komodo-stk.toml).
+include: [
+  '${SERV:?}/beszel/${FILE:?}',
+  '${SERV:?}/caddy/${FILE:?}',
+  '${SERV:?}/dnsmasq/${FILE:?}',
+  '${SERV:?}/gatus/${FILE:?}',
+  '${SERV:?}/grafana/${FILE:?}',
+  '${SERV:?}/infisical/${FILE:?}',
+  '${SERV:?}/ntfy/${FILE:?}',
+  '${SERV:?}/passbolt/${FILE:?}',
+  '${SERV:?}/termix/${FILE:?}',
+  '${SERV:?}/umami/${FILE:?}',
+]

@@ -1,0 +1,55 @@
+# References
+# --------------------
+# https://github.com/astralapp/astral
+# https://github.com/kdockerfiles/astral
+
+# NOTE:
+# astralapp/astral has no official Docker image or support, this uses
+# kdockerfiles/astral's community-maintained one instead.
+# It has no tagged releases, only per-commit builds, so this is pinned
+# to a specific commit-sha build instead of floating on ":latest".
+#
+# The app itself only speaks PHP-FastCGI (port 9000), not plain HTTP,
+# so it needs its own front-end webserver to translate that.
+# This mirrors how "open-project" is set up in this repo.
+
+networks:
+  astral:
+    name: astral
+
+volumes:
+  astral-public:
+    name: astral-public
+
+services:
+  astral-web:
+    image: ghcr.io/kdockerfiles/astral:6f5b706-1
+    container_name: astral-web
+    restart: unless-stopped
+    networks:
+      - astral
+    volumes:
+      - astral-public:/var/www/html/public/
+    environment:
+      # NOTE:
+      # GITHUB_CLIENT_ID/SECRET must be filled in with a real GitHub OAuth
+      # app's credentials before login works, generate one at
+      # https://github.com/settings/developers with callback URL:
+      # http://localhost:${ASTRAL_WEB_HTTP:-80}/auth/github/callback
+      GITHUB_CLIENT_ID: ${ASTRAL_GITHUB_CLIENT_ID:?}
+      GITHUB_CLIENT_SECRET: ${ASTRAL_GITHUB_CLIENT_SECRET:?}
+      GITHUB_CLIENT_CALLBACK_URL: http://localhost:${ASTRAL_WEB_HTTP:-80}/auth/github/callback
+
+  astral-proxy:
+    image: caddy:2.10.2
+    container_name: astral-proxy
+    restart: unless-stopped
+    depends_on:
+      - astral-web
+    networks:
+      - astral
+    ports:
+      - ${ASTRAL_WEB_HTTP:-80}:80
+    volumes:
+      - ./conf/Caddyfile:/etc/caddy/Caddyfile:ro
+      - astral-public:/var/www/html/public/:ro

@@ -1,0 +1,27 @@
+[[stack]]
+name = "iardo-macmini"
+
+[stack.config]
+server        = "iardo-macmini"
+branch        = "main"
+repo          = "iardo/srv-kube"
+clone_path    = "/etc/srv-kube"
+run_directory = "/etc/srv-kube"
+
+file_paths = [
+    "host/iardo-macmini/docker-compose.yml",
+]
+
+additional_env_files = [
+    # HOST
+    { track = true,  path = "host/iardo-macmini/.env" },
+    { track = false, path = "host/iardo-macmini/.env-secrets" },
+    { track = false, path = "host/iardo-macmini/.env-secrets.local" },
+]
+
+pre_deploy.shell_mode = false
+pre_deploy.command = """
+    [ -f host/iardo-macmini/.env-secrets.local ] || cp host/iardo-macmini/.env-secrets host/iardo-macmini/.env-secrets.local
+
+    bash utils/task/task-fill-secrets.sh host/iardo-macmini/.env-secrets.local
+"""

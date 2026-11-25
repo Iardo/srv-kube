@@ -1,0 +1,6 @@
+[[server]]
+name = "iardo-macbook"
+
+[server.config]
+enabled = false
+address = "http://iardo-macbook:9120"

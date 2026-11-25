@@ -1,0 +1,25 @@
+# References
+# --------------------
+# https://github.com/linuxserver/docker-bazarr
+
+networks:
+  bazarr:
+    name: bazarr
+
+services:
+  bazarr-web:
+    image: lscr.io/linuxserver/bazarr:latest
+    container_name: bazarr-web
+    restart: unless-stopped
+    networks:
+      - bazarr
+    ports:
+      - ${BAZARR_WEB_HTTP:-6767}:6767
+    volumes:
+      - ./conf:/config
+      - ./data/movies:/movies
+      - ./data/tv:/tv
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: ${TIMEZONE:-America/Panama}

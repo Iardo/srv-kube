@@ -1,0 +1,20 @@
+# Models - Host Selected
+
+models:
+  checkpoints:
+    - name: v1-5-pruned-emaonly.safetensors
+      url: https://huggingface.co/stable-diffusion-v1-5/stable-diffusion-v1-5/resolve/main/v1-5-pruned-emaonly.safetensors
+    - name: sd3.5_large_fp8_scaled.safetensors
+      url: https://huggingface.co/Comfy-Org/stable-diffusion-3.5-fp8/resolve/main/sd3.5_large_fp8_scaled.safetensors
+
+  diffusion_models:
+    - name: z_image_turbo_bf16.safetensors
+      url: https://huggingface.co/Comfy-Org/z_image_turbo/resolve/main/split_files/diffusion_models/z_image_turbo_bf16.safetensors
+
+  text_encoders:
+    - name: qwen_3_4b.safetensors
+      url: https://huggingface.co/Comfy-Org/z_image_turbo/resolve/main/split_files/text_encoders/qwen_3_4b.safetensors
+
+  vae:
+    - name: ae.safetensors
+      url: https://huggingface.co/Comfy-Org/z_image_turbo/resolve/main/split_files/vae/ae.safetensors

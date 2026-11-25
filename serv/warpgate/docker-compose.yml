@@ -1,0 +1,22 @@
+# References
+# --------------------
+# https://github.com/warp-tech/warpgate
+# https://warpgate.null.page/getting-started-on-docker/
+
+networks:
+  warpgate:
+    name: warpgate
+
+services:
+  warpgate-web:
+    image: ghcr.io/warp-tech/warpgate:0.30.6
+    container_name: warpgate-web
+    restart: unless-stopped
+    networks:
+      - warpgate
+    ports:
+      - ${WARPGATE_WEB_HTTPS:-8888}:8888
+      - ${WARPGATE_SSH:-2222}:2222
+      - ${WARPGATE_MYSQL:-33306}:33306
+    volumes:
+      - ./data:/data

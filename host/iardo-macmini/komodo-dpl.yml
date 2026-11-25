@@ -1,0 +1,9 @@
+# NOTE:
+# Used only by Komodo's own stack deploy (see komodo-stk.toml).
+include: [
+  '${SERV:?}/caddy/${FILE:?}',
+  '${SERV:?}/dnsmasq/${FILE:?}',
+  '${SERV:?}/openhands/${FILE:?}',
+  '${SERV:?}/openwebui/${FILE:?}',
+  '${SERV:?}/zeroclaw/${FILE:?}',
+]

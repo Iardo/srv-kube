@@ -1,0 +1,96 @@
+# References
+# --------------------
+# https://github.com/bluet/docker-cronicle-docker/blob/master/Dockerfile
+# https://github.com/bluet/docker-cronicle-docker/blob/master/docker-compose.yml
+
+
+# Credentials
+# --------------------
+# user: admin
+# pass: admin
+#
+# SECURITY: change this password immediately after first login.
+# Cronicle lets logged-in users schedule arbitrary shell-command jobs,
+# so leaving the default admin/admin is equivalent to no auth at all.
+
+
+# NOTE:
+# Stuck in "Waiting for master server..."
+# ---
+# 1. Check browser configuration local storage
+#    and remove old session if any. 
+# 
+# 
+# 2. Your server's hostname has changed, and thus Cronicle 
+#     can no longer find it in one of its internal lists
+#     https://github.com/jhuckaby/Cronicle/issues/36#issuecomment-332930842
+#     https://github.com/jhuckaby/Cronicle/issues/36#issuecomment-1370136367
+#     https://github.com/jhuckaby/Cronicle/wiki/Troubleshooting
+# 
+# In docker the best solution is to lock the hostname
+# Follow these steps:
+#   > ./data/cronicle/bin/control.sh stop
+#   > ./data/cronicle/bin/control.sh setup
+#   > ./data/cronicle/bin/storage-cli.js edit global/servers/0
+#   > ./data/cronicle/bin/storage-cli.js edit global/server_groups/0
+#   > ./data/cronicle/bin/control.sh start
+# 
+#   > To manually edit the files
+#     Do a search for your ip inside the directory:
+#       /data/global
+#     For Server Host  -> Search your ip
+#     For server Group -> Search term "maingrp"
+#     The files are in a path like this:
+#       /data/cronicle/data/global/af/56/5a/af565a097a0cf8d7d5855ecc92c24c34.json
+# 
+#   > Update the hostname or ip that inside the items array
+#   > Update the mastergroup with a regex like this to support multiple hostnames and wildcards
+#       {
+#         "id": "mastergrp",
+#         "title": "Master Group",
+#         "regexp": "^((.+)?example.com|pop-os)$",
+#         "master": 1
+#       }
+# 
+
+networks:
+  cronicle:
+    name: cronicle
+
+# NOTE:
+# Named Volumes with Copy-on-First-Use
+# ----
+# Upon the initial creation of the named volume,
+# if the target directory inside the container
+# (as defined in the Dockerfile with VOLUME) contains files,
+# these files will be copied into the named volume.
+# 
+# Subsequent container runs will then use the content of this named volume,
+# which now includes the original container files.
+volumes:
+  cronicle-web:
+    name: cronicle-web
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./data/cronicle
+
+services:
+  cronicle-web:
+    image: bluet/cronicle-docker:0.9.77
+    container_name: cronicle-web
+    restart: unless-stopped
+    networks:
+      - cronicle
+    ports:
+      - ${CRONICLE_WEB_HTTP:-3012}:3012
+    volumes:
+      - ./data/external:/external
+      - ./data/secrets:/secrets
+      - ./data/workloads:/app
+      - /var/run/docker.sock:/var/run/docker.sock
+      - cronicle-web:/opt/cronicle/data
+    environment:
+      CRONICLE_base_app_url: ${CRONICLE_PUBLIC_URL_WEB}
+      TZ: ${TIMEZONE:-America/Panama}

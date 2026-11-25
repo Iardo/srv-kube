@@ -1,0 +1,103 @@
+# Reverse Proxy
+# --------------------
+# https://caddyserver.com/docs/caddyfile
+
+# Not published to the host,
+# only reachable by other containers on the "caddy" network (e.g. caddy-ui-backend).
+{
+    admin 0.0.0.0:2019
+    log {
+        output file /var/log/caddy/access.log
+    }
+}
+
+# Services
+# --------------------
+http://adguard-home.iardo-home-nas:7000 {
+    reverse_proxy host.docker.internal:5000
+}
+
+http://aria2-pro.iardo-home-nas:7000 {
+    reverse_proxy host.docker.internal:5004
+}
+
+http://bazarr.iardo-home-nas:7000 {
+    reverse_proxy host.docker.internal:6000
+}
+
+http://docuseal.iardo-home-nas:7000 {
+    reverse_proxy host.docker.internal:8001
+}
+
+http://flood.iardo-home-nas:7000 {
+    reverse_proxy host.docker.internal:10000
+}
+
+http://homepage.iardo-home-nas:7000 {
+    reverse_proxy host.docker.internal:12000
+}
+
+http://immich.iardo-home-nas:7000 {
+    reverse_proxy host.docker.internal:13000
+}
+
+http://jackett.iardo-home-nas:7000 {
+    reverse_proxy host.docker.internal:14000
+}
+
+http://jellyfin.iardo-home-nas:7000 {
+    reverse_proxy host.docker.internal:14001
+}
+
+http://jellyfin-https.iardo-home-nas:7000 {
+    reverse_proxy https://host.docker.internal:14002 {
+        transport http {
+            tls_insecure_skip_verify
+        }
+    }
+}
+
+http://kavitareader.iardo-home-nas:7000 {
+    reverse_proxy host.docker.internal:15000
+}
+
+http://mealie.iardo-home-nas:7000 {
+    reverse_proxy host.docker.internal:17000
+}
+
+http://netbootxyz.iardo-home-nas:7000 {
+    reverse_proxy host.docker.internal:18000
+}
+
+http://paperless-ngx.iardo-home-nas:7000 {
+    reverse_proxy host.docker.internal:20000
+}
+
+http://radarr.iardo-home-nas:7000 {
+    reverse_proxy host.docker.internal:22000
+}
+
+http://romm.iardo-home-nas:7000 {
+    reverse_proxy host.docker.internal:22001
+}
+
+http://sonarr.iardo-home-nas:7000 {
+    reverse_proxy host.docker.internal:23000
+}
+
+http://speedtest-tracker.iardo-home-nas:7000 {
+    reverse_proxy host.docker.internal:23001
+}
+
+http://transmission.iardo-home-nas:7000 {
+    reverse_proxy host.docker.internal:24000
+}
+
+http://wger.iardo-home-nas:7000 {
+    reverse_proxy host.docker.internal:27000
+}
+
+http://wireguard-easy.iardo-home-nas:7000 {
+    reverse_proxy host.docker.internal:27003
+}
+

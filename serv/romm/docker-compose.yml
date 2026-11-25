@@ -1,0 +1,55 @@
+# References
+# --------------------
+# https://docs.romm.app/latest/getting-started/quick-start/
+
+networks:
+  romm:
+    name: romm
+
+volumes:
+  romm-database:
+    name: romm-database
+
+services:
+  romm-web:
+    image: rommapp/romm:latest
+    container_name: romm-web
+    restart: unless-stopped
+    depends_on:
+      romm-database:
+        condition: service_healthy
+    networks:
+      - romm
+    ports:
+      - ${ROMM_WEB_HTTP:-8080}:8080
+    volumes:
+      - ./conf:/romm/config
+      - ./data/resources:/romm/resources
+      - ./data/library:/romm/library
+      - ./data/assets:/romm/assets
+    env_file: .env
+    environment:
+      DB_HOST: romm-database
+      DB_NAME: romm
+      DB_USER: ${ROMM_MYSQL_USER:?}
+      DB_PASSWD: ${ROMM_MYSQL_PASS:?}
+      ROMM_AUTH_SECRET_KEY: ${ROMM_AUTH_SECRET_KEY:?}
+
+  romm-database:
+    image: mariadb:latest
+    container_name: romm-database
+    restart: unless-stopped
+    networks:
+      - romm
+    volumes:
+      - romm-database:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+    environment:
+      MARIADB_DATABASE: romm
+      MARIADB_USER: ${ROMM_MYSQL_USER:?}
+      MARIADB_PASSWORD: ${ROMM_MYSQL_PASS:?}
+      MARIADB_RANDOM_ROOT_PASSWORD: 'true'

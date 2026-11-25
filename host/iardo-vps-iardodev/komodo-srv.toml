@@ -1,0 +1,6 @@
+[[server]]
+name = "iardo-vps-iardodev"
+
+[server.config]
+enabled = true
+address = "https://13.140.237.134:9120"

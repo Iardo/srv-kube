@@ -1,0 +1,29 @@
+# References
+# --------------------
+# https://github.com/almarklein/timetagger/blob/main/deploy/docker-compose.yml
+
+
+# Credentials
+# --------------------
+# user: timetagger # Dummy
+# pass: timetagger # Dummy
+
+networks:
+  timetagger:
+    name: timetagger
+
+services:
+  timetagger-web:
+    image: ghcr.io/almarklein/timetagger:v25.06.1
+    container_name: timetagger-web
+    restart: unless-stopped
+    networks:
+      - timetagger
+    ports:
+      - ${TIMETAGGER_WEB_HTTP:-8092}:80
+    volumes:
+      - ./data:/root/_timetagger
+    env_file: .env
+    environment:
+      TIMETAGGER_BIND: 0.0.0.0:80
+      TIMETAGGER_CREDENTIALS: ${TIMETAGGER_CREDENTIALS:?}

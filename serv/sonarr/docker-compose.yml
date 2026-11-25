@@ -1,0 +1,25 @@
+# References
+# --------------------
+# https://github.com/linuxserver/docker-sonarr
+
+networks:
+  sonarr:
+    name: sonarr
+
+services:
+  sonarr-web:
+    image: lscr.io/linuxserver/sonarr:latest
+    container_name: sonarr-web
+    restart: unless-stopped
+    networks:
+      - sonarr
+    ports:
+      - ${SONARR_WEB_HTTP:-8989}:8989
+    volumes:
+      - ./conf:/config
+      - ./data/tv:/tv
+      - ./data/downloads:/downloads
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: ${TIMEZONE:-America/Panama}

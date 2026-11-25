@@ -1,0 +1,20 @@
+# References
+# --------------------
+# https://dozzle.dev/guide/getting-started
+# https://github.com/amir20/dozzle/blob/master/docker-compose.yml
+
+networks:
+  dozzle:
+    name: dozzle
+
+services:
+  dozzle-web:
+    image: amir20/dozzle:v10-alpine
+    container_name: dozzle-web
+    restart: unless-stopped
+    networks:
+      - dozzle
+    ports:
+      - ${DOZZLE_WEB_HTTP:-8080}:8080
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro

@@ -1,0 +1,31 @@
+# References
+# --------------------
+# https://github.com/linuxserver/docker-wireguard
+
+networks:
+  wireguard:
+    name: wireguard
+
+services:
+  wireguard-server:
+    image: lscr.io/linuxserver/wireguard:latest
+    container_name: wireguard-server
+    restart: unless-stopped
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    sysctls:
+      - net.ipv4.conf.all.src_valid_mark=1
+    networks:
+      - wireguard
+    ports:
+      - ${WIREGUARD_VPN:-51820}:51820/udp
+    volumes:
+      - ./conf:/config
+      - /lib/modules:/lib/modules:ro
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: ${TIMEZONE:-America/Panama}
+      # Number of client configs to generate on first start
+      PEERS: 1

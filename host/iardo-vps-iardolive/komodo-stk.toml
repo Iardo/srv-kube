@@ -1,0 +1,55 @@
+[[stack]]
+name = "iardo-vps-iardolive"
+
+[stack.config]
+server        = "iardo-vps-iardolive"
+branch        = "main"
+repo          = "iardo/srv-kube"
+clone_path    = "/etc/srv-kube"
+run_directory = "/etc/srv-kube"
+
+# NOTE:
+# One-shot jobs that exit 0 by design after doing their work (seeding, migrations)
+# without this Komodo flags them as unhealthy for exiting.
+ignore_services = [
+    "infisical-migration",
+]
+
+file_paths = [
+    "host/iardo-vps-iardolive/komodo-dpl.yml",
+]
+
+additional_env_files = [
+    # HOST
+    { track = true,  path = "host/iardo-vps-iardolive/.env" },
+    { track = false, path = "host/iardo-vps-iardolive/.env-secrets" },
+    { track = false, path = "host/iardo-vps-iardolive/.env-secrets.local" },
+    # SERV
+    { track = true, path = "serv/grafana/.env" },
+    { track = true, path = "serv/infisical/.env" },
+    { track = true, path = "serv/passbolt/.env" },
+]
+
+pre_deploy.shell_mode = false
+pre_deploy.command = """
+    [ -f host/iardo-vps-iardolive/.env-secrets.local ] || cp host/iardo-vps-iardolive/.env-secrets host/iardo-vps-iardolive/.env-secrets.local
+
+    bash utils/task/task-fill-secrets.sh host/iardo-vps-iardolive/.env-secrets.local
+
+    # Ntfy
+    bash serv/ntfy/task/task-set-initial-files.sh
+
+    # Caddy/dnsmasq bind-mount a single file, restart them only if it changed.
+    bash utils/task/task-restart-if-changed.sh \
+        host/iardo-vps-iardolive/caddyfile host/iardo-vps-iardolive/.caddyfile.sha256 \
+        caddy-web caddy-ui-backend caddy-ui-frontend
+
+    bash utils/task/task-restart-if-changed.sh \
+        host/iardo-vps-iardolive/dnsmasq.conf host/iardo-vps-iardolive/.dnsmasq.conf.sha256 \
+        dnsmasq
+
+    # Gatus bind-mounts a single file too.
+    bash utils/task/task-restart-if-changed.sh \
+        host/iardo-vps-iardolive/gatus.yml host/iardo-vps-iardolive/.gatus.yml.sha256 \
+        gatus-web
+"""

@@ -1,0 +1,23 @@
+# References
+# --------------------
+# https://github.com/silverbulletmd/silverbullet
+# https://silverbullet.md/Install/Docker
+
+networks:
+  silverbullet:
+    name: silverbullet
+
+services:
+  silverbullet-web:
+    image: ghcr.io/silverbulletmd/silverbullet:2.10.0
+    container_name: silverbullet-web
+    restart: unless-stopped
+    networks:
+      - silverbullet
+    ports:
+      - ${SILVERBULLET_WEB_HTTP:-3000}:3000
+    volumes:
+      - ./data:/space
+    environment:
+      TZ: ${TIMEZONE:-America/Panama}
+      SB_USER: ${SILVERBULLET_USER:?}

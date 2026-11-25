@@ -1,0 +1,9 @@
+# folders included:
+!conf/collector.yaml
+!conf/scrutiny.yaml
+
+# folders ignored:
+
+# --------------------
+# files included:
+# files ignored:

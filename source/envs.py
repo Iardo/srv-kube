@@ -1,0 +1,212 @@
+#!/usr/bin/env python3
+
+# Ruleset
+# ----------------------
+# Reserve 1,000 spaces per letter of the alphabet
+# Reserve a maximum of 10 spaces to assign to each service (Ignored for convenience purposes)
+
+# Ranges
+# ----------------------
+# Here's a representation of ranges
+'''
+A = 5000→5999
+B = 6000→6999
+C = 7000→7999
+D = 8000→8999
+E = 9000→9999
+F = 10000→10999
+G = 11000→11999
+H = 12000→12999
+I = 13000→13999
+J = 14000→14999
+K = 15000→15999
+L = 16000→16999
+M = 17000→17999
+N = 18000→18999
+O = 19000→19999
+P = 20000→20999
+Q = 21000→21999
+R = 22000→22999
+S = 23000→23999
+T = 24000→24999
+U = 25000→25999
+V = 26000→26999
+W = 27000→27999
+X = 28000→28999
+Y = 29000→29999
+Z = 30000→30999
+'''
+
+import os
+
+from enum import Enum
+from source.serv import Service
+
+class Env:
+    env_line_target = "# Generated"
+    env_line_start = 0
+    env_line_offset = 5 # Offset to preserve the comments
+
+    port_list = Enum('group', [ 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'])
+    port_start_at = 4000
+
+    # Komodo doesn't get a letter-group slot like everything else,
+    # it gets this fixed, reserved block instead.
+    komodo_port_base = 31000
+
+    # NOTE:
+    # Ports that browsers (Chrome/Firefox) refuse to connect to directly
+    # no matter what's listening there, since they're historically tied to
+    # other protocols (X11, IRC, etc).
+    blocked_ports = {6000, 6566, 6665, 6666, 6667, 6668, 6669, 6697, 10080}
+
+    '''
+    Bumps "port" forward past any browser-blocked port.
+    '''
+    @staticmethod
+    def skip_blocked(port):
+        while port in Env.blocked_ports:
+            port = port + 1
+        return port
+
+    # Per-host overrides that only make sense
+    # while their generated file exists,
+    # keyed by the service that owns it.
+    #
+    # Value is (header, key, filename).
+    override_list = {
+        'caddy'  : ('# Caddy'  , 'CADDY_CADDYFILE', 'caddyfile'),
+        'dnsmasq': ('# Dnsmasq', 'DNSMASQ_CONF'   , 'dnsmasq.conf'),
+    }
+
+    '''
+    Writes the caddy/dnsmasq per-host file overrides.
+
+    Updates each "key=" line in place and leaves everything else in the file untouched,
+    so any other hand-added lines sharing that header's block
+    (e.g. CADDY_DOMAIN next to CADDY_CADDYFILE)
+    survive every re-run instead of being wiped or shuffled elsewhere.
+    '''
+    @staticmethod
+    def build_overrides(host: str, user_conf: list):
+        dirname = os.path.basename(os.path.normpath(host))
+
+        try:
+            env_path = os.path.join(host, '.env')
+            env_file = open(env_path, 'r')
+            lines = env_file.readlines()
+            env_file.close()
+
+            for serv_name, (header, key, filename) in Env.override_list.items():
+                if serv_name not in user_conf:
+                    continue
+
+                value_line = f'{key}=../../host/{dirname}/{filename}\n'
+                prefix = f'{key}='
+
+                key_index = next((i for i, text in enumerate(lines) if text.startswith(prefix)), None)
+                if key_index is not None:
+                    lines[key_index] = value_line
+                    continue
+
+                header_index = next((i for i, text in enumerate(lines) if text.strip() == header), None)
+                if header_index is not None:
+                    lines.insert(header_index + 1, value_line)
+                    continue
+
+                insert_at = next(i for i, text in enumerate(lines) if Env.env_line_target in text) - 1
+                lines[insert_at:insert_at] = [f'{header}\n', value_line, '\n']
+
+            env_file = open(env_path, 'w')
+            env_file.writelines(lines)
+            env_file.close()
+        except Exception as err:
+            print(err)
+
+    '''
+    Cleans-up all the ports from the environment file
+    '''
+    @staticmethod
+    def clean(host):
+        global env_line_start
+
+        try:
+            env_path = os.path.join(host, '.env')
+            env_file = open(env_path, 'r')
+            lines = env_file.readlines()
+            for index, text in enumerate(lines):
+                if Env.env_line_target in text:
+                    env_line_start = index
+                    break
+            env_file.close()
+
+            env_file = open(env_path, 'w')
+            env_file.writelines(lines[:env_line_start + Env.env_line_offset])
+            env_file.close()
+        except Exception as err:
+            print(err)
+
+    '''
+    Generates ports for all services and write them to the environment file
+    '''
+    @staticmethod
+    def build(host: str, user_conf: list):
+        count = None
+        group = ""
+        passes = 0
+        length = len(Service.serv_list)
+
+        try:
+            env_path = os.path.join(host, '.env')
+
+            # A var already hand-set above "# Generated" (e.g. forcing
+            # CADDY_WEB_HTTP=80 on a host dedicated to one domain) wins,
+            # skip re-generating it below so it isn't immediately overwritten.
+            with open(env_path, 'r') as existing:
+                overridden = {
+                    line.split('=', 1)[0].strip()
+                    for line in existing
+                    if '=' in line and not line.lstrip().startswith('#')
+                }
+
+            env_file = open(env_path, 'a')
+
+            if 'komodo' in user_conf:
+                env_file.write('# komodo (reserved, always this range)\n')
+                env_file.write('# ----\n')
+                count = Env.komodo_port_base
+                for serv_container in Service.serv_list['komodo']:
+                    postfix = serv_container.replace('-', '_').upper()
+                    env_file.write(f'KOMODO_{postfix}={count}\n')
+                    count = count + 1
+                env_file.write('\n')
+
+            for index, (serv_name, serv_containers) in enumerate(Service.serv_list.items()):
+                passes = passes + 1
+
+                if serv_name == 'komodo':
+                    continue
+                if not serv_name in user_conf:
+                    continue
+                if group != serv_name[0]:
+                    group = serv_name[0]
+                    count = (Env.port_list[serv_name[0]].value * 1000) + Env.port_start_at
+                    count = Env.skip_blocked(count)
+                    env_file.write(f'# {group}\n')
+                    env_file.write(f'# ----\n')
+                if not serv_containers:
+                    passes = passes + 1
+                    continue
+                for serv_container in serv_containers:
+                    prefix  = serv_name.replace('-', '_')
+                    postfix = serv_container.replace('-', '_')
+                    setting = [prefix, postfix]
+                    setting = "_".join(setting).upper()
+                    if setting not in overridden:
+                        env_file.write(f'{setting}={count}\n')
+                    count = Env.skip_blocked(count + 1)
+                if passes is not length:
+                    env_file.write(f'\n')
+            env_file.close()
+        except Exception as err:
+            print(err)

@@ -1,0 +1,17 @@
+# folders included:
+!data
+!data/attachments
+!data/images
+!data/images/avatars
+!data/images/background
+
+# folders ignored:
+data/attachments/*
+data/images/avatars/*
+data/images/background/*
+
+# --------------------
+# files included:
+!.gitkeep
+
+# files ignored:

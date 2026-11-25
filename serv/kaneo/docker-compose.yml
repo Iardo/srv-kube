@@ -1,0 +1,54 @@
+# References
+# --------------------
+# https://github.com/usekaneo/kaneo
+# https://kaneo.app/docs/core/installation
+# https://github.com/usekaneo/kaneo/blob/main/compose.yml
+
+networks:
+  kaneo:
+    name: kaneo
+
+volumes:
+  kaneo-database:
+    name: kaneo-database
+    driver: local
+
+services:
+  kaneo-web:
+    image: ghcr.io/usekaneo/kaneo:latest
+    container_name: kaneo-web
+    restart: unless-stopped
+    depends_on:
+      - kaneo-database
+    networks:
+      - kaneo
+    ports:
+      - ${KANEO_WEB_HTTP:?}:5173
+    env_file: .env
+    environment:
+      # The browser calls this directly for the API,
+      # so it needs the real domain, not "localhost".
+      # Set KANEO_DOMAIN in this host's ".env".
+      KANEO_CLIENT_URL: 'https://${KANEO_DOMAIN:-localhost:${KANEO_WEB_HTTP:?}}'
+      POSTGRES_HOST: kaneo-database
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: ${KANEO_POSTGRESQL_NAME:?}
+      POSTGRES_USER: ${KANEO_POSTGRESQL_USER:?}
+      POSTGRES_PASSWORD: ${KANEO_POSTGRESQL_PASS:?}
+      AUTH_SECRET: ${KANEO_AUTH_SECRET:?}
+
+  kaneo-database:
+    image: postgres:16-alpine
+    container_name: kaneo-database
+    restart: unless-stopped
+    networks:
+      - kaneo
+    ports:
+      - ${KANEO_DATABASE:?}:5432
+    volumes:
+      - kaneo-database:/var/lib/postgresql/data
+    env_file: .env
+    environment:
+      POSTGRES_DB: ${KANEO_POSTGRESQL_NAME:?}
+      POSTGRES_USER: ${KANEO_POSTGRESQL_USER:?}
+      POSTGRES_PASSWORD: ${KANEO_POSTGRESQL_PASS:?}

@@ -1,0 +1,6 @@
+[[server]]
+name = "iardo-elitedesk"
+
+[server.config]
+enabled = false
+address = "http://iardo-elitedesk:9120"

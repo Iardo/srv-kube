@@ -1,0 +1,30 @@
+# References
+# --------------------
+# https://github.com/Revadike/epicgames-freebies-claimer/wiki/User-Guide-(Docker)#docker-compose
+
+
+# WARNING!
+# --------------------
+# EpicGames has made captchas mandatory for claiming free games.
+# Currently, epicgames freebies claimer cannot handle this, so it is not working.
+# 
+# https://github.com/Revadike/epicgames-freebies-claimer/pull/184
+# https://github.com/Revadike/epicgames-freebies-claimer/issues/172
+
+networks:
+  epicstore-claimer:
+    name: epicstore-claimer
+
+services:
+  epicstore-claimer:
+    image: ghcr.io/jackblk/epicgames-freebies-claimer:latest
+    container_name: epicstore-claimer
+    restart: unless-stopped
+    stdin_open: true # docker run -i
+    tty: true        # docker run -t
+    networks:
+      - epicstore-claimer
+    ports:
+      - ${EPICSTORE_CLAIMER_SERVER:-3000}:80
+    volumes:
+      - ./data:/app/data

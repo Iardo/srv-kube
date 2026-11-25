@@ -1,0 +1,35 @@
+# References
+# --------------------
+# https://github.com/comfyanonymous/ComfyUI
+# https://github.com/ai-dock/comfyui
+
+# NOTE:
+# This host installs ComfyUI at machine level instead (see "install.sh"),
+# to access the GPU/Metal API directly. This compose file is only here for
+# hosts where a containerized, GPU-passthrough deployment makes more sense.
+
+networks:
+  comfyui:
+    name: comfyui
+
+services:
+  comfyui-web:
+    image: ghcr.io/ai-dock/comfyui:latest-cuda
+    container_name: comfyui-web
+    restart: unless-stopped
+    networks:
+      - comfyui
+    ports:
+      - ${COMFYUI_WEB_HTTP:-8188}:8188
+    volumes:
+      - ./data/models:/opt/ComfyUI/models
+      - ./data/output:/opt/ComfyUI/output
+    environment:
+      TZ: ${TIMEZONE:-America/Panama}
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]

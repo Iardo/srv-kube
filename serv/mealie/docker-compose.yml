@@ -1,0 +1,23 @@
+# References
+# --------------------
+# https://docs.mealie.io/documentation/getting-started/installation/docker/
+
+networks:
+  mealie:
+    name: mealie
+
+services:
+  mealie-web:
+    image: ghcr.io/mealie-recipes/mealie:latest
+    container_name: mealie-web
+    restart: unless-stopped
+    networks:
+      - mealie
+    ports:
+      - ${MEALIE_WEB_HTTP:-9000}:9000
+    volumes:
+      - ./data:/app/data/
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: ${TIMEZONE:-America/Panama}

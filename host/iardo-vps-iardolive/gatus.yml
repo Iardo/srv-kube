@@ -1,0 +1,158 @@
+# Gatus config for this host, mounted over serv/gatus/conf/config.yaml.
+# Set GATUS_CONFIG in this host's .env (Override section) to use it.
+#
+# It checks every service Caddy serves on all hosts, through their public
+# domains, so a failure also catches DNS, Caddy and TLS, not just the container.
+# Anything below 500 counts as up, most of these answer a login redirect or 401 on "/".
+
+endpoints:
+  - name: gatus
+    group: iardo-vps-iardolive
+    url: "http://localhost:8080/health"
+    interval: 5m
+    conditions:
+      - "[STATUS] == 200"
+
+  - name: beszel
+    group: iardo-vps-iardodev
+    url: "https://beszel.iardo.dev"
+    interval: 5m
+    conditions:
+      - "[STATUS] < 500"
+      - "[RESPONSE_TIME] < 5000"
+
+  - name: bugsink
+    group: iardo-vps-iardodev
+    url: "https://bugsink.iardo.dev"
+    interval: 5m
+    conditions:
+      - "[STATUS] < 500"
+      - "[RESPONSE_TIME] < 5000"
+
+  - name: mailpit
+    group: iardo-vps-iardodev
+    url: "https://mailpit.iardo.dev"
+    interval: 5m
+    conditions:
+      - "[STATUS] < 500"
+      - "[RESPONSE_TIME] < 5000"
+
+  - name: open-project
+    group: iardo-vps-iardodev
+    url: "https://open-project.iardo.dev"
+    interval: 5m
+    conditions:
+      - "[STATUS] < 500"
+      - "[RESPONSE_TIME] < 5000"
+
+  - name: outline-https
+    group: iardo-vps-iardodev
+    url: "https://outline-https.iardo.dev"
+    interval: 5m
+    conditions:
+      - "[STATUS] < 500"
+      - "[RESPONSE_TIME] < 5000"
+
+  - name: webcheck
+    group: iardo-vps-iardodev
+    url: "https://webcheck.iardo.dev"
+    interval: 5m
+    conditions:
+      - "[STATUS] < 500"
+      - "[RESPONSE_TIME] < 5000"
+
+  - name: woodpecker
+    group: iardo-vps-iardodev
+    url: "https://woodpecker.iardo.dev"
+    interval: 5m
+    conditions:
+      - "[STATUS] < 500"
+      - "[RESPONSE_TIME] < 5000"
+
+  - name: actual
+    group: iardo-vps-iardoo
+    url: "https://actual.iardoo.com"
+    interval: 5m
+    conditions:
+      - "[STATUS] < 500"
+      - "[RESPONSE_TIME] < 5000"
+
+  - name: beszel
+    group: iardo-vps-iardoo
+    url: "https://beszel.iardoo.com"
+    interval: 5m
+    conditions:
+      - "[STATUS] < 500"
+      - "[RESPONSE_TIME] < 5000"
+
+  - name: linkace
+    group: iardo-vps-iardoo
+    url: "https://linkace.iardoo.com"
+    interval: 5m
+    conditions:
+      - "[STATUS] < 500"
+      - "[RESPONSE_TIME] < 5000"
+
+  - name: outline-https
+    group: iardo-vps-iardoo
+    url: "https://outline-https.iardoo.com"
+    interval: 5m
+    conditions:
+      - "[STATUS] < 500"
+      - "[RESPONSE_TIME] < 5000"
+
+  - name: silverbullet
+    group: iardo-vps-iardoo
+    url: "https://silverbullet.iardoo.com"
+    interval: 5m
+    conditions:
+      - "[STATUS] < 500"
+      - "[RESPONSE_TIME] < 5000"
+
+  - name: beszel
+    group: iardo-vps-iardolive
+    url: "https://beszel.iardo.live"
+    interval: 5m
+    conditions:
+      - "[STATUS] < 500"
+      - "[RESPONSE_TIME] < 5000"
+
+  - name: grafana
+    group: iardo-vps-iardolive
+    url: "https://grafana.iardo.live"
+    interval: 5m
+    conditions:
+      - "[STATUS] < 500"
+      - "[RESPONSE_TIME] < 5000"
+
+  - name: infisical
+    group: iardo-vps-iardolive
+    url: "https://infisical.iardo.live"
+    interval: 5m
+    conditions:
+      - "[STATUS] < 500"
+      - "[RESPONSE_TIME] < 5000"
+
+  - name: ntfy
+    group: iardo-vps-iardolive
+    url: "https://ntfy.iardo.live"
+    interval: 5m
+    conditions:
+      - "[STATUS] < 500"
+      - "[RESPONSE_TIME] < 5000"
+
+  - name: passbolt-https
+    group: iardo-vps-iardolive
+    url: "https://passbolt-https.iardo.live"
+    interval: 5m
+    conditions:
+      - "[STATUS] < 500"
+      - "[RESPONSE_TIME] < 5000"
+
+  - name: umami
+    group: iardo-vps-iardolive
+    url: "https://umami.iardo.live"
+    interval: 5m
+    conditions:
+      - "[STATUS] < 500"
+      - "[RESPONSE_TIME] < 5000"
