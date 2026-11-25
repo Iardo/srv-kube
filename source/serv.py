@@ -176,8 +176,8 @@ class Service:
             ('GITHUB_STARS_MANAGER_ENCRYPTION_KEY', GENERATE_HEX32),
         ],
         'grafana': [
-            ('GRAFANA_ADMIN_USER', 'admin # Dummy'),
-            ('GRAFANA_ADMIN_PASSWORD', 'admin # Dummy'),
+            ('GRAFANA_ADMIN_USER', 'admin # Do not change'),
+            ('GRAFANA_ADMIN_PASSWORD', 'admin # Do not change'),
         ],
         'immich': [
             ('IMMICH_POSTGRESQL_USER', 'immich # Do not change'),
