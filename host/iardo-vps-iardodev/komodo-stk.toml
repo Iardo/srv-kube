@@ -28,6 +28,7 @@ pre_deploy.shell_mode = false
 pre_deploy.command = """
     [ -f host/iardo-vps-iardodev/.env-secrets.local ] || cp host/iardo-vps-iardodev/.env-secrets host/iardo-vps-iardodev/.env-secrets.local
 
+    bash utils/task/task-sync-secrets.sh host/iardo-vps-iardodev/.env-secrets host/iardo-vps-iardodev/.env-secrets.local
     bash utils/task/task-fill-secrets.sh host/iardo-vps-iardodev/.env-secrets.local
 
     # Caddy/dnsmasq bind-mount a single file, restart them only if it changed.

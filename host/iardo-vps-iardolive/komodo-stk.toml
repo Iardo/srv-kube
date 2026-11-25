@@ -35,6 +35,7 @@ pre_deploy.shell_mode = false
 pre_deploy.command = """
     [ -f host/iardo-vps-iardolive/.env-secrets.local ] || cp host/iardo-vps-iardolive/.env-secrets host/iardo-vps-iardolive/.env-secrets.local
 
+    bash utils/task/task-sync-secrets.sh host/iardo-vps-iardolive/.env-secrets host/iardo-vps-iardolive/.env-secrets.local
     bash utils/task/task-fill-secrets.sh host/iardo-vps-iardolive/.env-secrets.local
 
     # Gatus: untracked, host-only endpoints file, never overwritten by a deploy.

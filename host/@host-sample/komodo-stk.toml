@@ -51,6 +51,7 @@ pre_deploy.shell_mode = false
 pre_deploy.command = """
     [ -f host/@host-sample/.env-secrets.local ] || cp host/@host-sample/.env-secrets host/@host-sample/.env-secrets.local
 
+    bash utils/task/task-sync-secrets.sh host/@host-sample/.env-secrets host/@host-sample/.env-secrets.local
     bash utils/task/task-fill-secrets.sh host/@host-sample/.env-secrets.local
 
     # Actual

@@ -26,6 +26,7 @@ pre_deploy.shell_mode = false
 pre_deploy.command = """
     [ -f host/iardo-vps-iardoo/.env-secrets.local ] || cp host/iardo-vps-iardoo/.env-secrets host/iardo-vps-iardoo/.env-secrets.local
 
+    bash utils/task/task-sync-secrets.sh host/iardo-vps-iardoo/.env-secrets host/iardo-vps-iardoo/.env-secrets.local
     bash utils/task/task-fill-secrets.sh host/iardo-vps-iardoo/.env-secrets.local
 
     # Actual
