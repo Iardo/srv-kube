@@ -21,16 +21,8 @@ http://aria2-pro.host-sample:7000 {
     reverse_proxy host.docker.internal:5001
 }
 
-http://authentik-http.host-sample:7000 {
-    reverse_proxy host.docker.internal:5005
-}
-
 http://authentik.host-sample:7000 {
-    reverse_proxy https://host.docker.internal:5006 {
-        transport http {
-            tls_insecure_skip_verify
-        }
-    }
+    reverse_proxy host.docker.internal:5005
 }
 
 http://azimutt.host-sample:7000 {

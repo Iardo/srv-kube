@@ -13,16 +13,8 @@
 
 # Services
 # --------------------
-authentik-http.iardo.live {
-    reverse_proxy host.docker.internal:5000
-}
-
 authentik.iardo.live {
-    reverse_proxy https://host.docker.internal:5001 {
-        transport http {
-            tls_insecure_skip_verify
-        }
-    }
+    reverse_proxy host.docker.internal:5000
 }
 
 beszel.iardo.live {

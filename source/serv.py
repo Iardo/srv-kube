@@ -15,7 +15,7 @@ class Service:
         'actual': ['web-http'],
         'adguard-home': ['web-http', 'panel', 'dns-tcp', 'dns-udp'],
         'aria2-pro': ['web-http', 'rpc', 'muse-tcp', 'muse-udp'],
-        'authentik': ['web-http', 'web-https', 'database', 'cache'],
+        'authentik': ['web-http', 'database', 'cache'],
         'azimutt': ['web-http', 'database', 'gateway'],
         'bazarr': ['web-http'],
         'beszel': ['web-http'],

@@ -40,8 +40,10 @@ services:
     networks:
       - authentik
     ports:
+      # Only HTTP is published: Authentik's own docs point an external
+      # reverse proxy (Caddy here) at 9000, TLS termination happens there,
+      # not at this container's self-signed 9443 listener.
       - ${AUTHENTIK_WEB_HTTP:?}:9000
-      - ${AUTHENTIK_WEB_HTTPS:?}:9443
     volumes:
       - ./data/authentik/media:/media
       - ./data/authentik/templates:/templates
