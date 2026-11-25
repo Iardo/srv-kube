@@ -24,3 +24,4 @@ __pycache__
 /CLAUDE.md
 /host/**/.*.sha256
 /host/**/.env-secrets.local
+/host/**/gatus.local.yml

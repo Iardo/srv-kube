@@ -19,6 +19,10 @@ services:
     volumes:
       # Per-host override: Set GATUS_CONFIG in that host's .env
       - ${GATUS_CONFIG:-./conf/config.yaml}:/config/config.yaml
+      # Untracked, host-only endpoints (e.g. temporary checks), merged on top.
+      # Set GATUS_CONFIG_LOCAL in that host's .env
+      - ${GATUS_CONFIG_LOCAL:-./conf/config.local.yaml}:/config/config.local.yaml
       - ./data:/data
     environment:
       TZ: ${TIMEZONE:-America/Panama}
+      GATUS_CONFIG_PATH: /config

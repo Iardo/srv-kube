@@ -1,18 +1,13 @@
 # Gatus config for this host, mounted over serv/gatus/conf/config.yaml.
 # Set GATUS_CONFIG in this host's .env (Override section) to use it.
 #
-# It checks every service Caddy serves on all hosts, through their public
-# domains, so a failure also catches DNS, Caddy and TLS, not just the container.
+# It checks every service Caddy serves on all hosts, through their public domains,
+# so a failure also catches DNS, Caddy and TLS, not just the container.
 # Anything below 500 counts as up, most of these answer a login redirect or 401 on "/".
 
 endpoints:
-  - name: gatus
-    group: iardo-vps-iardolive
-    url: "http://localhost:8080/health"
-    interval: 5m
-    conditions:
-      - "[STATUS] == 200"
-
+  # iardo-vps-iardodev
+  # --------------------
   - name: beszel
     group: iardo-vps-iardodev
     url: "https://beszel.iardo.dev"
@@ -29,17 +24,17 @@ endpoints:
       - "[STATUS] < 500"
       - "[RESPONSE_TIME] < 5000"
 
-  - name: mailpit
+  - name: kaneo
     group: iardo-vps-iardodev
-    url: "https://mailpit.iardo.dev"
+    url: "https://kaneo.iardo.dev"
     interval: 5m
     conditions:
       - "[STATUS] < 500"
       - "[RESPONSE_TIME] < 5000"
 
-  - name: kaneo
+  - name: mailpit
     group: iardo-vps-iardodev
-    url: "https://kaneo.iardo.dev"
+    url: "https://mailpit.iardo.dev"
     interval: 5m
     conditions:
       - "[STATUS] < 500"
@@ -69,6 +64,73 @@ endpoints:
       - "[STATUS] < 500"
       - "[RESPONSE_TIME] < 5000"
 
+  # iardo-vps-iardolive
+  # --------------------
+  - name: beszel
+    group: iardo-vps-iardolive
+    url: "https://beszel.iardo.live"
+    interval: 5m
+    conditions:
+      - "[STATUS] < 500"
+      - "[RESPONSE_TIME] < 5000"
+
+  - name: gatus
+    group: iardo-vps-iardolive
+    url: "http://localhost:8080/health"
+    interval: 5m
+    conditions:
+      - "[STATUS] == 200"
+
+  - name: grafana
+    group: iardo-vps-iardolive
+    url: "https://grafana.iardo.live"
+    interval: 5m
+    conditions:
+      - "[STATUS] < 500"
+      - "[RESPONSE_TIME] < 5000"
+
+  - name: infisical
+    group: iardo-vps-iardolive
+    url: "https://infisical.iardo.live"
+    interval: 5m
+    conditions:
+      - "[STATUS] < 500"
+      - "[RESPONSE_TIME] < 5000"
+
+  - name: ntfy
+    group: iardo-vps-iardolive
+    url: "https://ntfy.iardo.live"
+    interval: 5m
+    conditions:
+      - "[STATUS] < 500"
+      - "[RESPONSE_TIME] < 5000"
+
+  - name: passbolt
+    group: iardo-vps-iardolive
+    url: "https://passbolt.iardo.live"
+    interval: 5m
+    conditions:
+      - "[STATUS] < 500"
+      - "[RESPONSE_TIME] < 5000"
+
+  - name: termix
+    group: iardo-vps-iardolive
+    url: "https://termix.iardo.live"
+    interval: 5m
+    conditions:
+      - "[STATUS] < 500"
+      - "[RESPONSE_TIME] < 5000"
+
+  - name: umami
+    group: iardo-vps-iardolive
+    url: "https://umami.iardo.live"
+    interval: 5m
+    conditions:
+      - "[STATUS] < 500"
+      - "[RESPONSE_TIME] < 5000"
+
+  # iardo-vps-iardoo
+  # --------------------
   - name: actual
     group: iardo-vps-iardoo
     url: "https://actual.iardoo.com"
@@ -104,62 +166,6 @@ endpoints:
   - name: silverbullet
     group: iardo-vps-iardoo
     url: "https://silverbullet.iardoo.com"
-    interval: 5m
-    conditions:
-      - "[STATUS] < 500"
-      - "[RESPONSE_TIME] < 5000"
-
-  - name: beszel
-    group: iardo-vps-iardolive
-    url: "https://beszel.iardo.live"
-    interval: 5m
-    conditions:
-      - "[STATUS] < 500"
-      - "[RESPONSE_TIME] < 5000"
-
-  - name: grafana
-    group: iardo-vps-iardolive
-    url: "https://grafana.iardo.live"
-    interval: 5m
-    conditions:
-      - "[STATUS] < 500"
-      - "[RESPONSE_TIME] < 5000"
-
-  - name: infisical
-    group: iardo-vps-iardolive
-    url: "https://infisical.iardo.live"
-    interval: 5m
-    conditions:
-      - "[STATUS] < 500"
-      - "[RESPONSE_TIME] < 5000"
-
-  - name: ntfy
-    group: iardo-vps-iardolive
-    url: "https://ntfy.iardo.live"
-    interval: 5m
-    conditions:
-      - "[STATUS] < 500"
-      - "[RESPONSE_TIME] < 5000"
-
-  - name: termix
-    group: iardo-vps-iardolive
-    url: "https://termix.iardo.live"
-    interval: 5m
-    conditions:
-      - "[STATUS] < 500"
-      - "[RESPONSE_TIME] < 5000"
-
-  - name: passbolt
-    group: iardo-vps-iardolive
-    url: "https://passbolt.iardo.live"
-    interval: 5m
-    conditions:
-      - "[STATUS] < 500"
-      - "[RESPONSE_TIME] < 5000"
-
-  - name: umami
-    group: iardo-vps-iardolive
-    url: "https://umami.iardo.live"
     interval: 5m
     conditions:
       - "[STATUS] < 500"
