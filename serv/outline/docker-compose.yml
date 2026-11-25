@@ -32,6 +32,8 @@ services:
       - outline-storage:/var/lib/outline/data
     env_file: ./.env
     environment:
+      SECRET_KEY: ${OUTLINE_SECRET_KEY:?}
+      UTILS_SECRET: ${OUTLINE_UTILS_SECRET:?}
       # NOTE:
       # OUTLINE_DOMAIN is the public host name Caddy serves, e.g. outline-https.<domain>.
       # Unset, Outline falls back to https://localhost:<OUTLINE_WEB_HTTPS>.

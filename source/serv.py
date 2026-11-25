@@ -200,6 +200,7 @@ class Service:
             ('KOMODO_DATABASE_PASSWORD', 'admin # Do not change'),
         ],
         'linkace': [
+            ('LINKACE_APP_KEY', GENERATE_HEX32),
             ('LINKACE_MYSQL_USER', 'linkace # Do not change'),
             ('LINKACE_MYSQL_PASS', 'linkace # Dummy'),
             # Deliberately not a dummy, and not meant to be hand-edited
@@ -227,6 +228,10 @@ class Service:
         ],
         'openwebui': [
             ('OPENWEBUI_SECRET_KEY', GENERATE_HEX32),
+        ],
+        'outline': [
+            ('OUTLINE_SECRET_KEY', GENERATE_HEX32),
+            ('OUTLINE_UTILS_SECRET', GENERATE_HEX32),
         ],
         'paperless-ngx': [
             ('PAPERLESS_NGX_POSTGRESQL_USER', 'paperlessngx # Do not change'),

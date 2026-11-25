@@ -31,6 +31,7 @@ services:
       - ./data/backup:/app/storage/app/backups
     env_file: .env
     environment:
+      APP_KEY: ${LINKACE_APP_KEY:?}
       DB_HOST: linkace-database
       DB_DATABASE: ${MYSQL_NAME:-linkace}
       DB_USERNAME: ${LINKACE_MYSQL_USER:-linkace}
