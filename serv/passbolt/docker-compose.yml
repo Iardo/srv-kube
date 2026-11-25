@@ -37,7 +37,9 @@ services:
       # Passbolt only supports one base URL, it can't serve multiple
       # hostnames/ports like some other services here, and it should only
       # be used over HTTPS anyway (it's a password manager).
-      APP_FULL_BASE_URL: https://localhost:${PASSBOLT_WEB_HTTPS:?}
+      # The browser calls this directly, so it needs the real domain, not
+      # "localhost". Set PASSBOLT_DOMAIN in this host's ".env".
+      APP_FULL_BASE_URL: 'https://${PASSBOLT_DOMAIN:-localhost:${PASSBOLT_WEB_HTTPS:?}}'
       DATASOURCES_DEFAULT_DRIVER: 'Cake\Database\Driver\Postgres'
       DATASOURCES_DEFAULT_ENCODING: utf8
       DATASOURCES_DEFAULT_HOST: passbolt-database
