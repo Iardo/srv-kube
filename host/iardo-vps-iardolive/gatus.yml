@@ -37,17 +37,17 @@ endpoints:
       - "[STATUS] < 500"
       - "[RESPONSE_TIME] < 5000"
 
-  - name: open-project
+  - name: kaneo
     group: iardo-vps-iardodev
-    url: "https://open-project.iardo.dev"
+    url: "https://kaneo.iardo.dev"
     interval: 5m
     conditions:
       - "[STATUS] < 500"
       - "[RESPONSE_TIME] < 5000"
 
-  - name: outline-https
+  - name: outline
     group: iardo-vps-iardodev
-    url: "https://outline-https.iardo.dev"
+    url: "https://outline.iardo.dev"
     interval: 5m
     conditions:
       - "[STATUS] < 500"
@@ -93,9 +93,9 @@ endpoints:
       - "[STATUS] < 500"
       - "[RESPONSE_TIME] < 5000"
 
-  - name: outline-https
+  - name: outline
     group: iardo-vps-iardoo
-    url: "https://outline-https.iardoo.com"
+    url: "https://outline.iardoo.com"
     interval: 5m
     conditions:
       - "[STATUS] < 500"
@@ -141,9 +141,17 @@ endpoints:
       - "[STATUS] < 500"
       - "[RESPONSE_TIME] < 5000"
 
-  - name: passbolt-https
+  - name: termix
     group: iardo-vps-iardolive
-    url: "https://passbolt-https.iardo.live"
+    url: "https://termix.iardo.live"
+    interval: 5m
+    conditions:
+      - "[STATUS] < 500"
+      - "[RESPONSE_TIME] < 5000"
+
+  - name: passbolt
+    group: iardo-vps-iardolive
+    url: "https://passbolt.iardo.live"
     interval: 5m
     conditions:
       - "[STATUS] < 500"
