@@ -1,0 +1,33 @@
+# References
+# --------------------
+# https://github.com/miroslavpejic85/mirotalksfu
+# https://github.com/miroslavpejic85/mirotalksfu/blob/main/docker-compose.template.yml
+
+networks:
+  mirotalksfu:
+    name: mirotalksfu
+
+services:
+  mirotalksfu-web:
+    image: mirotalk/sfu@sha256:f3fbc71d0b13653ab7354cfc6411951f5e6e882a97869453e7c2c9e894f3811a
+    # No versioned tag exists upstream, only "latest".
+    # Pinned to what "latest" resolved to on 2026-11-25.
+    container_name: mirotalksfu-web
+    restart: unless-stopped
+    # Runs as the image's built-in non-root "node" user (1000:1000).
+    user: '1000:1000'
+    init: true
+    stop_grace_period: 35s
+    networks:
+      - mirotalksfu
+    ports:
+      - ${MIROTALKSFU_WEB_HTTP:?}:3010
+      # WebRTC media relay: a real port range, not a single port,
+      # so it's fixed here rather than going through the per-host port registry
+      # like every other service's ports.
+      # Same range on every host, open both TCP and UDP for the full range.
+      - 40000-40100:40000-40100/tcp
+      - 40000-40100:40000-40100/udp
+    env_file: .env
+    environment:
+      JWT_SECRET: ${MIROTALKSFU_JWT_SECRET:?}

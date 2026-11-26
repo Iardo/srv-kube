@@ -1,0 +1,29 @@
+# References
+# --------------------
+# https://github.com/foxcpp/maddy
+# https://maddy.email/docs/docker/
+
+networks:
+  maddy:
+    name: maddy
+
+services:
+  maddy:
+    image: docker.io/foxcpp/maddy@sha256:f2396d08bad7cc3e2ec76422530a6310644ac03d435093991150486a791b08a2 # 0.9.8
+    container_name: maddy
+    restart: unless-stopped
+    networks:
+      - maddy
+    ports:
+      # Outbound-only setup: no 25 (inbound SMTP) or 143/993 (IMAP) published,
+      # only authenticated Submission (used by this repo's other services
+      # to relay mail out), see readme.md.
+      - ${MADDY_SMTP_SUBMISSION:?}:587
+    volumes:
+      # Holds the baked-in maddy.conf (auto-placed here on first run),
+      # the credentials/queue databases, and the DKIM keys maddy generates itself.
+      - ./data:/data
+    env_file: .env
+    environment:
+      MADDY_HOSTNAME: ${MADDY_HOSTNAME:?}
+      MADDY_DOMAIN: ${MADDY_DOMAIN:?}

@@ -1,0 +1,49 @@
+# References
+# --------------------
+# https://github.com/jokob-sk/NetAlertX
+# https://github.com/jokob-sk/NetAlertX/blob/main/docker-compose.yml
+#
+# NOTE:
+# "pi-alert" (pucherot/Pi.Alert) is unmaintained,
+# this is its actively maintained fork/successor, NetAlertX.
+#
+# EXCEPTION, same spirit as the GPU-bound services and netdata (see .llms/skills/local-services/SKILL.md).
+#
+# NetAlertX needs host networking for ARP/nmap scanning of the LAN,
+# so it uses "network_mode: host" instead of a docker network and published ports.
+#
+# "ports:" is meaningless here.
+# It binds directly on this host's own PI_ALERT_WEB_HTTP port, set in this host's ".env".
+# Point "serv/caddy" at "host.docker.internal:${PI_ALERT_WEB_HTTP}" to reverse-proxy it.
+
+volumes:
+  pi-alert-data:
+    name: pi-alert-data
+
+services:
+  pi-alert-web:
+    image: ghcr.io/netalertx/netalertx@sha256:ebce55cdbccc0f71544e6997541fe81db803b8c8bec3079435b8cd0a40d49b7e # 26.10.28
+    container_name: pi-alert-web
+    restart: unless-stopped
+    network_mode: host
+    read_only: true
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+      - NET_BIND_SERVICE
+      - CHOWN
+      - SETUID
+      - SETGID
+    sysctls:
+      net.ipv4.conf.all.arp_ignore: 1
+      net.ipv4.conf.all.arp_announce: 2
+    tmpfs:
+      - /tmp:mode=1700,uid=0,gid=0,rw,noexec,nosuid,nodev,async,noatime,nodiratime
+    volumes:
+      - pi-alert-data:/data
+      - /etc/localtime:/etc/localtime:ro
+    env_file: .env
+    environment:
+      PORT: ${PI_ALERT_WEB_HTTP:?}

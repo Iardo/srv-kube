@@ -1,0 +1,38 @@
+# References
+# --------------------
+# https://lancache.net/docs/
+# https://github.com/lancachenet/docker-compose
+
+networks:
+  lan-cache:
+    name: lan-cache
+
+services:
+  lan-cache-dns:
+    image: lancachenet/lancache-dns@sha256:801f2aae809b95793bb8d591681a948c79afbf5e195414321b9f43e756ccb07c
+    # No versioned tag exists upstream, only "latest".
+    # Pinned to what "latest" resolved to on 2026-11-25.
+    container_name: lan-cache-dns
+    restart: unless-stopped
+    networks:
+      - lan-cache
+    ports:
+      - ${LAN_CACHE_DNS_TCP:?}:53/tcp
+      - ${LAN_CACHE_DNS_UDP:?}:53/udp
+    env_file: .env
+
+  lan-cache-web:
+    image: lancachenet/monolithic@sha256:3253f1b5d2fe84d5a423a8cb8edab0d44a131bd1057248106415e3fd3d0ca542
+    # No versioned tag exists upstream, only "latest".
+    # Pinned to what "latest" resolved to on 2026-11-25.
+    container_name: lan-cache-web
+    restart: unless-stopped
+    networks:
+      - lan-cache
+    ports:
+      - ${LAN_CACHE_WEB_HTTP:?}:80
+      - ${LAN_CACHE_WEB_HTTPS:?}:443
+    volumes:
+      - ./data/cache:/data/cache
+      - ./data/logs:/data/logs
+    env_file: .env

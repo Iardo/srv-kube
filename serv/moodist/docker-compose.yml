@@ -1,0 +1,17 @@
+# References
+# --------------------
+# https://github.com/remvze/moodist
+
+networks:
+  moodist:
+    name: moodist
+
+services:
+  moodist-web:
+    image: ghcr.io/remvze/moodist@sha256:44367c9ca0f1ec93a28dd3715ad39fa8e69e25cb64931ab655f86954c2ee4b93 # v3.1.1
+    container_name: moodist-web
+    restart: unless-stopped
+    networks:
+      - moodist
+    ports:
+      - ${MOODIST_WEB_HTTP:?}:8080

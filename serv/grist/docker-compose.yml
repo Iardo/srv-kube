@@ -1,0 +1,33 @@
+# References
+# --------------------
+# https://github.com/gristlabs/grist-core
+# https://github.com/gristlabs/grist-core/blob/main/docker-compose-examples/grist-local-testing/docker-compose.yml
+
+# NOTE:
+# Upstream's old postgres+redis+minio example is gone, replaced by a keycloak+rustfs enterprise example.
+# For a single/small-team instance, their recommended setup is this simple
+# single container, SQLite-backed under /persist, no separate
+# database/cache/object-storage needed.
+
+networks:
+  grist:
+    name: grist
+
+volumes:
+  grist-data:
+    name: grist-data
+
+services:
+  grist-web:
+    image: gristlabs/grist@sha256:c2221950675081c79a06a44c27f8c65cc96c43d93d76f2b3214d8dbdff709355 # 1.7.22
+    container_name: grist-web
+    restart: unless-stopped
+    networks:
+      - grist
+    ports:
+      - ${GRIST_WEB_HTTP:?}:8484
+    volumes:
+      - grist-data:/persist
+    env_file: .env
+    environment:
+      GRIST_SESSION_SECRET: ${GRIST_SESSION_SECRET:?}

@@ -14,7 +14,9 @@ class Service:
     serv_list: dict = {
         'actual': ['web-http'],
         'adguard-home': ['web-http', 'panel', 'dns-tcp', 'dns-udp'],
+        'affine': ['web-http', 'database', 'cache'],
         'aria2-pro': ['web-http', 'rpc', 'muse-tcp', 'muse-udp'],
+        'astral': ['web-http'],
         'authentik': ['web-http', 'database', 'cache'],
         'azimutt': ['web-http', 'database', 'gateway'],
         'bazarr': ['web-http'],
@@ -29,66 +31,81 @@ class Service:
         'cronicle': ['web-http'],
         'cronjob-org': ['web-http', 'database-master', 'database-node'],
         'dnsmasq': ['dns'],
-        'dockermon': ['web-http', 'api', 'websocket'],
+        'dockge': ['web-http'],
         'docmost': ['web-http', 'database', 'cache'],
         'docuseal': ['web-http'],
         'dozzle': ['web-http'],
         'drawdb': ['web-http'],
         'epicstore-claimer': ['server'],
         'excalidraw': ['web-http'],
+        'filebrowser': ['web-http'],
         'firefly3': ['web-http', 'database'],
         'flood': ['web-http'],
+        'forgejo': ['web-http', 'ssh'],
         'gatus': ['web-http'],
         'github-stars-manager': ['web-http'],
+        'gitlab': ['web-http', 'ssh'],
         'grafana': ['web-http'],
-        'grimoire': ['web-http', 'database'],
-        'grist': ['web-http', 'database', 'cache'],
-        'guacamole': ['web-http'],
-        'highlight': ['web-http'],
+        'grimoire': ['web-http'],
+        'grist': ['web-http'],
+        'guacamole': ['web-http', 'database'],
+        'ha-fusion': ['web-http'],
         'home-assistant': ['web-http'],
         'homepage': ['web-http'],
-        'huly': ['web-http', 'database', 'account', 'collaborator', 'transactor', 'rekoni', 'minio', 'elasticsearch'],
         'immich': ['web-http'],
         'infisical': ['web-http'],
+        'it-tools': ['web-http'],
         'jackett': ['web-http'],
         'jellyfin': ['web-http', 'web-https', 'discovery', 'dlna'],
         'kaneo': ['web-http', 'database'],
         'kavitareader': ['web-http'],
         'komodo': ['web-http', 'web-https', 'database', 'ferretdb'],
+        'lan-cache': ['web-http', 'web-https', 'dns-tcp', 'dns-udp'],
         'linkace': ['web-http', 'database', 'cache'],
         'linkwarden': ['web-http', 'database'],
         'llama-cpp': ['web-http'],
+        'maddy': ['smtp-submission'],
         'mailpit': ['web-http', 'smtp'],
+        'marquez': ['web-http', 'api', 'api-admin', 'database'],
         'mealie': ['web-http'],
+        'memos': ['web-http'],
         'mirotalksfu': ['web-http'],
-        'monica': ['web-http'],
+        'monica': ['web-http', 'database'],
+        'moodist': ['web-http'],
         'n8n': ['web-http', 'database'],
         'netbootxyz': ['web-http', 'assets-http', 'tftp'],
         'netdata': ['web-http'],
         'nginx-proxy-manager': ['web-http', 'web-https', 'panel'],
-        'nginx': ['web-http'],
         'notesnook': ['server', 'identity', 'events', 'monograph', 'minio-api', 'minio-web', 'database'],
         'ntfy': ['web-http'],
-        'oneuptime': ['web-http'],
+        'nut-web-ui': ['web-http'],
         'open-project': ['web-http', 'database'],
+        'opencloud': ['web-http'],
         'openhands': ['web-http'],
         'openwebui': ['web-http'],
         'outline': ['web-https', 'database', 'cache'],
+        'overleaf': ['web-http', 'database', 'cache'],
         'paperless-ngx': ['web-http', 'database'],
         'passbolt': ['web-https'],
         'penpot': ['web-http', 'database', 'cache', 'mailcatch'],
+        'pi-alert': ['web-http'],
         'pihole': ['web-http', 'dns-tcp', 'dns-udp', 'dhcp'],
         'plane': ['web-http'],
         'planka': ['web-http', 'database'],
         'portainer': ['web-http'],
-        'postal': ['web-http', 'database'],
+        'privatebin': ['web-http'],
         'radarr': ['web-http'],
+        'rill': ['web-http'],
         'romm': ['web-http'],
         'scrutiny': ['web-http', 'database'],
-        'sentry': ['web-http'],
+        'scrypted': ['web-http'],
         'silverbullet': ['web-http'],
+        'sist2': ['web-http', 'panel'],
+        'soft-serve': ['ssh', 'web-http', 'stats', 'git-daemon'],
         'sonarr': ['web-http'],
         'speedtest-tracker': ['web-http'],
+        'ssh-swifty': ['web-http'],
+        'stalwart': ['web-https', 'smtp-submission', 'panel'],
         'stumpapp': ['web-http'],
         'termix': ['web-http'],
         'timetagger': ['web-http'],
@@ -97,8 +114,9 @@ class Service:
         'transmission': ['web-http', 'peer-tcp', 'peer-udp'],
         'trilium-next': ['web-http'],
         'trudesk': ['web-http', 'database', 'elasticsearch', 'elasticsearch-transport'],
-        'tuleap': ['web-http'],
+        'twenty': ['web-http', 'database', 'cache'],
         'umami': ['web-http'],
+        'upsnap': ['web-http'],
         'uptime-kuma': ['web-http'],
         'warpgate': ['web-https', 'ssh', 'mysql'],
         'webcheck': ['web-http'],
@@ -107,6 +125,7 @@ class Service:
         'wireguard': ['vpn'],
         'wireguard-easy': ['vpn', 'web-http'],
         'woodpecker': ['web-http'],
+        'workout-tracer': ['web-http', 'database'],
         'zeroclaw': ['web-http'],
     }
 
@@ -114,6 +133,13 @@ class Service:
     Secret variables each service needs, with dummy values.
     '''
     envs_list: dict = {
+        'affine': [
+            ('AFFINE_POSTGRESQL_PASS', GENERATE_HEX32),
+        ],
+        'astral': [
+            ('ASTRAL_GITHUB_CLIENT_ID', ' # Fill-in, see serv/astral/readme.md'),
+            ('ASTRAL_GITHUB_CLIENT_SECRET', ' # Fill-in, see serv/astral/readme.md'),
+        ],
         'authentik': [
             ('AUTHENTIK_SECRET_KEY', GENERATE_HEX32),
             ('AUTHENTIK_POSTGRESQL__USER', 'authentik # Do not change'),
@@ -171,13 +197,29 @@ class Service:
         'firefly3': [
             ('FIREFLY3_APP_KEY', GENERATE_HEX16),
         ],
+        'forgejo': [
+            # Non-empty SECRET_KEY makes Forgejo set INSTALL_LOCK itself,
+            # skipping the web install wizard on first boot.
+            # Create the first admin user via CLI instead, see readme.md.
+            ('FORGEJO_SECRET_KEY', GENERATE_HEX32),
+        ],
         'github-stars-manager': [
             ('GITHUB_STARS_MANAGER_API_SECRET', GENERATE_HEX32),
             ('GITHUB_STARS_MANAGER_ENCRYPTION_KEY', GENERATE_HEX32),
         ],
+        'gitlab': [
+            ('GITLAB_ROOT_PASSWORD', GENERATE_HEX16),
+        ],
         'grafana': [
             ('GRAFANA_ADMIN_USER', 'admin # Do not change'),
             ('GRAFANA_ADMIN_PASSWORD', 'admin # Do not change'),
+        ],
+        'grist': [
+            ('GRIST_SESSION_SECRET', GENERATE_HEX32),
+        ],
+        'guacamole': [
+            ('GUACAMOLE_POSTGRESQL_USER', 'guacamole # Do not change'),
+            ('GUACAMOLE_POSTGRESQL_PASS', 'guacamole # Do not change'),
         ],
         'immich': [
             ('IMMICH_POSTGRESQL_USER', 'immich # Do not change'),
@@ -211,6 +253,17 @@ class Service:
             ('LINKWARDEN_POSTGRES_USER', 'linkwarden # Do not change'),
             ('LINKWARDEN_POSTGRES_PASS', 'linkwarden # Do not change'),
         ],
+        'marquez': [
+            ('MARQUEZ_POSTGRESQL_PASS', 'marquez # Do not change'),
+        ],
+        'mirotalksfu': [
+            ('MIROTALKSFU_JWT_SECRET', GENERATE_HEX32),
+        ],
+        'monica': [
+            ('MONICA_APP_KEY', GENERATE_BASE64_32),
+            ('MONICA_MYSQL_USER', 'monica # Do not change'),
+            ('MONICA_MYSQL_PASS', 'monica # Do not change'),
+        ],
         'n8n': [
             ('N8N_POSTGRESQL_USER', 'n8n # Do not change'),
             ('N8N_POSTGRESQL_PASS', 'n8n # Do not change'),
@@ -222,10 +275,16 @@ class Service:
             ('NOTESNOOK_MINIO_ROOT_USER', 'notesnook # Do not change'),
             ('NOTESNOOK_MINIO_ROOT_PASSWORD', 'notesnook # Do not change'),
         ],
+        'nut-web-ui': [
+            ('NUT_WEB_UI_UPSD_PASS', 'changeme # Dummy, must match the existing NUT server\'s upsd.users password'),
+        ],
         'open-project': [
             ('OPEN_PROJECT_POSTGRESQL_USER', 'openproject # Do not change'),
             ('OPEN_PROJECT_POSTGRESQL_PASS', 'openproject # Do not change'),
             ('OPEN_PROJECT_SECRET_KEY_BASE', GENERATE_HEX32),
+        ],
+        'opencloud': [
+            ('OPENCLOUD_ADMIN_PASSWORD', GENERATE_HEX32),
         ],
         'openwebui': [
             ('OPENWEBUI_SECRET_KEY', GENERATE_HEX32),
@@ -233,6 +292,9 @@ class Service:
         'outline': [
             ('OUTLINE_SECRET_KEY', GENERATE_HEX32),
             ('OUTLINE_UTILS_SECRET', GENERATE_HEX32),
+        ],
+        'overleaf': [
+            ('OVERLEAF_INVITE_TOKEN_SECRET', GENERATE_BASE64_32),
         ],
         'paperless-ngx': [
             ('PAPERLESS_NGX_POSTGRESQL_USER', 'paperlessngx # Do not change'),
@@ -268,14 +330,32 @@ class Service:
         'silverbullet': [
             ('SILVERBULLET_USER', 'admin:admin # Dummy'),
         ],
+        'soft-serve': [
+            ('SOFT_SERVE_INITIAL_ADMIN_KEYS', ' # Fill-in, see serv/soft-serve/readme.md'),
+        ],
+        'ssh-swifty': [
+            ('SSH_SWIFTY_SHARED_KEY', GENERATE_HEX32),
+        ],
         'timetagger': [
             ('TIMETAGGER_CREDENTIALS', 'timetagger:$$2a$$08$$oFD7M9lLEcvtXWw4ePpVe.k7/vOYUrxrozNlwJnBCgKGXwiIVXdWS # Dummy'),
+        ],
+        'twenty': [
+            ('TWENTY_POSTGRESQL_USER', 'twenty # Do not change'),
+            ('TWENTY_POSTGRESQL_PASS', 'twenty # Do not change'),
+            ('TWENTY_ENCRYPTION_KEY', GENERATE_HEX32),
+            ('TWENTY_FALLBACK_ENCRYPTION_KEY', GENERATE_HEX32),
+            ('TWENTY_APP_SECRET', GENERATE_HEX32),
         ],
         'umami': [
             ('UMAMI_POSTGRESQL_USER', 'umami # Do not change'),
             ('UMAMI_POSTGRESQL_PASS', 'umami # Do not change'),
             ('UMAMI_APP_SECRET', GENERATE_HEX32),
             ('UMAMI_TWO_FACTOR_ENCRYPTION_KEY', GENERATE_HEX32),
+        ],
+        'uptime-kuma-auto': [
+            ('UPTIME_KUMA_AUTO_KUMA_URL', ' # Fill-in, see serv/uptime-kuma-auto/readme.md'),
+            ('UPTIME_KUMA_AUTO_KUMA_USER', ' # Fill-in, see serv/uptime-kuma-auto/readme.md'),
+            ('UPTIME_KUMA_AUTO_KUMA_PASS', ' # Fill-in, see serv/uptime-kuma-auto/readme.md'),
         ],
         'wger': [
             ('WGER_POSTGRESQL_USER', 'wger # Do not change'),
@@ -293,6 +373,11 @@ class Service:
             ('WOODPECKER_GITHUB_CLIENT', 'changeme # Dummy, GitHub OAuth app -> https://github.com/settings/developers'),
             ('WOODPECKER_GITHUB_SECRET', 'changeme # Dummy, GitHub OAuth app -> https://github.com/settings/developers'),
             ('WOODPECKER_AGENT_SECRET', GENERATE_HEX32),
+        ],
+        'workout-tracer': [
+            ('WORKOUT_TRACER_POSTGRESQL_USER', 'workouttracer # Do not change'),
+            ('WORKOUT_TRACER_POSTGRESQL_PASS', 'workouttracer # Do not change'),
+            ('WORKOUT_TRACER_JWT_ENCRYPTION_KEY', GENERATE_HEX32),
         ],
         'zeroclaw': [
             ('ZEROCLAW_OPENROUTER_API_KEY', 'sk-or-v1-changeme # Dummy, replace with a real OpenRouter API key'),

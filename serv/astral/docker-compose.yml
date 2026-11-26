@@ -1,0 +1,52 @@
+# References
+# --------------------
+# https://github.com/astralapp/astral
+# https://github.com/kdockerfiles/astral
+
+# NOTE:
+# astralapp/astral has no official image or tagged releases.
+# Builds locally instead, from kdockerfiles/astral's community Dockerfile
+# (see code/web/dockerfile).
+#
+# The app only speaks PHP-FastCGI (port 9000), not plain HTTP.
+# Needs its own front-end webserver for that, same as "open-project" here.
+
+networks:
+  astral:
+    name: astral
+
+volumes:
+  astral-public:
+    name: astral-public
+
+services:
+  astral-web:
+    container_name: astral-web
+    build:
+      context: ./code/web
+      dockerfile: dockerfile
+    restart: unless-stopped
+    networks:
+      - astral
+    volumes:
+      - astral-public:/var/www/html/public/
+    env_file: .env
+    environment:
+      # Needs a real GitHub OAuth app's credentials, see readme.md.
+      GITHUB_CLIENT_ID: ${ASTRAL_GITHUB_CLIENT_ID:?}
+      GITHUB_CLIENT_SECRET: ${ASTRAL_GITHUB_CLIENT_SECRET:?}
+      GITHUB_CLIENT_CALLBACK_URL: http://localhost:${ASTRAL_WEB_HTTP:?}/auth/github/callback
+
+  astral-proxy:
+    image: caddy:2.10.2
+    container_name: astral-proxy
+    restart: unless-stopped
+    depends_on:
+      - astral-web
+    networks:
+      - astral
+    ports:
+      - ${ASTRAL_WEB_HTTP:?}:80
+    volumes:
+      - ./conf/Caddyfile:/etc/caddy/Caddyfile:ro
+      - astral-public:/var/www/html/public/:ro

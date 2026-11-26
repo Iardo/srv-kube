@@ -1,0 +1,42 @@
+# References
+# --------------------
+# https://stalw.art/
+# https://github.com/stalwartlabs/stalwart
+# https://stalw.art/docs/install/platform/docker
+
+networks:
+  stalwart:
+    name: stalwart
+
+volumes:
+  stalwart-etc:
+    name: stalwart-etc
+  stalwart-data:
+    name: stalwart-data
+
+services:
+  stalwart:
+    image: docker.io/stalwartlabs/stalwart@sha256:ca2f6832e12f92f1070bb9bf69505d9a091ddc03d94e02a2fd1df63679c16e84 # v0.12.1
+    container_name: stalwart
+    restart: unless-stopped
+    init: true
+    networks:
+      - stalwart
+    ports:
+      # Outbound-only setup, same posture as serv/maddy.
+      # No port 25 (inbound SMTP),
+      # only implicit-TLS Submission for other services here to relay mail out.
+      - ${STALWART_SMTP_SUBMISSION:?}:465
+      # Web admin UI + JMAP.
+      # Stalwart manages its own TLS and won't sign in over plain HTTP,
+      # kept off port 443 since Caddy already owns that, see readme.md.
+      - ${STALWART_WEB_HTTPS:?}:443
+      # First-run setup wizard only, unauthenticated by design upstream.
+      # Bound to loopback on purpose, reach it through an SSH tunnel,
+      # see readme.md.
+      - 127.0.0.1:${STALWART_PANEL:?}:8080
+    volumes:
+      # Config the setup wizard writes (config.json) and TLS/DKIM state.
+      - stalwart-etc:/etc/stalwart
+      # Mail data (accounts, queues, stores).
+      - stalwart-data:/var/lib/stalwart

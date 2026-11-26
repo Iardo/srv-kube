@@ -1,0 +1,25 @@
+# References
+# --------------------
+# https://github.com/usememos/memos
+# https://www.usememos.com/docs/install/container-install
+
+networks:
+  memos:
+    name: memos
+
+volumes:
+  memos-data:
+    name: memos-data
+
+services:
+  memos-web:
+    image: neosmemo/memos@sha256:3c7bd779510403350465ecabb7e6fbc0887206f9d55b8decf51a205613fa5616 # 26.11.2
+    container_name: memos-web
+    restart: unless-stopped
+    networks:
+      - memos
+    ports:
+      - ${MEMOS_WEB_HTTP:?}:5230
+    volumes:
+      - memos-data:/var/opt/memos
+    env_file: .env

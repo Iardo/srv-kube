@@ -1,0 +1,103 @@
+# References
+# --------------------
+# https://github.com/twentyhq/twenty
+# https://github.com/twentyhq/twenty/blob/main/packages/twenty-docker/docker-compose.yml
+
+networks:
+  twenty:
+    name: twenty
+
+volumes:
+  twenty-data:
+    name: twenty-data
+  twenty-database:
+    name: twenty-database
+
+services:
+  twenty-web:
+    image: twentycrm/twenty@sha256:a3f361c289dcfd6e1fbca0201c49441199e0522fd0c8debe665af95c6a0b5269 # v2.63.0
+    container_name: twenty-web
+    restart: unless-stopped
+    depends_on:
+      twenty-database:
+        condition: service_healthy
+      twenty-cache:
+        condition: service_healthy
+    networks:
+      - twenty
+    ports:
+      - ${TWENTY_WEB_HTTP:?}:3000
+    volumes:
+      - twenty-data:/app/packages/twenty-server/.local-storage
+    env_file: .env
+    environment:
+      NODE_PORT: 3000
+      PG_DATABASE_URL: 'postgres://${TWENTY_POSTGRESQL_USER:?}:${TWENTY_POSTGRESQL_PASS:?}@twenty-database:5432/twenty'
+      REDIS_URL: redis://twenty-cache:6379
+      ENCRYPTION_KEY: ${TWENTY_ENCRYPTION_KEY:?}
+      FALLBACK_ENCRYPTION_KEY: ${TWENTY_FALLBACK_ENCRYPTION_KEY:?}
+      APP_SECRET: ${TWENTY_APP_SECRET:?}
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:3000/healthz"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  twenty-worker:
+    image: twentycrm/twenty@sha256:a3f361c289dcfd6e1fbca0201c49441199e0522fd0c8debe665af95c6a0b5269 # v2.63.0
+    container_name: twenty-worker
+    restart: unless-stopped
+    command: ["yarn", "worker:prod"]
+    depends_on:
+      twenty-database:
+        condition: service_healthy
+      twenty-web:
+        condition: service_healthy
+    networks:
+      - twenty
+    volumes:
+      - twenty-data:/app/packages/twenty-server/.local-storage
+    env_file: .env
+    environment:
+      PG_DATABASE_URL: 'postgres://${TWENTY_POSTGRESQL_USER:?}:${TWENTY_POSTGRESQL_PASS:?}@twenty-database:5432/twenty'
+      REDIS_URL: redis://twenty-cache:6379
+      DISABLE_DB_MIGRATIONS: 'true' # it already runs on the server
+      DISABLE_CRON_JOBS_REGISTRATION: 'true' # it already runs on the server
+      ENCRYPTION_KEY: ${TWENTY_ENCRYPTION_KEY:?}
+      FALLBACK_ENCRYPTION_KEY: ${TWENTY_FALLBACK_ENCRYPTION_KEY:?}
+      APP_SECRET: ${TWENTY_APP_SECRET:?}
+
+  twenty-database:
+    image: postgres:16-alpine
+    container_name: twenty-database
+    restart: unless-stopped
+    networks:
+      - twenty
+    ports:
+      - ${TWENTY_DATABASE:?}:5432
+    volumes:
+      - twenty-database:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${TWENTY_POSTGRESQL_USER:?} -d twenty"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    environment:
+      POSTGRES_DB: twenty
+      POSTGRES_USER: ${TWENTY_POSTGRESQL_USER:?}
+      POSTGRES_PASSWORD: ${TWENTY_POSTGRESQL_PASS:?}
+
+  twenty-cache:
+    image: redis:7-alpine
+    container_name: twenty-cache
+    restart: unless-stopped
+    command: ["--maxmemory-policy", "noeviction", "--port", "6379"]
+    networks:
+      - twenty
+    ports:
+      - ${TWENTY_CACHE:?}:6379
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10

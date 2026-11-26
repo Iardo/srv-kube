@@ -1,0 +1,67 @@
+# References
+# --------------------
+# https://guacamole.apache.org/doc/gug/guacamole-docker.html
+# https://hub.docker.com/r/guacamole/guacamole
+
+# NOTE:
+# No nginx/self-signed-cert sidecar (common in community examples): Caddy
+# already terminates public HTTPS and proxies to this container's plain
+# :8080, same pattern as linkace/kaneo.
+
+networks:
+  guacamole:
+    name: guacamole
+
+volumes:
+  guacamole-database:
+    name: guacamole-database
+
+services:
+  guacamole-web:
+    image: guacamole/guacamole@sha256:700b319ba221d6a5685eb531b27758d3fb2830aa383e94c664296d8b7887db9d # 1.6.0
+    container_name: guacamole-web
+    restart: unless-stopped
+    depends_on:
+      - guacamole-database
+      - guacamole-daemon
+    networks:
+      - guacamole
+    ports:
+      - ${GUACAMOLE_WEB_HTTP:?}:8080
+    env_file: .env
+    environment:
+      GUACD_HOSTNAME: guacamole-daemon
+      POSTGRES_DATABASE: guacamole
+      POSTGRES_HOSTNAME: guacamole-database
+      POSTGRES_USER: ${GUACAMOLE_POSTGRESQL_USER:?}
+      POSTGRES_PASSWORD: ${GUACAMOLE_POSTGRESQL_PASS:?}
+
+  guacamole-database:
+    image: postgres:16-alpine
+    container_name: guacamole-database
+    restart: unless-stopped
+    networks:
+      - guacamole
+    volumes:
+      - guacamole-database:/var/lib/postgresql/data
+      # Schema init script, generated once by task/task-init-db.sh.
+      - ./init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: pg_isready -U ${GUACAMOLE_POSTGRESQL_USER:?}
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    environment:
+      POSTGRES_DB: guacamole
+      POSTGRES_USER: ${GUACAMOLE_POSTGRESQL_USER:?}
+      POSTGRES_PASSWORD: ${GUACAMOLE_POSTGRESQL_PASS:?}
+
+  guacamole-daemon:
+    image: guacamole/guacd@sha256:6e3576cbbda19f4c73951d1a7e5b0f0d96f5ba456c727605611eefb181cb0da8 # 1.6.0
+    container_name: guacamole-daemon
+    restart: unless-stopped
+    networks:
+      - guacamole
+    volumes:
+      - ./data/drive:/drive
+      - ./data/record:/record

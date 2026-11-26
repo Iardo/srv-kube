@@ -1,0 +1,32 @@
+# References
+# --------------------
+# https://github.com/charmbracelet/soft-serve
+# https://github.com/charmbracelet/soft-serve/blob/main/docker.md
+
+networks:
+  soft-serve:
+    name: soft-serve
+
+volumes:
+  soft-serve-data:
+    name: soft-serve-data
+
+services:
+  soft-serve-web:
+    image: charmcli/soft-serve@sha256:740a313b3075ddbf4a24765cda8cfa1560c3fcad96e71d355dc365aeab351db6 # v0.12.4
+    container_name: soft-serve-web
+    restart: unless-stopped
+    networks:
+      - soft-serve
+    ports:
+      - ${SOFT_SERVE_SSH:?}:23231
+      - ${SOFT_SERVE_WEB_HTTP:?}:23232
+      - ${SOFT_SERVE_STATS:?}:23233
+      - ${SOFT_SERVE_GIT_DAEMON:?}:9418
+    volumes:
+      - soft-serve-data:/soft-serve
+    env_file: .env
+    environment:
+      # Your own SSH public key(s), space-separated.
+      # Filled in on the host itself, see readme.md.
+      SOFT_SERVE_INITIAL_ADMIN_KEYS: ${SOFT_SERVE_INITIAL_ADMIN_KEYS:-}

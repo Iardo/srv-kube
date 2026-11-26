@@ -1,0 +1,40 @@
+# References
+# --------------------
+# https://github.com/BigBoot/AutoKuma
+# No numbered release tag is published for the Docker image, only "latest".
+# Pinned to what "latest" resolved to on 2026-11-25.
+
+networks:
+  uptime-kuma-auto:
+    name: uptime-kuma-auto
+
+volumes:
+  uptime-kuma-auto-data:
+    name: uptime-kuma-auto-data
+
+services:
+  uptime-kuma-auto:
+    image: ghcr.io/bigboot/autokuma@sha256:8acbd3ad3ec8cb6c066aa0ee541154921283ec78159015937128541921c47974
+    container_name: uptime-kuma-auto
+    restart: unless-stopped
+    networks:
+      - uptime-kuma-auto
+    # No published port of its own.
+    # It reads other containers' Docker labels straight off the host's
+    # docker.sock, and reaches Uptime Kuma over host.docker.internal
+    # (same pattern as Caddy), not a shared network,
+    # since every service here sits on its own isolated network.
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - uptime-kuma-auto-data:/data
+    env_file: .env
+    environment:
+      # Must point at an already-running Uptime Kuma instance
+      # (this repo's own serv/uptime-kuma),
+      # with an existing admin account's real credentials.
+      # Filled in on the host itself, see readme.md.
+      AUTOKUMA__KUMA__URL: ${UPTIME_KUMA_AUTO_KUMA_URL:?}
+      AUTOKUMA__KUMA__USERNAME: ${UPTIME_KUMA_AUTO_KUMA_USER:?}
+      AUTOKUMA__KUMA__PASSWORD: ${UPTIME_KUMA_AUTO_KUMA_PASS:?}

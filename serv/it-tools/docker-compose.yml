@@ -1,0 +1,21 @@
+# References
+# --------------------
+# https://github.com/CorentinTh/it-tools
+
+# NOTE:
+# Pure static frontend (Vue SPA), no backend/database,
+# all state lives in the browser's own localStorage.
+
+networks:
+  it-tools:
+    name: it-tools
+
+services:
+  it-tools-web:
+    image: corentinth/it-tools@sha256:8b8128748339583ca951af03dfe02a9a4d7363f61a216226fc28030731a5a61f # 2024.10.22-7ca5933
+    container_name: it-tools-web
+    restart: unless-stopped
+    networks:
+      - it-tools
+    ports:
+      - ${IT_TOOLS_WEB_HTTP:?}:80

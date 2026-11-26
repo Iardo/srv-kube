@@ -1,0 +1,52 @@
+# References
+# --------------------
+# https://github.com/monicahq/docker
+# https://github.com/monicahq/docker/blob/main/.examples/simple/apache/docker-compose.yml
+
+networks:
+  monica:
+    name: monica
+
+volumes:
+  monica-storage:
+    name: monica-storage
+  monica-database:
+    name: monica-database
+
+services:
+  monica-web:
+    image: monica@sha256:fce559a809b3b19336b27f72d0713222beb7b955e99adcc8813cd85f070cbd38 # 4.1.2-apache
+    container_name: monica-web
+    restart: unless-stopped
+    depends_on:
+      - monica-database
+    networks:
+      - monica
+    ports:
+      - ${MONICA_WEB_HTTP:?}:80
+    volumes:
+      - monica-storage:/var/www/html/storage
+    env_file: .env
+    environment:
+      APP_KEY: ${MONICA_APP_KEY:?}
+      DB_HOST: monica-database
+      DB_DATABASE: monica
+      DB_USERNAME: ${MONICA_MYSQL_USER:?}
+      DB_PASSWORD: ${MONICA_MYSQL_PASS:?}
+
+  monica-database:
+    image: mariadb:11.5@sha256:2d50fe0f77dac919396091e527e5e148a9de690e58f32875f113bef6506a17f5
+    container_name: monica-database
+    restart: unless-stopped
+    networks:
+      - monica
+    ports:
+      - ${MONICA_DATABASE:?}:3306
+    volumes:
+      - monica-database:/var/lib/mysql
+    env_file: .env
+    environment:
+      MYSQL_DATABASE: monica
+      MYSQL_USER: ${MONICA_MYSQL_USER:?}
+      MYSQL_PASSWORD: ${MONICA_MYSQL_PASS:?}
+      MYSQL_RANDOM_ROOT_PASSWORD: 'true'

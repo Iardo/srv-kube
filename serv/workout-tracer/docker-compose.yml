@@ -1,0 +1,59 @@
+# References
+# --------------------
+# https://github.com/jovandeginste/workout-tracker
+# https://github.com/jovandeginste/workout-tracker/blob/master/docker/docker-compose.yaml
+
+networks:
+  workout-tracer:
+    name: workout-tracer
+
+volumes:
+  workout-tracer-database:
+    name: workout-tracer-database
+
+services:
+  workout-tracer-web:
+    image: ghcr.io/jovandeginste/workout-tracker@sha256:ff56f9a1c2cff36e1af9131ad67ce252c2b2f7d0e4d31afccb4a6cf39649a36a # 2.11.0
+    container_name: workout-tracer-web
+    restart: unless-stopped
+    depends_on:
+      workout-tracer-database:
+        condition: service_healthy
+    networks:
+      - workout-tracer
+    ports:
+      - ${WORKOUT_TRACER_WEB_HTTP:?}:8080
+    env_file: .env
+    environment:
+      TZ: ${TIMEZONE:-America/Panama}
+      WT_JWT_ENCRYPTION_KEY: ${WORKOUT_TRACER_JWT_ENCRYPTION_KEY:?}
+      WT_DATABASE_DRIVER: postgres
+      WT_DSN: 'host=workout-tracer-database user=${WORKOUT_TRACER_POSTGRESQL_USER:?} password=${WORKOUT_TRACER_POSTGRESQL_PASS:?} dbname=workout-tracer port=5432 sslmode=disable TimeZone=${TIMEZONE:-America/Panama}'
+    healthcheck:
+      test: ["CMD", "curl", "-sSLf", "http://localhost:8080/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+
+  workout-tracer-database:
+    image: postgres:16-alpine
+    container_name: workout-tracer-database
+    restart: unless-stopped
+    shm_size: 128mb
+    networks:
+      - workout-tracer
+    ports:
+      - ${WORKOUT_TRACER_DATABASE:?}:5432
+    volumes:
+      - workout-tracer-database:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d workout-tracer -U ${WORKOUT_TRACER_POSTGRESQL_USER:?}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    environment:
+      TZ: ${TIMEZONE:-America/Panama}
+      POSTGRES_DB: workout-tracer
+      POSTGRES_USER: ${WORKOUT_TRACER_POSTGRESQL_USER:?}
+      POSTGRES_PASSWORD: ${WORKOUT_TRACER_POSTGRESQL_PASS:?}

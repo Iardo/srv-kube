@@ -1,0 +1,22 @@
+# References
+# --------------------
+# https://github.com/superioone/nut_webgui
+
+networks:
+  nut-web-ui:
+    name: nut-web-ui
+
+services:
+  nut-web-ui-web:
+    image: ghcr.io/superioone/nut_webgui@sha256:b5ba23f05c47c79091c7390fa6c62bb55f57a5e0967fab88724dd8c1510bebb3 # 0.11.0
+    container_name: nut-web-ui-web
+    restart: unless-stopped
+    networks:
+      - nut-web-ui
+    ports:
+      - ${NUT_WEB_UI_WEB_HTTP:?}:9000
+    env_file: .env
+    environment:
+      # Credentials of an existing NUT (Network UPS Tools) server
+      # elsewhere on the network, not something this repo generates.
+      UPSD_PASS: ${NUT_WEB_UI_UPSD_PASS:?}

@@ -1,0 +1,26 @@
+# References
+# --------------------
+# https://github.com/seriousm4x/UpSnap
+# https://github.com/seriousm4x/UpSnap/blob/master/docker-compose.yml
+
+services:
+  upsnap-web:
+    image: ghcr.io/seriousm4x/upsnap@sha256:e01e61ac6bfbf34a2003364e1499faf2da0fba0a485e0f4b31c49b6576b95e9d # 5.7.3
+    container_name: upsnap-web
+    restart: unless-stopped
+    cap_add:
+      # Required for privileged ping, network device scan (nmap),
+      # and WOL magic packets.
+      - NET_RAW
+    cap_drop:
+      - ALL
+    # Same documented exception as netdata/GPU-bound services.
+    # WOL magic packets and local-network device scanning need the host's
+    # own network, a published container port doesn't work for this.
+    network_mode: host
+    volumes:
+      - ./data:/app/pb_data
+    env_file: .env
+    environment:
+      TZ: ${TIMEZONE:-America/Panama}
+      UPSNAP_HTTP_LISTEN: 0.0.0.0:${UPSNAP_WEB_HTTP:?}

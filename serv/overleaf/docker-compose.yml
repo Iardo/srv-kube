@@ -1,0 +1,67 @@
+# References
+# --------------------
+# https://github.com/overleaf/overleaf/blob/main/docker-compose.yml
+
+networks:
+  overleaf:
+    name: overleaf
+
+volumes:
+  overleaf-data:
+    name: overleaf-data
+  overleaf-database:
+    name: overleaf-database
+  overleaf-cache:
+    name: overleaf-cache
+
+services:
+  overleaf-web:
+    image: sharelatex/sharelatex@sha256:8fe42ff1991cb0cd5a3750171d2c568f78cd8c75f60eba1279e5ddf6fd427271 # 6.3.4
+    container_name: overleaf-web
+    restart: unless-stopped
+    stop_grace_period: 60s
+    depends_on:
+      overleaf-database:
+        condition: service_healthy
+      overleaf-cache:
+        condition: service_started
+    networks:
+      - overleaf
+    ports:
+      - ${OVERLEAF_WEB_HTTP:?}:80
+    volumes:
+      - overleaf-data:/var/lib/overleaf
+    env_file: .env
+    environment:
+      OVERLEAF_MONGO_URL: mongodb://overleaf-database/sharelatex
+      OVERLEAF_REDIS_HOST: overleaf-cache
+      REDIS_HOST: overleaf-cache
+      # Required for invite token generation.
+      OVERLEAF_INVITE_TOKEN_SECRET: ${OVERLEAF_INVITE_TOKEN_SECRET:?}
+
+  overleaf-database:
+    image: mongo@sha256:479e85ced54ffb8a40dade1dcde2da2a9ae858515b9415e9cc54bfb8f0575d01 # 8.0
+    container_name: overleaf-database
+    restart: unless-stopped
+    command: --replSet overleaf
+    networks:
+      - overleaf
+    volumes:
+      - overleaf-database:/data/db
+      - ./bin/mongodb-init-replica-set.js:/docker-entrypoint-initdb.d/mongodb-init-replica-set.js
+    environment:
+      MONGO_INITDB_DATABASE: sharelatex
+    healthcheck:
+      test: echo 'db.stats().ok' | mongosh localhost:27017/test --quiet
+      interval: 10s
+      timeout: 10s
+      retries: 5
+
+  overleaf-cache:
+    image: redis@sha256:25e5c748e65892d29c2682a0f42d3b12765f9406cbe8eabe7acdc569f4708542 # 6.2
+    container_name: overleaf-cache
+    restart: unless-stopped
+    networks:
+      - overleaf
+    volumes:
+      - overleaf-cache:/data

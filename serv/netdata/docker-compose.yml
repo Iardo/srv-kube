@@ -1,0 +1,49 @@
+# References
+# --------------------
+# https://learn.netdata.cloud/docs/netdata-agent/installation/docker
+#
+# EXCEPTION, same spirit as the GPU-bound services (see .llms/skills/local-services/SKILL.md).
+#
+# Netdata needs host PID/network and /proc, /sys, /etc access for accurate metrics,
+# so it uses "network_mode: host" instead of a docker network and published ports.
+#
+# "ports:" is meaningless here.
+# Netdata binds directly on this host's own NETDATA_WEB_HTTP port (19999 by default),
+# set in this host's ".env".
+# Point "serv/caddy" at "host.docker.internal:${NETDATA_WEB_HTTP}" to reverse-proxy it.
+
+volumes:
+  netdata-cache:
+    name: netdata-cache
+  netdata-lib:
+    name: netdata-lib
+
+services:
+  netdata-web:
+    image: netdata/netdata@sha256:2da5100232978bcae211f78e7fe33a7032d75333b5235412bfab743ed1e0c002 # v2.13.0
+    container_name: netdata-web
+    restart: unless-stopped
+    pid: host
+    network_mode: host
+    security_opt:
+      - apparmor:unconfined
+    cap_add:
+      - SYS_PTRACE
+      - SYS_ADMIN
+    volumes:
+      - ./config:/etc/netdata
+      - /etc/group:/host/etc/group:ro
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/os-release:/host/etc/os-release:ro
+      - /etc/passwd:/host/etc/passwd:ro
+      - /proc:/host/proc:ro
+      - /run/dbus:/run/dbus:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /sys:/host/sys:ro
+      - /var/log:/host/var/log:ro
+      - netdata-cache:/var/cache/netdata
+      - netdata-lib:/var/lib/netdata
+    env_file: .env
+    environment:
+      PUID: 1000
+      PGID: 1000

@@ -1,0 +1,39 @@
+# References
+# --------------------
+# https://github.com/knowald/ha-fusion
+# https://github.com/knowald/ha-fusion/blob/main/docker-compose.yml
+
+# NOTE:
+# The original matt8707/ha-fusion is no longer maintained,
+# this uses the maintained fork (knowald/ha-fusion) instead,
+# per the original's own README.
+
+networks:
+  ha-fusion:
+    name: ha-fusion
+
+volumes:
+  ha-fusion-data:
+    name: ha-fusion-data
+
+services:
+  ha-fusion-web:
+    image: ghcr.io/knowald/ha-fusion@sha256:9b19dcfc1d8703429117c428091f97fbd755a12269ab51139b963961edf97020 # 2026.8.2
+    container_name: ha-fusion-web
+    restart: unless-stopped
+    networks:
+      - ha-fusion
+    ports:
+      - ${HA_FUSION_WEB_HTTP:?}:5050
+    volumes:
+      - ha-fusion-data:/app/data
+    healthcheck:
+      test: ['CMD', 'wget', '--quiet', '--tries=1', '--spider', 'http://localhost:5050']
+    env_file: .env
+    environment:
+      PORT: 5050
+      NODE_ENV: production
+      TZ: ${TIMEZONE:-America/Panama}
+      # Your Home Assistant instance's URL.
+      # Set HA_FUSION_HASS_URL in this host's ".env".
+      HASS_URL: ${HA_FUSION_HASS_URL:?}

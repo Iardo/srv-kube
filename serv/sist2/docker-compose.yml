@@ -1,0 +1,33 @@
+# References
+# --------------------
+# https://github.com/sist2app/sist2
+
+networks:
+  sist2:
+    name: sist2
+
+services:
+  sist2-admin:
+    image: docker.io/sist2app/sist2@sha256:b15fcc8b62fadce783be7a607a3086c510aff8b77aab08e9b4f908448f4c3552 # 4.2.1
+    container_name: sist2-admin
+    restart: unless-stopped
+    networks:
+      - sist2
+    ports:
+      # The actual public search frontend, started by sist2-admin from a job's config.
+      - ${SIST2_WEB_HTTP:?}:4090
+      # sist2-admin's own job/config UI. Never expose this one publicly,
+      # it has no auth of its own (see readme.md).
+      - ${SIST2_PANEL:?}:8080
+    # The image's entrypoint is just the "sist2" CLI (scan/index/web commands).
+    # This overrides it to run sist2-admin instead,
+    # which manages scan jobs and starts "sist2 web" from its own config.
+    entrypoint: node
+    command:
+      - /root/sist2-admin/server/main.js
+    volumes:
+      - ./data:/sist2-admin
+      # Mount the directory you want indexed here (read-only),
+      # then point a scan job at "/host" from the admin UI.
+      # Replace "./data-host" with the real host path first.
+      - ./data-host:/host:ro

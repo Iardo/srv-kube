@@ -1,4 +1,0 @@
-:80 {
-  reverse_proxy host.docker.internal:19999
-  tls admin@example.org
-}

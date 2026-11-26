@@ -1,0 +1,88 @@
+# References
+# --------------------
+# https://github.com/penpot/penpot/blob/develop/docker/images/docker-compose.yaml
+# https://help.penpot.app/technical-guide/getting-started/
+
+networks:
+  penpot:
+    name: penpot
+
+volumes:
+  penpot-database:
+    name: penpot-database
+  penpot-assets:
+    name: penpot-assets
+
+services:
+  penpot-frontend:
+    image: penpotapp/frontend@sha256:5b7ad570f137162b0c4cae300e42a376c15e05cb6ec89404f67e43a0996d0107 # 2.19.5
+    container_name: penpot-frontend
+    restart: unless-stopped
+    depends_on:
+      - penpot-backend
+      - penpot-exporter
+    networks:
+      - penpot
+    volumes:
+      - penpot-assets:/opt/data
+    ports:
+      - ${PENPOT_WEB_HTTP:?}:80
+    env_file: .env
+
+  penpot-backend:
+    image: penpotapp/backend@sha256:6bb018a295812ed1a7f0b996079187a72c314feeab1aa7ea65b5b0dc35aad341 # 2.19.5
+    container_name: penpot-backend
+    restart: unless-stopped
+    depends_on:
+      - penpot-database
+      - penpot-redis
+    networks:
+      - penpot
+    volumes:
+      - penpot-assets:/opt/data
+    env_file: .env
+    environment:
+      PENPOT_SECRET_KEY: ${PENPOT_SECRET_KEY:?}
+      PENPOT_DATABASE_USERNAME: ${PENPOT_POSTGRESQL_USER:?}
+      PENPOT_DATABASE_PASSWORD: ${PENPOT_POSTGRESQL_PASS:?}
+
+  penpot-exporter:
+    image: penpotapp/exporter@sha256:30eb19b6d86daa9f36fbfcbf3284835ae9da9cbe03ca2eab472bd1b8a6054e95 # 2.19.5
+    container_name: penpot-exporter
+    restart: unless-stopped
+    networks:
+      - penpot
+    env_file: .env
+
+  penpot-database:
+    image: postgres@sha256:91b9edc40277faf94bc1e3d7ae621b185fa70f3099b94309c4731a8296114870 # 15
+    container_name: penpot-database
+    restart: unless-stopped
+    stop_signal: SIGINT
+    networks:
+      - penpot
+    ports:
+      - ${PENPOT_DATABASE:?}:5432
+    volumes:
+      - penpot-database:/var/lib/postgresql/data
+    environment:
+      POSTGRES_INITDB_ARGS: --data-checksums
+      POSTGRES_DB: penpot
+      POSTGRES_USER: ${PENPOT_POSTGRESQL_USER:?}
+      POSTGRES_PASSWORD: ${PENPOT_POSTGRESQL_PASS:?}
+
+  penpot-redis:
+    image: redis@sha256:6b645a37f49b0546582468706b32e71a8b7fbb5ba4583d0f9e27a8004716b738 # 7
+    container_name: penpot-cache
+    restart: unless-stopped
+    networks:
+      - penpot
+
+  penpot-mailcatch:
+    image: sj26/mailcatcher@sha256:572048324658d2198e0a96785cca4f0260f2c4cadb2cb057bd837b9ee0c60533 # latest, 2026-11-25
+    container_name: penpot-mailcatch
+    restart: unless-stopped
+    networks:
+      - penpot
+    ports:
+      - ${PENPOT_MAILCATCH:?}:1080

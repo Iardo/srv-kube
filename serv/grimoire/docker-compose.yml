@@ -1,0 +1,43 @@
+# References
+# --------------------
+# https://github.com/goniszewski/grimoire
+# https://github.com/goniszewski/grimoire/blob/main/docker-compose.yml
+
+# NOTE:
+# The old pocketbase-backed architecture (pre-1.x) is gone. 1.4.0 is a single
+# standalone container with its own data dir, no separate database.
+
+networks:
+  grimoire:
+    name: grimoire
+
+volumes:
+  grimoire-data:
+    name: grimoire-data
+
+services:
+  grimoire-web:
+    image: goniszewski/grimoire@sha256:1d68f454d84cc692ece63ef71959ab528ca113b6480cdd739b2648cd390980de # 1.4.0
+    container_name: grimoire-web
+    restart: unless-stopped
+    networks:
+      - grimoire
+    ports:
+      - ${GRIMOIRE_WEB_HTTP:?}:3210
+    volumes:
+      - grimoire-data:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3210/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    env_file: .env
+    environment:
+      HOST: 0.0.0.0
+      PORT: 3210
+      DATA_DIR: /data
+      XDG_CONFIG_HOME: /data/config
+      HOME: /data
+      NODE_ENV: production
+      LOG_FORMAT: json

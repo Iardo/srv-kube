@@ -1,0 +1,32 @@
+# References
+# --------------------
+# https://forgejo.org/
+# https://codeberg.org/forgejo/forgejo
+# https://forgejo.org/docs/latest/admin/config-cheat-sheet/
+
+networks:
+  forgejo:
+    name: forgejo
+
+volumes:
+  forgejo-data:
+    name: forgejo-data
+
+services:
+  forgejo-web:
+    image: codeberg.org/forgejo/forgejo@sha256:879f4f10a98e3e167b32cde5f7ae3af0163d50bfacf567559a27a0e95a95670c # 17.0.2
+    container_name: forgejo-web
+    restart: unless-stopped
+    networks:
+      - forgejo
+    ports:
+      - ${FORGEJO_WEB_HTTP:?}:3000
+      - ${FORGEJO_SSH:?}:22
+    volumes:
+      - forgejo-data:/data
+    env_file: .env
+    environment:
+      # DB_TYPE defaults to sqlite3 already, no separate database container.
+      USER_UID: 1000
+      USER_GID: 1000
+      SECRET_KEY: ${FORGEJO_SECRET_KEY:?}

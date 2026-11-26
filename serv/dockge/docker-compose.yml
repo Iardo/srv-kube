@@ -1,0 +1,31 @@
+# References
+# --------------------
+# https://github.com/louislam/dockge
+# https://github.com/louislam/dockge/blob/master/compose.yaml
+
+networks:
+  dockge:
+    name: dockge
+
+services:
+  dockge-web:
+    image: louislam/dockge@sha256:335c6368b880ecc203236ed89e6e5232e0d6578e8ef5920e4a502390451502bf # 1.5.0
+    container_name: dockge-web
+    restart: unless-stopped
+    networks:
+      - dockge
+    ports:
+      - ${DOCKGE_WEB_HTTP:?}:5001
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./data:/app/data
+      # Dockge shells out to "docker compose" on the host's own socket.
+      # This path must match byte-for-byte on both sides of the mount,
+      # or stacks it manages become unrunnable outside Dockge.
+      # This repo's clone_path is always "/etc/srv-kube", matching
+      # every host's komodo-stk.toml, so this mount uses that exact
+      # path instead of Dockge's relative "./stacks" example.
+      - /etc/srv-kube/serv/dockge/stacks:/etc/srv-kube/serv/dockge/stacks
+    env_file: .env
+    environment:
+      DOCKGE_STACKS_DIR: /etc/srv-kube/serv/dockge/stacks

@@ -1,0 +1,38 @@
+# References
+# --------------------
+# https://github.com/koush/scrypted
+# https://github.com/koush/scrypted/blob/main/install/docker/docker-compose.yml
+#
+# EXCEPTION (same spirit as the GPU-bound services, netdata and pi-alert,
+# see .llms/skills/local-services/SKILL.md).
+#
+# HomeKit/mDNS device discovery needs the container to advertise itself on the real LAN,
+# a bridge network's private IP breaks that,
+# so this uses "network_mode: host" instead of a docker network and published ports.
+#
+# "ports:" is meaningless here.
+# Scrypted binds directly on this host's own SCRYPTED_WEB_HTTPS port, set in this host's ".env" like any other port.
+#
+# No versioned tag is published upstream, only "latest",
+# pinned to what "latest" resolved to on 2026-11-25.
+
+volumes:
+  scrypted-data:
+    name: scrypted-data
+
+services:
+  scrypted-web:
+    image: ghcr.io/koush/scrypted@sha256:e78b4fcecdd6c61acaaf22b50ccef303c738da58cc0be57afdb116521df52296
+    container_name: scrypted-web
+    restart: unless-stopped
+    network_mode: host
+    volumes:
+      - scrypted-data:/server/volume
+    env_file: .env
+    environment:
+      SCRYPTED_WEB_PORT: ${SCRYPTED_WEB_HTTP:?}
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: '10'

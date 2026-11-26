@@ -1,0 +1,25 @@
+# References
+# --------------------
+# https://github.com/filebrowser/filebrowser
+# https://filebrowser.org/installation
+
+networks:
+  filebrowser:
+    name: filebrowser
+
+services:
+  filebrowser-web:
+    image: filebrowser/filebrowser@sha256:a469ea076d4a1b4b1d86a41d130f2f536cd9da996a2b1fb39c0d7635f9d89b9a # v2.63.23
+    container_name: filebrowser-web
+    restart: unless-stopped
+    networks:
+      - filebrowser
+    ports:
+      - ${FILEBROWSER_WEB_HTTP:?}:80
+    volumes:
+      - ./data/srv:/srv
+      # The image refuses to start unless these two files already exist,
+      # see task-gen-directories.sh.
+      - ./data/filebrowser.db:/database/filebrowser.db
+      - ./data/settings.json:/.filebrowser.json
+    env_file: .env

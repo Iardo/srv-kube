@@ -1,0 +1,26 @@
+# References
+# --------------------
+# https://privatebin.info/
+# https://hub.docker.com/r/privatebin/nginx-fpm-alpine
+
+networks:
+  privatebin:
+    name: privatebin
+
+services:
+  privatebin-web:
+    image: privatebin/nginx-fpm-alpine@sha256:2e2674fa2f8b18a263fe5577841a6959c5954cd09b9a5476d80a422c277f5a1a # 2.1.1
+    container_name: privatebin-web
+    restart: unless-stopped
+    read_only: true
+    networks:
+      - privatebin
+    ports:
+      - ${PRIVATEBIN_WEB_HTTP:?}:8080
+    volumes:
+      - ./data:/srv/data
+    tmpfs:
+      - /tmp:nodev,noexec,mode=1777
+      - /run:nodev,exec,mode=1777
+      - /var/lib/nginx/tmp:mode=1777
+    env_file: .env

@@ -1,0 +1,87 @@
+# References
+# --------------------
+# https://affine.pro/
+# https://github.com/toeverything/AFFiNE
+# https://docs.affine.pro/self-host-affine
+
+# NOTE:
+# No numbered release tag is published to ghcr.io for the self-hosted
+# image, only a floating "stable" tag.
+# Pinned to what "stable" resolved to on 2026-11-25.
+
+networks:
+  affine:
+    name: affine
+
+volumes:
+  affine-storage:
+    name: affine-storage
+  affine-config:
+    name: affine-config
+  affine-database:
+    name: affine-database
+
+services:
+  affine-web:
+    image: ghcr.io/toeverything/affine@sha256:b649f5ce2384ffdf13c23bccf81d759e15973d59d0b0058af65d895a84373099 # stable, as of 2026-11-25
+    container_name: affine-web
+    restart: unless-stopped
+    depends_on:
+      - affine-database
+      - affine-cache
+      - affine-migration
+    networks:
+      - affine
+    ports:
+      - ${AFFINE_WEB_HTTP:?}:3010
+    volumes:
+      - affine-storage:/root/.affine/storage
+      - affine-config:/root/.affine/config
+    environment:
+      REDIS_SERVER_HOST: affine-cache
+      DATABASE_URL: postgresql://affine:${AFFINE_POSTGRESQL_PASS:?}@affine-database:5432/affine
+      DEPLOYMENT_TYPE: selfhosted
+
+  # One-shot: runs schema migrations/setup, then exits.
+  # Keep this on the same pinned image/digest as affine-web.
+  affine-migration:
+    image: ghcr.io/toeverything/affine@sha256:b649f5ce2384ffdf13c23bccf81d759e15973d59d0b0058af65d895a84373099 # stable, as of 2026-11-25
+    container_name: affine-migration
+    restart: 'no'
+    depends_on:
+      - affine-database
+      - affine-cache
+    networks:
+      - affine
+    volumes:
+      - affine-storage:/root/.affine/storage
+      - affine-config:/root/.affine/config
+    command: ['sh', '-c', 'node ./scripts/self-host-predeploy.js']
+    environment:
+      REDIS_SERVER_HOST: affine-cache
+      DATABASE_URL: postgresql://affine:${AFFINE_POSTGRESQL_PASS:?}@affine-database:5432/affine
+      DEPLOYMENT_TYPE: selfhosted
+
+  affine-database:
+    image: pgvector/pgvector:pg16
+    container_name: affine-database
+    restart: unless-stopped
+    networks:
+      - affine
+    ports:
+      - ${AFFINE_DATABASE:?}:5432
+    volumes:
+      - affine-database:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: affine
+      # Real password (unlike upstream's trust-auth reference compose),
+      # since this port is published to the host.
+      POSTGRES_PASSWORD: ${AFFINE_POSTGRESQL_PASS:?}
+      POSTGRES_DB: affine
+
+  affine-cache:
+    image: redis:7-alpine
+    container_name: affine-cache
+    restart: unless-stopped
+    networks:
+      - affine

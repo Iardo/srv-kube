@@ -1,0 +1,41 @@
+# References
+# --------------------
+# https://docs.gitlab.com/ee/install/docker.html
+# https://docs.gitlab.com/omnibus/settings/configuration.html
+
+# NOTE:
+# GitLab CE is a heavy, all-in-one image (bundles its own nginx, Postgres,
+# Redis, Gitaly, Sidekiq, Puma). Official minimum is 4 CPU / 4GB RAM, 8GB+
+# recommended for real use. Think twice before adding this to a small host.
+
+networks:
+  gitlab:
+    name: gitlab
+
+services:
+  gitlab-web:
+    image: gitlab/gitlab-ce@sha256:926ff73d53698c1e3724e65a8be5cc980bd18104f87db6d8d461c6f7a84d7bba # 19.6.2-ce.0
+    container_name: gitlab-web
+    restart: unless-stopped
+    hostname: ${GITLAB_DOMAIN:-localhost}
+    shm_size: '256m'
+    networks:
+      - gitlab
+    ports:
+      - ${GITLAB_WEB_HTTP:?}:80
+      - ${GITLAB_SSH:?}:22
+    volumes:
+      - ./data/config:/etc/gitlab
+      - ./data/logs:/var/log/gitlab
+      - ./data/data:/var/opt/gitlab
+    env_file: .env
+    environment:
+      # Caddy already terminates public HTTPS and proxies to this container's
+      # plain :80, same pattern as linkace/kaneo.
+      # Set GITLAB_DOMAIN in this host's ".env".
+      GITLAB_OMNIBUS_CONFIG: |
+        external_url 'http://${GITLAB_DOMAIN:-localhost}'
+        nginx['listen_port'] = 80
+        nginx['listen_https'] = false
+        gitlab_rails['gitlab_shell_ssh_port'] = ${GITLAB_SSH:?}
+        gitlab_rails['initial_root_password'] = '${GITLAB_ROOT_PASSWORD:?}'

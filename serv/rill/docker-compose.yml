@@ -1,0 +1,34 @@
+# References
+# --------------------
+# https://github.com/rilldata/rill
+# https://docs.rilldata.com/reference/cli/start
+
+# NOTE:
+# DuckDB is bundled inside this image, it's Rill's own embedded OLAP engine,
+# there's no separate DuckDB container to run.
+# Point a Rill source/model at your data (CSV/Parquet under ./data, or any supported connector) and it loads into DuckDB itself.
+#
+# This is Rill's local single-user "Developer" mode (no built-in login),
+# not "Rill Cloud" multi-tenant hosting.
+# Keep this off the public internet, same as any other no-auth tool here.
+
+networks:
+  rill:
+    name: rill
+
+volumes:
+  rill-project:
+    name: rill-project
+
+services:
+  rill:
+    image: rilldata/rill@sha256:4a9b7c8729ab9fa4fff640c4023739d31690e2b77323b48dfbe95b018983afc6 # v0.92.1
+    container_name: rill
+    restart: unless-stopped
+    networks:
+      - rill
+    ports:
+      - ${RILL_WEB_HTTP:?}:9009
+    volumes:
+      - rill-project:/project
+    command: ['start', '/project', '--no-open', '--port', '9009']

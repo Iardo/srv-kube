@@ -1,0 +1,75 @@
+# References
+# --------------------
+# https://marquezproject.ai/
+# https://github.com/MarquezProject/marquez
+# https://github.com/MarquezProject/marquez/blob/main/docker-compose.yml
+
+# NOTE:
+# OpenSearch is upstream's optional search backend, not included here
+# to keep this light (SEARCH_ENABLED=false).
+# It's only used for free-text search across datasets/jobs,
+# lineage itself works without it.
+
+networks:
+  marquez:
+    name: marquez
+
+volumes:
+  marquez-data:
+    name: marquez-data
+  marquez-database:
+    name: marquez-database
+
+services:
+  marquez-api:
+    image: marquezproject/marquez@sha256:0721c976cff17d8b14f7949d85d6dac9c7ea37cb9fe857caa19833730fcb1a50 # 0.51.1
+    container_name: marquez-api
+    restart: unless-stopped
+    depends_on:
+      - marquez-database
+    networks:
+      - marquez
+    ports:
+      - ${MARQUEZ_API:?}:5000
+      - ${MARQUEZ_API_ADMIN:?}:5001
+    volumes:
+      - marquez-data:/opt/marquez
+    environment:
+      MARQUEZ_PORT: 5000
+      MARQUEZ_ADMIN_PORT: 5001
+      POSTGRES_HOST: marquez-database
+      POSTGRES_PORT: 5432
+      SEARCH_ENABLED: "false"
+
+  marquez-web:
+    image: marquezproject/marquez-web@sha256:7312112ca0e611b0a37b00d3da6a677485ae4a97622b23d3ae24d849a927868b # 0.51.1
+    container_name: marquez-web
+    restart: unless-stopped
+    depends_on:
+      - marquez-api
+    networks:
+      - marquez
+    ports:
+      - ${MARQUEZ_WEB_HTTP:?}:3000
+    environment:
+      MARQUEZ_HOST: marquez-api
+      MARQUEZ_PORT: 5000
+      WEB_PORT: 3000
+
+  marquez-database:
+    image: docker.io/library/postgres:14
+    container_name: marquez-database
+    restart: unless-stopped
+    networks:
+      - marquez
+    ports:
+      - ${MARQUEZ_DATABASE:?}:5432
+    volumes:
+      - marquez-database:/var/lib/postgresql/data
+    environment:
+      # marquez-api's bundled marquez.dev.yml config hardcodes
+      # db.user/db.password as the literal string "marquez" (not env-var interpolated),
+      # so this can't be a generated secret, the value here must match exactly.
+      POSTGRES_USER: marquez
+      POSTGRES_PASSWORD: ${MARQUEZ_POSTGRESQL_PASS:?} # Do not change
+      POSTGRES_DB: marquez
