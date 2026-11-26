@@ -32,6 +32,9 @@ services:
     env_file: .env
     environment:
       APP_KEY: ${LINKACE_APP_KEY:?}
+      # Required: LinkAce's TrustHosts middleware only allows the Host header
+      # to match subdomains of this URL, anything else is rejected as a 400.
+      APP_URL: 'https://${LINKACE_DOMAIN:-localhost:${LINKACE_WEB_HTTP:?}}'
       DB_HOST: linkace-database
       DB_DATABASE: ${MYSQL_NAME:-linkace}
       DB_USERNAME: ${LINKACE_MYSQL_USER:-linkace}
