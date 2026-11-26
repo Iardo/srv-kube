@@ -1,0 +1,36 @@
+# References
+# --------------------
+# https://github.com/dagucloud/dagu
+# https://docs.dagu.sh/server-admin/deployment/docker-compose
+# https://docs.dagu.sh/server-admin/
+
+networks:
+  dagu:
+    name: dagu
+
+volumes:
+  dagu-data:
+    name: dagu-data
+
+services:
+  dagu:
+    image: ghcr.io/dagucloud/dagu@sha256:399dda807f532df9e17bcea6fa836b79f5700c3c13ca2f62fc0c1e45cab8e286 # 2.27.0
+    container_name: dagu
+    restart: unless-stopped
+    networks:
+      - dagu
+    ports:
+      - ${DAGU_WEB_HTTP:?}:8080
+    volumes:
+      - dagu-data:/var/lib/dagu
+      # Optional, SSH private key for remote steps.
+      # See readme.md before relying on this.
+      - ./data/ssh:/home/dagu/.ssh:ro
+    command: ['dagu', 'start-all']
+    environment:
+      DAGU_HOST: 0.0.0.0
+      DAGU_PORT: 8080
+      DAGU_DAGS_DIR: /var/lib/dagu/dags
+      DAGU_AUTH_MODE: basic
+      DAGU_AUTH_BASIC_USERNAME: admin
+      DAGU_AUTH_BASIC_PASSWORD: ${DAGU_ADMIN_PASSWORD:?}

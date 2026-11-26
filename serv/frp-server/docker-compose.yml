@@ -1,0 +1,37 @@
+# References
+# --------------------
+# https://github.com/fatedier/frp
+# https://github.com/fatedier/frp/blob/master/README.md
+
+# NOTE:
+# This is the public-IP side of the pair, deploy it to a VPS host.
+# "serv/frp-client" goes on the other end, the local/dev machine.
+# See readme.md for the first-run flow and DNS setup.
+
+networks:
+  frp-server:
+    name: frp-server
+
+services:
+  frp-server:
+    image: docker.io/fatedier/frps@sha256:74a92b46be8cb287636c8fd238eed53c26c915ed51b95c4b430ad4620a247dc2 # v0.72.0
+    container_name: frp-server
+    restart: unless-stopped
+    networks:
+      - frp-server
+    ports:
+      # "frpc" clients connect here.
+      - ${FRP_SERVER_TUNNEL:?}:7000
+      # Public HTTP entrypoint for tunneled traffic.
+      # Published directly, not through "serv/caddy".
+      # Caddy only knows one fixed route per service,
+      # this has to route by whatever subdomain the client picks.
+      - ${FRP_SERVER_VHOST_HTTP:?}:8080
+      # Dashboard, unauthenticated by design, same posture as "serv/stalwart"'s panel.
+      # Bound to loopback, reach it through an SSH tunnel, see readme.md.
+      - 127.0.0.1:${FRP_SERVER_PANEL:?}:7500
+    volumes:
+      - ./frps.toml:/etc/frp/frps.toml:ro
+    environment:
+      FRP_SERVER_AUTH_TOKEN: ${FRP_SERVER_AUTH_TOKEN:?}
+    command: ['-c', '/etc/frp/frps.toml']

@@ -1,0 +1,14 @@
+serverAddr = "{{ .Envs.FRP_CLIENT_SERVER_ADDR }}"
+serverPort = {{ .Envs.FRP_CLIENT_SERVER_PORT }}
+
+auth.method = "token"
+auth.token = "{{ .Envs.FRP_CLIENT_AUTH_TOKEN }}"
+
+# Add your own proxies below, one block per local port you want to share.
+# Example, exposes a local dev server on :3000 as "myapp.<FRP_SERVER subdomain host>":
+#
+# [[proxies]]
+# name = "myapp"
+# type = "http"
+# localPort = 3000
+# subdomain = "myapp"

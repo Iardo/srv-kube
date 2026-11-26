@@ -30,6 +30,7 @@ class Service:
         'crafty': ['web-http', 'web-https', 'dynmap', 'bedrock'],
         'cronicle': ['web-http'],
         'cronjob-org': ['web-http', 'database-master', 'database-node'],
+        'dagu': ['web-http'],
         'dnsmasq': ['dns'],
         'dockge': ['web-http'],
         'docmost': ['web-http', 'database', 'cache'],
@@ -42,6 +43,8 @@ class Service:
         'firefly3': ['web-http', 'database'],
         'flood': ['web-http'],
         'forgejo': ['web-http', 'ssh'],
+        'frp-client': [],
+        'frp-server': ['tunnel', 'vhost-http', 'panel'],
         'gatus': ['web-http'],
         'github-stars-manager': ['web-http'],
         'gitlab': ['web-http', 'ssh'],
@@ -189,6 +192,9 @@ class Service:
             ('CRONJOB_ORG_VERP_SECRET', GENERATE_HEX32),
             ('CRONJOB_ORG_STATUS_BADGE_TOKEN_SECRET', GENERATE_HEX32),
         ],
+        'dagu': [
+            ('DAGU_ADMIN_PASSWORD', GENERATE_HEX32),
+        ],
         'docmost': [
             ('DOCMOST_APP_SECRET', GENERATE_HEX32),
             ('DOCMOST_POSTGRESQL_USER', 'docmost # Do not change'),
@@ -202,6 +208,16 @@ class Service:
             # skipping the web install wizard on first boot.
             # Create the first admin user via CLI instead, see readme.md.
             ('FORGEJO_SECRET_KEY', GENERATE_HEX32),
+        ],
+        'frp-client': [
+            # Must match "serv/frp-server"'s own host, see its readme.md.
+            ('FRP_CLIENT_SERVER_ADDR', ' # Fill-in, see serv/frp-client/readme.md'),
+            ('FRP_CLIENT_SERVER_PORT', ' # Fill-in, see serv/frp-client/readme.md'),
+            # Must match "serv/frp-server"'s generated FRP_SERVER_AUTH_TOKEN exactly.
+            ('FRP_CLIENT_AUTH_TOKEN', ' # Fill-in, see serv/frp-client/readme.md'),
+        ],
+        'frp-server': [
+            ('FRP_SERVER_AUTH_TOKEN', GENERATE_HEX32),
         ],
         'github-stars-manager': [
             ('GITHUB_STARS_MANAGER_API_SECRET', GENERATE_HEX32),

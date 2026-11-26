@@ -1,0 +1,31 @@
+# References
+# --------------------
+# https://github.com/fatedier/frp
+# https://github.com/fatedier/frp/blob/master/README.md
+
+# NOTE:
+# This is the local/dev-machine side of the pair, it only dials out.
+# "serv/frp-server" goes on the other end, a VPS with a public IP.
+# See readme.md for the first-run flow and how to add a proxy.
+
+# EXCEPTION (same spirit as the GPU-bound services and netdata,
+# see .llms/skills/local-services/SKILL.md).
+#
+# Each proxy's "localPort" in frpc.toml points at a port on the dev machine
+# itself (e.g. a local dev server on :3000), not at another container,
+# so this uses "network_mode: host" instead of a docker network.
+
+services:
+  frp-client:
+    image: docker.io/fatedier/frpc@sha256:50913ff54a289615ef49bf51bc39d7d0a0b1e2b54056328937b3b4db5213e2f4 # v0.72.0
+    container_name: frp-client
+    restart: unless-stopped
+    # Outbound-only, it dials "serv/frp-server", nothing listens here.
+    network_mode: host
+    volumes:
+      - ./frpc.toml:/etc/frp/frpc.toml:ro
+    environment:
+      FRP_CLIENT_SERVER_ADDR: ${FRP_CLIENT_SERVER_ADDR:?}
+      FRP_CLIENT_SERVER_PORT: ${FRP_CLIENT_SERVER_PORT:?}
+      FRP_CLIENT_AUTH_TOKEN: ${FRP_CLIENT_AUTH_TOKEN:?}
+    command: ['-c', '/etc/frp/frpc.toml']

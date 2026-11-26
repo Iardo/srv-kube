@@ -1,0 +1,8 @@
+bindPort = 7000
+vhostHTTPPort = 8080
+
+auth.method = "token"
+auth.token = "{{ .Envs.FRP_SERVER_AUTH_TOKEN }}"
+
+webServer.addr = "0.0.0.0"
+webServer.port = 7500
