@@ -8,6 +8,7 @@ include: [
   '${SERV:?}/kaneo/${FILE:?}',
   '${SERV:?}/mailpit/${FILE:?}',
   '${SERV:?}/outline/${FILE:?}',
+  '${SERV:?}/silo/${FILE:?}',
   '${SERV:?}/webcheck/${FILE:?}',
   '${SERV:?}/woodpecker/${FILE:?}',
 ]

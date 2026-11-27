@@ -1,0 +1,8 @@
+# folders included:
+# folders ignored:
+
+# --------------------
+# files included:
+!.env
+
+# files ignored:

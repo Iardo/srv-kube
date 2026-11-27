@@ -1,0 +1,47 @@
+# References
+# --------------------
+# https://silo.pgsty.com/
+# https://hub.docker.com/r/pgsty/silo
+# https://github.com/usekaneo/kaneo/blob/main/apps/docs/core/installation/silo.mdx
+
+# NOTE:
+# Silo is a maintained MinIO fork, S3-compatible API plus a web console.
+# Used here as Kaneo's S3-compatible storage backend, see serv/kaneo/readme.md.
+
+networks:
+  silo:
+    name: silo
+
+volumes:
+  silo-data:
+    name: silo-data
+
+services:
+  silo:
+    image: docker.io/pgsty/silo@sha256:6f48a60830eb101e19f955124914554d73c4a4721396d3d13d61634e1396eadf # RELEASE.2026-11-12T00-00-00Z
+    container_name: silo
+    restart: unless-stopped
+    networks:
+      - silo
+    command: ['server', '/data', '--console-address', ':9001']
+    ports:
+      # S3 API, reachable from the browser for presigned uploads,
+      # Caddy reverse-proxies it to the real domain, see readme.md.
+      - ${SILO_WEB_HTTP:?}:9000
+      # Admin console, unauthenticated until you sign in,
+      # kept on loopback, reach it through an SSH tunnel, see readme.md.
+      - 127.0.0.1:${SILO_PANEL:?}:9001
+    volumes:
+      - silo-data:/data
+    env_file: .env
+    environment:
+      MINIO_ROOT_USER: silo-admin
+      MINIO_ROOT_PASSWORD: ${SILO_ROOT_PASSWORD:?}
+      # Must match Kaneo's own public origin exactly, including scheme.
+      # Set SILO_CORS_ORIGIN in this host's ".env", see readme.md.
+      MINIO_API_CORS_ALLOW_ORIGIN: ${SILO_CORS_ORIGIN:?}
+    healthcheck:
+      test: ['CMD', 'silo', 'healthcheck', 'ready']
+      interval: 30s
+      timeout: 5s
+      retries: 3

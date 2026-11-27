@@ -102,6 +102,7 @@ class Service:
         'romm': ['web-http'],
         'scrutiny': ['web-http', 'database'],
         'scrypted': ['web-http'],
+        'silo': ['web-http', 'panel'],
         'silverbullet': ['web-http'],
         'sist2': ['web-http', 'panel'],
         'soft-serve': ['ssh', 'web-http', 'stats', 'git-daemon'],
@@ -251,6 +252,9 @@ class Service:
             ('KANEO_AUTH_SECRET', GENERATE_HEX32),
             ('KANEO_POSTGRESQL_USER', 'kaneo # Do not change'),
             ('KANEO_POSTGRESQL_PASS', 'kaneo # Do not change'),
+            ('KANEO_S3_BUCKET', ' # Fill-in, see serv/kaneo/readme.md'),
+            ('KANEO_S3_ACCESS_KEY_ID', ' # Fill-in, see serv/kaneo/readme.md'),
+            ('KANEO_S3_SECRET_ACCESS_KEY', ' # Fill-in, see serv/kaneo/readme.md'),
         ],
         'komodo': [
             ('KOMODO_DATABASE_USERNAME', 'admin # Do not change'),
@@ -342,6 +346,9 @@ class Service:
             ('ROMM_MYSQL_USER', 'romm # Do not change'),
             ('ROMM_MYSQL_PASS', 'romm # Do not change'),
             ('ROMM_AUTH_SECRET_KEY', GENERATE_HEX32),
+        ],
+        'silo': [
+            ('SILO_ROOT_PASSWORD', GENERATE_HEX32),
         ],
         'silverbullet': [
             ('SILVERBULLET_USER', 'admin:admin # Dummy'),

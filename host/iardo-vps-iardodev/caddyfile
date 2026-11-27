@@ -30,11 +30,15 @@ mailpit.iardo.dev {
 }
 
 outline.iardo.dev {
-    reverse_proxy https://host.docker.internal:19002 {
+    reverse_proxy https://host.docker.internal:19000 {
         transport http {
             tls_insecure_skip_verify
         }
     }
+}
+
+silo.iardo.dev {
+    reverse_proxy host.docker.internal:23000
 }
 
 webcheck.iardo.dev {
